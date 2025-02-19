@@ -1,0 +1,84 @@
+name: PHPUnit
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  get_libraries:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Libraries Cache
+        id: libraries-cache
+        uses: actions/cache@v3
+        with:
+          path: lib
+          key: lib-${{ hashFiles('**/duckdb-ffi.h') }}
+          restore-keys: |
+            lib-
+
+      - name: Get libraries
+        if: steps.libraries-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: ./scripts/get_libraries.sh
+
+
+  build:
+    needs: get_libraries
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        php: [8.4, 8.3]
+        stability: [prefer-lowest, prefer-stable]
+  
+    name: P${{ matrix.php }} - ${{ matrix.stability }} - ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        lfs: false
+
+    - name: Libraries Cache
+      id: libraries-cache
+      uses: actions/cache@v3
+      with:
+        path: lib
+        key: lib-${{ hashFiles('**/duckdb-ffi.h') }}
+        restore-keys: |
+          lib-
+        enableCrossOsArchive: true
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        extensions: ffi, pcntl
+        coverage: none
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install dependencies
+      run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+
+    - name: Run test suite
+      run: vendor/bin/phpunit test

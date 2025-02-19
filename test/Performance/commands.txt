@@ -1,0 +1,44 @@
+# Configuración del gráfico
+load 'test/Performance/accent.pal'
+set terminal pngcairo size 800,600 enhanced font 'Verdana,10'
+
+set title system("head -n 1 /tmp/plot_data.data | sed 's/\"//g'")
+
+# Etiquetas de los ejes
+set ylabel "Time (s)"
+set y2label "Mem (KB)"
+
+# Configuración de los ejes
+set ytics nomirror
+set y2tics
+
+# Calcular rangos para los ejes y e y2
+# stats '/tmp/plot_data.data' every ::1 using 3 nooutput  # Calcula estadísticas para la columna Mem (eje y2)
+# y2max = STATS_max * 1.1  # Aumenta el valor máximo en un 10%
+# set y2range [0:y2max]  # Define el rango del eje y2
+
+# stats '/tmp/plot_data.data' every ::1 using 2 nooutput  # Calcula estadísticas para la columna Time (eje y)
+# ymax = STATS_max * 1.1  # Aumenta el valor máximo en un 10%
+# set yrange [0:ymax]  # Define el rango del eje y
+
+# Calcular manualmente el valor máximo de las columnas Time y Mem
+max_time = 0
+max_mem = 0
+stats '/tmp/plot_data.data' every ::1 using 2:(max_time = ($2 > max_time) ? $2 : max_time) nooutput
+stats '/tmp/plot_data.data' every ::1 using 3:(max_mem = ($3 > max_mem) ? $3 : max_mem) nooutput
+
+# Ajustar los rangos de los ejes y e y2 con un 10% más que los valores máximos
+set yrange [0:max_time * 1.1]
+set y2range [0:max_mem * 1.1]
+
+
+# Configuración de las barras y líneas
+set style fill solid
+set boxwidth 0.5
+
+# Definir una paleta de colores para las barras
+unset colorbox
+
+# Dibujar el gráfico
+plot '/tmp/plot_data.data' every ::1 using 0:2:0:xtic(1) with boxes notitle axes x1y1 lc palette, \
+     '/tmp/plot_data.data' every ::1 using 0:3 with lines title 'Mem' linewidth 5 axes x1y2

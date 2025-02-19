@@ -1,0 +1,12 @@
+/vendor/
+.idea
+**/.DS_Store
+**.log
+test.db
+**/measurements*.csv
+composer.lock
+**/cachegrind.out.*
+tools
+.php-cs-fixer.cache
+.phpunit.result.cache
+out

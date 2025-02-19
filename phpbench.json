@@ -1,0 +1,14 @@
+{
+  "$schema":"./vendor/phpbench/phpbench/phpbench.schema.json",
+  "runner.bootstrap": "test/Benchmark/bootstrap.php",
+  "runner.path": "test/Benchmark",
+  "runner.file_pattern": "*Bench.php",
+  "report.generators": {
+    "real_memory": {
+      "extends": "benchmark",
+      "title": "Benchmark with real memory",
+      "description": "Benchmark adding also real memory usage",
+      "cols": [ "subject", "mem_real", "mode", "rstdev", "stdev" ]
+    }
+  }
+}
