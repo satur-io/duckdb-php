@@ -211,6 +211,13 @@ class TypeConverter
         return UUID::fromHugeint($hugeint, self::getMath());
     }
 
+    public static function getBitDuckDBBit(?CDataInterface $data, FFIDuckDB $ffi): string
+    {
+        $value = $ffi->createBit($data);
+
+        return $ffi->getVarchar($value);
+    }
+
     /**
      * @throws BigNumbersNotSupportedException
      */

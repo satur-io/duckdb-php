@@ -365,6 +365,27 @@ class QueryTest extends TestCase
     }
 
     #[Group('primitives')]
+    public function testBitSelect(): void
+    {
+        $this->markTestSkipped('Not supported yet');
+        $expectedValues = '101010';
+
+        $this->db->query("SET TimeZone = 'UTC';");
+        $result = $this->db->query("SELECT '101010'::BITSTRING AS b;");
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row);
+
+        $expectedValues = '00000000000000000000000001111011';
+
+        $this->db->query("SET TimeZone = 'UTC';");
+        $result = $this->db->query('SELECT 123::BITSTRING AS b;');
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row);
+    }
+
+    #[Group('primitives')]
     public function testIntervalSelect(): void
     {
         $expectedValues = [

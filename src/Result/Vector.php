@@ -6,6 +6,7 @@ namespace Saturio\DuckDB\Result;
 
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
+use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Type\Converter\NumericConverter;
@@ -143,6 +144,7 @@ class Vector
             TypeC::DUCKDB_TYPE_UBIGINT => TypeConverter::getUBigIntFromDuckDBUBigInt($data),
             TypeC::DUCKDB_TYPE_HUGEINT, TypeC::DUCKDB_TYPE_UHUGEINT => TypeConverter::getHugeIntFromDuckDBHugeInt($this->currentValue),
             TypeC::DUCKDB_TYPE_UUID => TypeConverter::getUUIDFromDuckDBHugeInt($this->currentValue),
+            TypeC::DUCKDB_TYPE_BIT => throw new UnsupportedTypeException('Type BIT/BITSTRING is not supported'), // @todo - Check why does not work TypeConverter::getBitDuckDBBit($this->currentValue, $this->ffi),
             default => $data,
         };
     }
