@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Type\Math;
+namespace Saturio\DuckDB\Type\Math;
 
 class BCMathLib implements MathLibInterface
 {

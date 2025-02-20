@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Result;
+namespace Saturio\DuckDB\Result;
 
-use SaturIo\DuckDB\Exception\BigNumbersNotSupportedException;
-use SaturIo\DuckDB\Exception\InvalidTimeException;
-use SaturIo\DuckDB\FFI\CDataInterface;
-use SaturIo\DuckDB\FFI\DuckDB as FFIDuckDB;
-use SaturIo\DuckDB\Type\Converter\NumericConverter;
-use SaturIo\DuckDB\Type\Converter\TypeConverter;
-use SaturIo\DuckDB\Type\Type;
-use SaturIo\DuckDB\Type\TypeC;
+use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
+use Saturio\DuckDB\Exception\InvalidTimeException;
+use Saturio\DuckDB\FFI\CDataInterface;
+use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Type\Converter\NumericConverter;
+use Saturio\DuckDB\Type\Converter\TypeConverter;
+use Saturio\DuckDB\Type\Type;
+use Saturio\DuckDB\Type\TypeC;
 
 class Vector
 {

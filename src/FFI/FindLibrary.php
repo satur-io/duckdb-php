@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\FFI;
+namespace Saturio\DuckDB\FFI;
 
-use SaturIo\DuckDB\Exception\NotSupportedException;
+use Saturio\DuckDB\Exception\NotSupportedException;
 
 class FindLibrary
 {

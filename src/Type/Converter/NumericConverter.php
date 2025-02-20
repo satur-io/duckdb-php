@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Type\Converter;
+namespace Saturio\DuckDB\Type\Converter;
 
-use SaturIo\DuckDB\FFI\CDataInterface;
-use SaturIo\DuckDB\FFI\DuckDB;
+use Saturio\DuckDB\FFI\CDataInterface;
+use Saturio\DuckDB\FFI\DuckDB;
 
 class NumericConverter
 {

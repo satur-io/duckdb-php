@@ -67,20 +67,20 @@ $result->print();
 | DUCKDB_TYPE_UBIGINT        | UBIGINT      | string                        | :ballot_box_with_check: |   :grey_question:    |
 | DUCKDB_TYPE_FLOAT          | FLOAT        | float                         |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_DOUBLE         | DOUBLE       | float                         |   :white_check_mark:    |   :grey_question:    |
-| DUCKDB_TYPE_TIMESTAMP      | TIMESTAMP    | SaturIo\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
-| DUCKDB_TYPE_DATE           | DATE         | SaturIo\DuckDB\Type\Date      |   :white_check_mark:    |   :grey_question:    |
-| DUCKDB_TYPE_TIME           | TIME         | SaturIo\DuckDB\Type\Time      |   :white_check_mark:    |   :grey_question:    |
-| DUCKDB_TYPE_INTERVAL	      | INTERVAL     | SaturIo\DuckDB\Type\Interval  |   :white_check_mark:    |   :grey_question:    |
+| DUCKDB_TYPE_TIMESTAMP      | TIMESTAMP    | Saturio\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
+| DUCKDB_TYPE_DATE           | DATE         | Saturio\DuckDB\Type\Date      |   :white_check_mark:    |   :grey_question:    |
+| DUCKDB_TYPE_TIME           | TIME         | Saturio\DuckDB\Type\Time      |   :white_check_mark:    |   :grey_question:    |
+| DUCKDB_TYPE_INTERVAL	      | INTERVAL     | Saturio\DuckDB\Type\Interval  |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_HUGEINT        | HUGEINT      | string                        | :ballot_box_with_check: |   :grey_question:    |
 | DUCKDB_TYPE_UHUGEINT       | UHUGEINT     | string                        | :ballot_box_with_check: |   :grey_question:    |
 | DUCKDB_TYPE_VARCHAR        | VARCHAR      | string                        |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_BLOB           | BLOB         |                               |           :x:           |   :grey_question:    |
-| DUCKDB_TYPE_TIMESTAMP_S    | TIMESTAMP_S  | SaturIo\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
-| DUCKDB_TYPE_TIMESTAMP_MS   | TIMESTAMP_MS | SaturIo\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
-| DUCKDB_TYPE_TIMESTAMP_NS   | TIMESTAMP_NS | SaturIo\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
+| DUCKDB_TYPE_TIMESTAMP_S    | TIMESTAMP_S  | Saturio\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
+| DUCKDB_TYPE_TIMESTAMP_MS   | TIMESTAMP_MS | Saturio\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
+| DUCKDB_TYPE_TIMESTAMP_NS   | TIMESTAMP_NS | Saturio\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_UUID           | UUID         |                               |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_TIME_TZ        | TIMETZ       |                               |           :x:           |   :grey_question:    |
-| DUCKDB_TYPE_TIMESTAMP_TZ   | TIMESTAMPTZ  | SaturIo\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
+| DUCKDB_TYPE_TIMESTAMP_TZ   | TIMESTAMPTZ  | Saturio\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_DECIMAL        | DECIMAL      | float                         |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_ENUM           | ENUM         | array                         |           :x:           | :small_blue_diamond: |
 | DUCKDB_TYPE_LIST           | LIST         | array                         |   :white_check_mark:    | :small_blue_diamond: |

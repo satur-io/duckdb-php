@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\FFI;
+namespace Saturio\DuckDB\FFI;
 
 use FFI;
-use SaturIo\DuckDB\Exception\MissedLibraryException;
-use SaturIo\DuckDB\Exception\NotSupportedException;
-use SaturIo\DuckDB\FFI\CData as DuckDBCData;
+use Saturio\DuckDB\Exception\MissedLibraryException;
+use Saturio\DuckDB\Exception\NotSupportedException;
+use Saturio\DuckDB\FFI\CData as DuckDBCData;
 
 class DuckDB
 {

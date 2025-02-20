@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\FFI;
+namespace Saturio\DuckDB\FFI;
 
 /**
  * @property \FFI\CData $cdata

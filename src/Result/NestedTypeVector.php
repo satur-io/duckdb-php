@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Result;
+namespace Saturio\DuckDB\Result;
 
 interface NestedTypeVector
 {

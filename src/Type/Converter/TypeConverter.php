@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Type\Converter;
+namespace Saturio\DuckDB\Type\Converter;
 
-use SaturIo\DuckDB\Exception\BigNumbersNotSupportedException;
-use SaturIo\DuckDB\Exception\InvalidTimeException;
-use SaturIo\DuckDB\FFI\CData;
-use SaturIo\DuckDB\FFI\CDataInterface;
-use SaturIo\DuckDB\FFI\DuckDB;
-use SaturIo\DuckDB\FFI\DuckDB as FFIDuckDB;
-use SaturIo\DuckDB\Type\Date;
-use SaturIo\DuckDB\Type\Interval;
-use SaturIo\DuckDB\Type\Math\MathLib;
-use SaturIo\DuckDB\Type\Math\MathLibInterface;
-use SaturIo\DuckDB\Type\Time;
-use SaturIo\DuckDB\Type\TimePrecision;
-use SaturIo\DuckDB\Type\Timestamp;
-use SaturIo\DuckDB\Type\UUID;
+use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
+use Saturio\DuckDB\Exception\InvalidTimeException;
+use Saturio\DuckDB\FFI\CData;
+use Saturio\DuckDB\FFI\CDataInterface;
+use Saturio\DuckDB\FFI\DuckDB;
+use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Type\Date;
+use Saturio\DuckDB\Type\Interval;
+use Saturio\DuckDB\Type\Math\MathLib;
+use Saturio\DuckDB\Type\Math\MathLibInterface;
+use Saturio\DuckDB\Type\Time;
+use Saturio\DuckDB\Type\TimePrecision;
+use Saturio\DuckDB\Type\Timestamp;
+use Saturio\DuckDB\Type\UUID;
 
 class TypeConverter
 {

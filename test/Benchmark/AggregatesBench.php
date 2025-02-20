@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Benchmark;
 
 use PhpBench\Attributes as Bench;
-use SaturIo\DuckDB\DuckDB;
+use Saturio\DuckDB\DuckDB;
 
 class AggregatesBench
 {

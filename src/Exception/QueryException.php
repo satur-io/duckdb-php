@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Exception;
+namespace Saturio\DuckDB\Exception;
 
 final class QueryException extends DuckDBException
 {

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\PreparedStatement;
+namespace Saturio\DuckDB\PreparedStatement;
 
-use SaturIo\DuckDB\Exception\BindValueException;
-use SaturIo\DuckDB\Exception\PreparedStatementExecuteException;
-use SaturIo\DuckDB\Exception\UnsupportedTypeException;
-use SaturIo\DuckDB\FFI\CDataInterface;
-use SaturIo\DuckDB\FFI\DuckDB as FFIDuckDB;
-use SaturIo\DuckDB\Result\ResultSet;
-use SaturIo\DuckDB\Type\Converter\TypeConverter;
+use Saturio\DuckDB\Exception\BindValueException;
+use Saturio\DuckDB\Exception\PreparedStatementExecuteException;
+use Saturio\DuckDB\Exception\UnsupportedTypeException;
+use Saturio\DuckDB\FFI\CDataInterface;
+use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Result\ResultSet;
+use Saturio\DuckDB\Type\Converter\TypeConverter;
 
 class PreparedStatement
 {

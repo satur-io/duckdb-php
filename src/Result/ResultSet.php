@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Result;
+namespace Saturio\DuckDB\Result;
 
-use SaturIo\DuckDB\Exception\BigNumbersNotSupportedException;
-use SaturIo\DuckDB\Exception\InvalidTimeException;
-use SaturIo\DuckDB\FFI\CDataInterface;
-use SaturIo\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
+use Saturio\DuckDB\Exception\InvalidTimeException;
+use Saturio\DuckDB\FFI\CDataInterface;
+use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 
 class ResultSet
 {

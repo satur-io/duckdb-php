@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use SaturIo\DuckDB\FFI\FindLibrary;
+use Saturio\DuckDB\FFI\FindLibrary;
 
 require __DIR__ . '/vendor/autoload.php';
 

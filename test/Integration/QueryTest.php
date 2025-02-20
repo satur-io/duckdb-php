@@ -6,13 +6,13 @@ namespace Integration;
 
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
-use SaturIo\DuckDB\DuckDB;
-use SaturIo\DuckDB\Exception\QueryException;
-use SaturIo\DuckDB\Type\Date;
-use SaturIo\DuckDB\Type\Interval;
-use SaturIo\DuckDB\Type\Time;
-use SaturIo\DuckDB\Type\Timestamp;
-use SaturIo\DuckDB\Type\UUID;
+use Saturio\DuckDB\DuckDB;
+use Saturio\DuckDB\Exception\QueryException;
+use Saturio\DuckDB\Type\Date;
+use Saturio\DuckDB\Type\Interval;
+use Saturio\DuckDB\Type\Time;
+use Saturio\DuckDB\Type\Timestamp;
+use Saturio\DuckDB\Type\UUID;
 
 class QueryTest extends TestCase
 {

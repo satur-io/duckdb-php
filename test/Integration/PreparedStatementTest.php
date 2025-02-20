@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Integration;
 
 use PHPUnit\Framework\TestCase;
-use SaturIo\DuckDB\DuckDB;
-use SaturIo\DuckDB\Type\Date;
-use SaturIo\DuckDB\Type\Time;
-use SaturIo\DuckDB\Type\Timestamp;
+use Saturio\DuckDB\DuckDB;
+use Saturio\DuckDB\Type\Date;
+use Saturio\DuckDB\Type\Time;
+use Saturio\DuckDB\Type\Timestamp;
 
 class PreparedStatementTest extends TestCase
 {

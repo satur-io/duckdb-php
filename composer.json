@@ -5,7 +5,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "SaturIo\\DuckDB\\": "src/"
+            "Saturio\\DuckDB\\": "src/"
         }
     },
     "autoload-dev": {

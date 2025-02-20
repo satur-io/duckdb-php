@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unit\Helper;
 
-use SaturIo\DuckDB\FFI\CDataInterface;
+use Saturio\DuckDB\FFI\CDataInterface;
 
 class DummyCData implements CDataInterface
 {

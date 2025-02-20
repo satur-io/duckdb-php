@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Result;
+namespace Saturio\DuckDB\Result;
 
-use SaturIo\DuckDB\FFI\CDataInterface;
-use SaturIo\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\FFI\CDataInterface;
+use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 
 class DataChunk
 {

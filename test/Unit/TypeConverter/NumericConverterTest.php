@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Unit\TypeConverter;
 
 use PHPUnit\Framework\TestCase;
-use SaturIo\DuckDB\FFI\CDataInterface;
-use SaturIo\DuckDB\FFI\DuckDB as FFIDuckDB;
-use SaturIo\DuckDB\Type\Converter\NumericConverter;
+use Saturio\DuckDB\FFI\CDataInterface;
+use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Type\Converter\NumericConverter;
 use Unit\Helper\DummyCData;
 
 class NumericConverterTest extends TestCase

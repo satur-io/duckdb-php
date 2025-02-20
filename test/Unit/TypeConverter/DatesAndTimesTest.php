@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Unit\TypeConverter;
 
 use PHPUnit\Framework\TestCase;
-use SaturIo\DuckDB\FFI\DuckDB as FFIDuckDB;
-use SaturIo\DuckDB\Type\Converter\TypeConverter;
-use SaturIo\DuckDB\Type\Date;
+use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Type\Converter\TypeConverter;
+use Saturio\DuckDB\Type\Date;
 use Unit\Helper\DummyCData;
 
 class DatesAndTimesTest extends TestCase

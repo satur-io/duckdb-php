@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Type\Converter;
+namespace Saturio\DuckDB\Type\Converter;
 
-use SaturIo\DuckDB\Exception\UnsupportedTypeException;
-use SaturIo\DuckDB\FFI\CDataInterface;
-use SaturIo\DuckDB\FFI\DuckDB as FFIDuckDB;
-use SaturIo\DuckDB\Type\Date;
-use SaturIo\DuckDB\Type\Time;
-use SaturIo\DuckDB\Type\Timestamp;
-use SaturIo\DuckDB\Type\Type;
-use SaturIo\DuckDB\Type\TypeC;
+use Saturio\DuckDB\Exception\UnsupportedTypeException;
+use Saturio\DuckDB\FFI\CDataInterface;
+use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Type\Date;
+use Saturio\DuckDB\Type\Time;
+use Saturio\DuckDB\Type\Timestamp;
+use Saturio\DuckDB\Type\Type;
+use Saturio\DuckDB\Type\TypeC;
 
 trait GetDuckDBValue
 {

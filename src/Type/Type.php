@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Type;
+namespace Saturio\DuckDB\Type;
 
 enum Type: int
 {

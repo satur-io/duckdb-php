@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Type\Math;
+namespace Saturio\DuckDB\Type\Math;
 
-use SaturIo\DuckDB\Exception\BigNumbersNotSupportedException;
+use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 
 class MathLib implements MathLibInterface
 {

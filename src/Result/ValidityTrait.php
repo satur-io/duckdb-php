@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Result;
+namespace Saturio\DuckDB\Result;
 
-use SaturIo\DuckDB\FFI\CDataInterface;
+use Saturio\DuckDB\FFI\CDataInterface;
 
 trait ValidityTrait
 {

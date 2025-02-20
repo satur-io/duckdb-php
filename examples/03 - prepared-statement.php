@@ -2,7 +2,7 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use SaturIo\DuckDB\DuckDB;
+use Saturio\DuckDB\DuckDB;
 
 $duckDB = DuckDB::create();
 

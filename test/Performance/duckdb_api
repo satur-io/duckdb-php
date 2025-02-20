@@ -3,7 +3,7 @@
 
 require $_composer_autoload_path ?? __DIR__ . '/../../vendor/autoload.php';
 
-use SaturIo\DuckDB\DuckDB;
+use Saturio\DuckDB\DuckDB;
 
 $printBatchSize = 10000;
 

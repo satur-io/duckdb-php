@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB\Type;
+namespace Saturio\DuckDB\Type;
 
-use SaturIo\DuckDB\Exception\InvalidTimeException;
+use Saturio\DuckDB\Exception\InvalidTimeException;
 
 class Time
 {

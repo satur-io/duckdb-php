@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Integration;
 
 use PHPUnit\Framework\TestCase;
-use SaturIo\DuckDB\DuckDB;
-use SaturIo\DuckDB\Exception\ConnectionException;
+use Saturio\DuckDB\DuckDB;
+use Saturio\DuckDB\Exception\ConnectionException;
 
 class DuckDBTest extends TestCase
 {

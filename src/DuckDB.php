@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace SaturIo\DuckDB;
+namespace Saturio\DuckDB;
 
-use SaturIo\DuckDB\DB\Connection;
-use SaturIo\DuckDB\DB\DB;
-use SaturIo\DuckDB\Exception\ConnectionException;
-use SaturIo\DuckDB\Exception\DuckDBException;
-use SaturIo\DuckDB\Exception\QueryException;
-use SaturIo\DuckDB\FFI\DuckDB as FFIDuckDB;
-use SaturIo\DuckDB\PreparedStatement\PreparedStatement;
-use SaturIo\DuckDB\Result\ResultSet;
+use Saturio\DuckDB\DB\Connection;
+use Saturio\DuckDB\DB\DB;
+use Saturio\DuckDB\Exception\ConnectionException;
+use Saturio\DuckDB\Exception\DuckDBException;
+use Saturio\DuckDB\Exception\QueryException;
+use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\PreparedStatement\PreparedStatement;
+use Saturio\DuckDB\Result\ResultSet;
 
 class DuckDB
 {

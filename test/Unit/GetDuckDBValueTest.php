@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Unit;
 
 use PHPUnit\Framework\TestCase;
-use SaturIo\DuckDB\Exception\UnsupportedTypeException;
-use SaturIo\DuckDB\FFI\DuckDB as FFIDuckDB;
-use SaturIo\DuckDB\Type\Converter\GetDuckDBValue;
-use SaturIo\DuckDB\Type\Type;
+use Saturio\DuckDB\Exception\UnsupportedTypeException;
+use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Type\Converter\GetDuckDBValue;
+use Saturio\DuckDB\Type\Type;
 
 class GetDuckDBValueTest extends TestCase
 {
