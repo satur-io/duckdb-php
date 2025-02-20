@@ -19,6 +19,7 @@ class Time
         private readonly ?int $microseconds = null,
         private readonly ?int $nanoseconds = null,
         private readonly bool $isTimeZoned = false,
+        private int $offset = 0,
     ) {
         if (count(array_filter([$this->milliseconds, $this->microseconds, $this->nanoseconds], function ($item) { return !is_null($item); })) > 1) {
             throw new InvalidTimeException('Only one second fraction time is allowed.');
@@ -53,6 +54,13 @@ class Time
     public function getNanoseconds(): int
     {
         return $this->nanoseconds ?? (int) ($this->getMicroseconds() * 1000) ?? (int) ($this->getMilliseconds() / 1000000);
+    }
+
+    public function setOffset(int $offset): self
+    {
+        $this->offset = $offset;
+
+        return $this;
     }
 
     public function __toString(): string

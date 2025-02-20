@@ -133,6 +133,7 @@ class Vector
             TypeC::DUCKDB_TYPE_DECIMAL => $this->numericConverter->getFloatFromDecimal(is_scalar($data) ? $data : $this->currentValue, $this->logicalType),
             TypeC::DUCKDB_TYPE_DATE => TypeConverter::getDateFromDuckDBDate($this->currentValue, $this->ffi),
             TypeC::DUCKDB_TYPE_TIME => TypeConverter::getTimeFromDuckDBTime($this->currentValue, $this->ffi),
+            TypeC::DUCKDB_TYPE_TIME_TZ => TypeConverter::getTimeFromDuckDBTimeTz($this->currentValue, $this->ffi),
             TypeC::DUCKDB_TYPE_TIMESTAMP => TypeConverter::getTimestampFromDuckDBTimestamp($this->currentValue, $this->ffi),
             TypeC::DUCKDB_TYPE_TIMESTAMP_MS => TypeConverter::getTimestampFromDuckDBTimestampMs($this->currentValue),
             TypeC::DUCKDB_TYPE_TIMESTAMP_S => TypeConverter::getTimestampFromDuckDBTimestampS($this->currentValue),

@@ -310,6 +310,16 @@ class QueryTest extends TestCase
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValues, $row);
+
+        $expectedValues = [new Timestamp(
+            new Date(1992, 9, 20),
+            new Time(12, 30, 0, microseconds: 123456, isTimeZoned: true)
+        )];
+        $this->db->query("SET TimeZone = 'Etc/GMT+1';");
+        $result = $this->db->query("SELECT TIMESTAMPTZ '1992-09-20 11:30:00.123456789';");
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row);
     }
 
     #[Group('primitives')]
@@ -329,6 +339,26 @@ class QueryTest extends TestCase
         $expectedValues = [new Time(11, 30, 0, microseconds: 123456)];
 
         $result = $this->db->query("SELECT '11:30:00.123456'::TIME;");
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row);
+    }
+
+    #[Group('primitives')]
+    public function testTimeTzSelect(): void
+    {
+        $expectedValues = [new Time(11, 30, 0, microseconds: 123456, isTimeZoned: true, offset: 0)];
+
+        $this->db->query("SET TimeZone = 'UTC';");
+        $result = $this->db->query("SELECT '11:30:00.123456'::TIMETZ;");
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row);
+
+        $expectedValues = [new Time(11, 30, 0, microseconds: 123456, isTimeZoned: true, offset: -3600)];
+
+        $this->db->query("SET TimeZone = 'Etc/GMT+1';");
+        $result = $this->db->query("SELECT '11:30:00.123456'::TIMETZ;");
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValues, $row);

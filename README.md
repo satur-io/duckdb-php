@@ -79,7 +79,7 @@ $result->print();
 | DUCKDB_TYPE_TIMESTAMP_MS   | TIMESTAMP_MS | Saturio\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_TIMESTAMP_NS   | TIMESTAMP_NS | Saturio\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_UUID           | UUID         | Saturio\DuckDB\Type\UUID      |   :white_check_mark:    |   :grey_question:    |
-| DUCKDB_TYPE_TIME_TZ        | TIMETZ       |                               |           :x:           |   :grey_question:    |
+| DUCKDB_TYPE_TIME_TZ        | TIMETZ       | Saturio\DuckDB\Type\Time      |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_TIMESTAMP_TZ   | TIMESTAMPTZ  | Saturio\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_DECIMAL        | DECIMAL      | float                         |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_ENUM           | ENUM         | array                         |           :x:           | :small_blue_diamond: |

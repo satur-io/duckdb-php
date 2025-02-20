@@ -67,6 +67,20 @@ class TypeConverter
     /**
      * @throws InvalidTimeException
      */
+    public static function getTimeFromDuckDBTimeTz(
+        CDataInterface $time,
+        FFIDuckDB $ffi,
+    ): Time {
+        $timeStruct = $ffi->fromTimeTz($time);
+
+        $time = self::getTime(CData::from($timeStruct->time), true);
+
+        return $time->setOffset($timeStruct->offset);
+    }
+
+    /**
+     * @throws InvalidTimeException
+     */
     public static function getTimestampFromDuckDBTimestamp(
         CDataInterface $timestamp,
         FFIDuckDB $ffi,

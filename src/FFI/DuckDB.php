@@ -259,6 +259,11 @@ class DuckDB
         return new DuckDBCData(self::$ffi->duckdb_create_bool($value));
     }
 
+    public function createTimeTzValue(CDataInterface $timeTz): CDataInterface
+    {
+        return new DuckDBCData(self::$ffi->duckdb_create_time_tz_value($timeTz->cdata));
+    }
+
     public function createInt8_t(int $value): CDataInterface
     {
         return new DuckDBCData(self::$ffi->duckdb_create_int8($value));
@@ -332,6 +337,11 @@ class DuckDB
     public function fromTime(CDataInterface $time): CDataInterface
     {
         return new DuckDBCData(self::$ffi->duckdb_from_time($time->cdata));
+    }
+
+    public function fromTimeTz(CDataInterface $time): CDataInterface
+    {
+        return new DuckDBCData(self::$ffi->duckdb_from_time_tz($time->cdata));
     }
 
     public function createTime(CDataInterface $time): CDataInterface
@@ -427,5 +437,10 @@ class DuckDB
     public function destroyLogicalType(CDataInterface $logicalType): void
     {
         self::$ffi->duckdb_destroy_logical_type($logicalType->cdata);
+    }
+
+    public function getVarchar(CDataInterface $duckdbValue): string
+    {
+        return \FFI::string(self::$ffi->duckdb_get_varchar($duckdbValue->cdata));
     }
 }
