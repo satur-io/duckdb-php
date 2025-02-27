@@ -2,7 +2,7 @@
 
 ## DuckDB API for PHP
 
-[![Github Actions Badge](https://github.com/satur-io/duckdb/actions/workflows/php_test.yml/badge.svg?branch=main)](https://github.com/satur-io/duckdb/actions)
+[![Github Actions Badge](https://github.com/satur-io/duckdb-php/actions/workflows/php_test.yml/badge.svg?branch=main)](https://github.com/satur-io/duckdb-php/actions)
 
 This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API for PHP.
 
