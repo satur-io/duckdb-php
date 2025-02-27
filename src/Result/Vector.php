@@ -116,6 +116,7 @@ class Vector
      * @throws InvalidTimeException
      * @throws \DateMalformedStringException
      * @throws BigNumbersNotSupportedException
+     * @throws UnsupportedTypeException
      */
     public function getTypedData(int $rowIndex): mixed
     {
@@ -144,7 +145,8 @@ class Vector
             TypeC::DUCKDB_TYPE_UBIGINT => TypeConverter::getUBigIntFromDuckDBUBigInt($data),
             TypeC::DUCKDB_TYPE_HUGEINT, TypeC::DUCKDB_TYPE_UHUGEINT => TypeConverter::getHugeIntFromDuckDBHugeInt($this->currentValue),
             TypeC::DUCKDB_TYPE_UUID => TypeConverter::getUUIDFromDuckDBHugeInt($this->currentValue),
-            TypeC::DUCKDB_TYPE_BIT => throw new UnsupportedTypeException('Type BIT/BITSTRING is not supported'), // @todo - Check why does not work TypeConverter::getBitDuckDBBit($this->currentValue, $this->ffi),
+            TypeC::DUCKDB_TYPE_BIT => throw new UnsupportedTypeException('Type BIT/BITSTRING is not supported by duckdb-php yet'), // @todo - Check why does not work TypeConverter::getBitDuckDBBit($this->currentValue, $this->ffi),
+            TypeC::DUCKDB_TYPE_BLOB => throw new UnsupportedTypeException('Type BLOB is not supported by duckdb-php yet'), // @todo - Check why does not work TypeConverter::getBlobDuckDBlob($this->currentValue, $this->ffi),
             default => $data,
         };
     }

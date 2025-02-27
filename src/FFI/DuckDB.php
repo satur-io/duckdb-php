@@ -269,6 +269,11 @@ class DuckDB
         return new DuckDBCData(self::$ffi->duckdb_create_bit($bit->cdata));
     }
 
+    public function createBlob(?CDataInterface $blob, int $size)
+    {
+        return new DuckDBCData(self::$ffi->duckdb_create_blob($blob->cdata, $size));
+    }
+
     public function createInt8_t(int $value): CDataInterface
     {
         return new DuckDBCData(self::$ffi->duckdb_create_int8($value));

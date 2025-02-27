@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
 use Saturio\DuckDB\Exception\QueryException;
+use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
 use Saturio\DuckDB\Type\Time;
@@ -367,7 +368,7 @@ class QueryTest extends TestCase
     #[Group('primitives')]
     public function testBitSelect(): void
     {
-        $this->markTestSkipped('Not supported yet');
+        $this->expectException(UnsupportedTypeException::class);
         $expectedValues = '101010';
 
         $this->db->query("SET TimeZone = 'UTC';");
@@ -375,11 +376,16 @@ class QueryTest extends TestCase
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValues, $row);
+    }
 
-        $expectedValues = '00000000000000000000000001111011';
+    #[Group('primitives')]
+    public function testBlobSelect(): void
+    {
+        $this->expectException(UnsupportedTypeException::class);
+        $expectedValues = '\xAA\xAB\xAC';
 
         $this->db->query("SET TimeZone = 'UTC';");
-        $result = $this->db->query('SELECT 123::BITSTRING AS b;');
+        $result = $this->db->query("SELECT '\\xAA\\xAB\\xAC'::BLOB;");
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValues, $row);

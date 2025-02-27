@@ -88,7 +88,7 @@ $result->print();
 | DUCKDB_TYPE_ARRAY          | ARRAY        | array                         |   :white_check_mark:    | :small_blue_diamond: |
 | DUCKDB_TYPE_MAP            | MAP          | array                         |   :white_check_mark:    | :small_blue_diamond: |
 | DUCKDB_TYPE_UNION          | UNION        | mixed                         |   :white_check_mark:    | :small_blue_diamond: |
-| DUCKDB_TYPE_BIT            | BIT          |                               |           :x:           | :small_blue_diamond: |
+| DUCKDB_TYPE_BIT            | BIT          | string                        |           :x:           | :small_blue_diamond: |
 
 :white_check_mark: Fully supported
 

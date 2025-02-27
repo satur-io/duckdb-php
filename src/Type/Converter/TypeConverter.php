@@ -218,6 +218,13 @@ class TypeConverter
         return $ffi->getVarchar($value);
     }
 
+    public static function getBlobDuckDBlob(?CDataInterface $data, FFIDuckDB $ffi): string
+    {
+        $value = $ffi->createBlob(CData::from($data->cdata->data), $data->cdata->size);
+
+        return $ffi->getVarchar($value);
+    }
+
     /**
      * @throws BigNumbersNotSupportedException
      */
