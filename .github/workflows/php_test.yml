@@ -12,6 +12,8 @@ permissions:
 
 jobs:
   build:
+    if: ${{ always() }}
+    needs: [ get_nightly_libraries ]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -26,6 +28,16 @@ jobs:
     - uses: actions/checkout@v4
       with:
         lfs: false
+
+    - name: Libraries Cache
+      id: libraries-cache
+      uses: actions/cache@v3
+      with:
+        path: lib_nightly
+        key: lib_nightly-${{ steps.get-date.outputs.date }}
+        restore-keys: |
+          lib_nightly
+        enableCrossOsArchive: true
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -47,4 +59,27 @@ jobs:
       run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
     - name: Run test suite
+      env:
+        DUCKDB_PHP_LIB_DIRECTORY: ${{ inputs.lib-path }}
       run: vendor/bin/phpunit test
+
+  get_nightly_libraries:
+    if: ${{ inputs.lib-path }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Libraries Cache
+        id: libraries-cache
+        uses: actions/cache@v3
+        with:
+          path: lib_nightly
+          key: lib_nightly-${{ steps.get-date.outputs.date }}
+          restore-keys: |
+            lib_nightly
+
+      - name: Get libraries
+        run: ./scripts/get_libraries_nightly.sh

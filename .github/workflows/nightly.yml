@@ -1,4 +1,4 @@
-name: nightly.yml
+name: PHP Unit (unstable nightly C library build)
 
 on:
   schedule:
@@ -8,4 +8,4 @@ jobs:
   phpunit:
     uses: ./.github/workflows/php_test.yml
     with:
-      lib-path: 'lib-nightly'
+      lib-path: 'lib_nightly'

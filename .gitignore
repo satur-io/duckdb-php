@@ -10,3 +10,4 @@ tools
 .php-cs-fixer.cache
 .phpunit.result.cache
 out
+lib_nightly
