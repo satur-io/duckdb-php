@@ -43,6 +43,17 @@ class TypeConverter
         return $ffi->string($data, $length);
     }
 
+    public static function getStringFromBlob(CDataInterface $data, FFIDuckDB $ffi): string
+    {
+        $string = self::getVarChar($data, $ffi);
+
+        $blobString = '';
+        for ($i=0; $i<strlen($string); $i++) {
+            $blobString .= ctype_print($string[$i]) ? $string[$i] : '\x'.str_pad(strtoupper(dechex(ord($string[$i]))), 2, '0', STR_PAD_LEFT);
+        }
+        return $blobString;
+    }
+
     public static function getDateFromDuckDBDate(
         CDataInterface $date,
         FFIDuckDB $ffi,

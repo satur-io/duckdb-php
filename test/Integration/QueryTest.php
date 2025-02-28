@@ -381,11 +381,10 @@ class QueryTest extends TestCase
     #[Group('primitives')]
     public function testBlobSelect(): void
     {
-        $this->expectException(UnsupportedTypeException::class);
-        $expectedValues = '\xAA\xAB\xAC';
+        $expectedValues = ['123\xAA\xAB\xAC'];
 
         $this->db->query("SET TimeZone = 'UTC';");
-        $result = $this->db->query("SELECT '\\xAA\\xAB\\xAC'::BLOB;");
+        $result = $this->db->query("SELECT '123\\xAA\\xAB\\xAC'::BLOB;");
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValues, $row);
