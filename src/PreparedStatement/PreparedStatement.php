@@ -11,6 +11,7 @@ use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Result\ResultSet;
 use Saturio\DuckDB\Type\Converter\TypeConverter;
+use Saturio\DuckDB\Type\Type;
 
 class PreparedStatement
 {
@@ -42,12 +43,12 @@ class PreparedStatement
     /**
      * @throws BindValueException|UnsupportedTypeException
      */
-    public function bindParam(int $parameter, mixed $value): void
+    public function bindParam(int $parameter, mixed $value, ?Type $type = null): void
     {
         if ($this->ffi->bindValue(
             $this->preparedStatement,
             $parameter,
-            TypeConverter::getDuckDBValue($value, $this->ffi)
+            TypeConverter::getDuckDBValue($value, $this->ffi, $type)
         ) === $this->ffi->error()) {
             $error = $this->ffi->prepareError($this->preparedStatement);
             throw new BindValueException("Couldn't bind parameter {$parameter} to prepared statement {$this->query}. Error: {$error}");

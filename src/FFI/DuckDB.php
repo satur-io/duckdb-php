@@ -309,7 +309,7 @@ class DuckDB
         return new DuckDBCData(self::$ffi->duckdb_create_int32($value));
     }
 
-    public function createUint64_t(int $value): CDataInterface
+    public function createUint64_t(int|string $value): CDataInterface
     {
         return new DuckDBCData(self::$ffi->duckdb_create_int32($value));
     }

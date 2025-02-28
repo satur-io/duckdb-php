@@ -35,6 +35,8 @@ class FindLibrary
         $os = php_uname('s');
         $machine = php_uname('m');
 
+        $libDirectory = getenv('DUCKDB_PHP_LIB_DIRECTORY') ? getenv('DUCKDB_PHP_LIB_DIRECTORY') : 'lib';
+
         $machine = ('Linux' === $os && 'x86_64' === $machine) ? 'amd64' : $machine;
         $machine = ('Windows NT' === $os && 'AMD64' === $machine) ? 'amd64' : $machine;
 
@@ -42,9 +44,9 @@ class FindLibrary
         $path = dirname($thisClassReflection->getFileName());
 
         return match ($os) {
-            'Windows NT' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', 'lib', "windows-{$machine}"]),
-            'Linux' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', 'lib', "linux-{$machine}"]),
-            'Darwin' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', 'lib', 'osx-universal']),
+            'Windows NT' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, "windows-{$machine}"]),
+            'Linux' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, "linux-{$machine}"]),
+            'Darwin' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, 'osx-universal']),
             default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
         };
     }

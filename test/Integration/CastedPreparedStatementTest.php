@@ -1,0 +1,64 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Integration;
+
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+use Saturio\DuckDB\DuckDB;
+use Saturio\DuckDB\Type\Type;
+
+class CastedPreparedStatementTest extends TestCase
+{
+    private DuckDB $db;
+
+    protected function setUp(): void
+    {
+        $this->db = DuckDB::create();
+    }
+
+    #[DataProvider('typesProvider')]
+    public function testCastedPreparedStatement(Type $type, string $sqlType, mixed $searchValue, array $expectedResult, $values): void
+    {
+        $this->testType($type, $sqlType, $searchValue, $expectedResult, ...$values);
+    }
+
+    private function testType(Type $type, string $sqlType, mixed $searchValue, array $expectedResult, ...$values): void
+    {
+        $tableName = str_shuffle('abcdefghijklmnop');
+        $this->createTableAndInsert($tableName, $sqlType, ...$values);
+        $preparedStatement = $this->db->preparedStatement("SELECT x FROM '{$tableName}' WHERE x = ?;");
+        $preparedStatement->bindParam(1, $searchValue, $type);
+        $result = $preparedStatement->execute();
+
+        $arrayResult = iterator_to_array($result->rows());
+
+        $this->assertEquals($expectedResult, $arrayResult);
+        $this->db->query("DROP TABLE {$tableName};");
+    }
+
+    private function createTableAndInsert(string $tableName, string $type, ...$values): void
+    {
+        $this->db->query("CREATE TABLE '{$tableName}' (x {$type});");
+        $values = implode(', ', array_map(fn (mixed $v) => "($v)", $values));
+        $this->db->query("INSERT INTO '{$tableName}' VALUES $values;");
+    }
+
+    public static function typesProvider(): array
+    {
+        return [
+            [Type::DUCKDB_TYPE_TINYINT, 'TINYINT', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
+            [Type::DUCKDB_TYPE_SMALLINT, 'SMALLINT', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
+            [Type::DUCKDB_TYPE_INTEGER, 'INTEGER', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
+            [Type::DUCKDB_TYPE_BIGINT, 'BIGINT', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
+            [Type::DUCKDB_TYPE_UTINYINT, 'UTINYINT', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
+            [Type::DUCKDB_TYPE_USMALLINT, 'USMALLINT', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
+            [Type::DUCKDB_TYPE_UINTEGER, 'UINTEGER', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
+            [Type::DUCKDB_TYPE_UBIGINT, 'UBIGINT', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
+            [Type::DUCKDB_TYPE_UBIGINT, 'UBIGINT', '3', [[3], [3]], [3, 5, 6, 3, 'null']],
+            [Type::DUCKDB_TYPE_FLOAT, 'FLOAT', 3.0, [[3.0], [3.0]], [3, 5, 6, 3, 'null']],
+            [Type::DUCKDB_TYPE_DOUBLE, 'DOUBLE', 3.0, [[3.0], [3.0]], [3, 5, 6, 3, 'null']],
+        ];
+    }
+}
