@@ -50,9 +50,9 @@ class CastedPreparedStatementTest extends TestCase
 
     public static function typesProvider(): array
     {
-        $timestampSearch = new Timestamp(new Date(1521, 4, 23), new Time(12, 3, 2, microseconds: 56201));
+        $timestampSearch = new Timestamp(new Date(1521, 4, 23), new Time(12, 3, 2));
         $timestampResult = [[clone $timestampSearch],[clone $timestampSearch]];
-        $timestampInsert = [clone $timestampSearch, null, clone $timestampSearch, new Timestamp(new Date(100, 1, 2), new Time(12, 3, 2, microseconds: 56201))];
+        $timestampInsert = [clone $timestampSearch, null, clone $timestampSearch, new Timestamp(new Date(100, 1, 2), new Time(12, 3, 2))];
         return [
             [Type::DUCKDB_TYPE_TINYINT, 'TINYINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
             [Type::DUCKDB_TYPE_SMALLINT, 'SMALLINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
