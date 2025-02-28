@@ -236,4 +236,9 @@ class TypeConverter
 
         return self::$math;
     }
+
+    public static function getStringFromEnum(CDataInterface $logicalType, int $entry, FFIDuckDB $ffi): string
+    {
+        return $ffi->enumDictionaryValue($logicalType, $entry);
+    }
 }

@@ -82,7 +82,7 @@ $result->print();
 | DUCKDB_TYPE_TIME_TZ        | TIMETZ       | Saturio\DuckDB\Type\Time      |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_TIMESTAMP_TZ   | TIMESTAMPTZ  | Saturio\DuckDB\Type\Timestamp |   :white_check_mark:    |   :grey_question:    |
 | DUCKDB_TYPE_DECIMAL        | DECIMAL      | float                         |   :white_check_mark:    |   :grey_question:    |
-| DUCKDB_TYPE_ENUM           | ENUM         | array                         |           :x:           | :small_blue_diamond: |
+| DUCKDB_TYPE_ENUM           | ENUM         | string                        |   :white_check_mark:    | :small_blue_diamond: |
 | DUCKDB_TYPE_LIST           | LIST         | array                         |   :white_check_mark:    | :small_blue_diamond: |
 | DUCKDB_TYPE_STRUCT         | STRUCT       | array                         |   :white_check_mark:    | :small_blue_diamond: |
 | DUCKDB_TYPE_ARRAY          | ARRAY        | array                         |   :white_check_mark:    | :small_blue_diamond: |

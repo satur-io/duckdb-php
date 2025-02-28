@@ -404,6 +404,11 @@ class DuckDB
         return self::$ffi->duckdb_decimal_internal_type($logicalType->cdata);
     }
 
+    public function enumDictionaryValue(CDataInterface $logicalType, int $entry): string
+    {
+        return \FFI::string(self::$ffi->duckdb_enum_dictionary_value($logicalType->cdata, $entry));
+    }
+
     public function valueDecimal(CDataInterface $result, int $col, int $row): CDataInterface
     {
         return new DuckDBCData(self::$ffi->duckdb_value_decimal($result->cdata, $col, $row));
@@ -432,6 +437,11 @@ class DuckDB
     public function arraySize(CDataInterface $array): int
     {
         return self::$ffi->duckdb_array_type_array_size($array->cdata);
+    }
+
+    public function enumInternalType(CDataInterface $logicalType): int
+    {
+        return self::$ffi->duckdb_enum_internal_type($logicalType->cdata);
     }
 
     public function columnCount(CDataInterface $result): int

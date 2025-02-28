@@ -51,6 +51,7 @@ class Vector
             TypeC::DUCKDB_TYPE_DECIMAL => $this->cast(TypeC::{Type::from($this->ffi->decimalInternalType($this->logicalType))->name}),
             TypeC::DUCKDB_TYPE_TIMESTAMP_TZ => $this->cast(TypeC::DUCKDB_TYPE_TIMESTAMP),
             TypeC::DUCKDB_TYPE_UUID => $this->cast(TypeC::DUCKDB_TYPE_HUGEINT),
+            TypeC::DUCKDB_TYPE_ENUM => $this->cast(TypeC::{Type::from($this->ffi->enumInternalType($this->logicalType))->name}),
             default => $this->cast($this->type),
         };
 
@@ -145,6 +146,7 @@ class Vector
             TypeC::DUCKDB_TYPE_UBIGINT => TypeConverter::getUBigIntFromDuckDBUBigInt($data),
             TypeC::DUCKDB_TYPE_HUGEINT, TypeC::DUCKDB_TYPE_UHUGEINT => TypeConverter::getHugeIntFromDuckDBHugeInt($this->currentValue),
             TypeC::DUCKDB_TYPE_UUID => TypeConverter::getUUIDFromDuckDBHugeInt($this->currentValue),
+            TypeC::DUCKDB_TYPE_ENUM => TypeConverter::getStringFromEnum($this->logicalType, $data, $this->ffi),
             TypeC::DUCKDB_TYPE_BIT => throw new UnsupportedTypeException('Type BIT/BITSTRING is not supported by duckdb-php yet'), // @todo - Check why does not work TypeConverter::getBitDuckDBBit($this->currentValue, $this->ffi),
             TypeC::DUCKDB_TYPE_BLOB => throw new UnsupportedTypeException('Type BLOB is not supported by duckdb-php yet'), // @todo - Check why does not work TypeConverter::getBlobDuckDBlob($this->currentValue, $this->ffi),
             default => $data,

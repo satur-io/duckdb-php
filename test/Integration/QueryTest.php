@@ -550,6 +550,17 @@ class QueryTest extends TestCase
         }
     }
 
+    #[Group('nested')]
+    public function testEnum(): void
+    {
+        $expectedValues = [['happy']];
+        $result = $this->db->query("SELECT 'happy'::ENUM ('sad', 'ok', 'happy');");
+
+        foreach ($result->rows() as $id => $row) {
+            $this->assertEquals($expectedValues[$id], $row);
+        }
+    }
+
     public function testColumnNames(): void
     {
         $expectedValues = ['column1', 'column2', 'column3'];
