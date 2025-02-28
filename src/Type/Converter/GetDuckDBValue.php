@@ -8,6 +8,7 @@ use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Type\Date;
+use Saturio\DuckDB\Type\Interval;
 use Saturio\DuckDB\Type\Time;
 use Saturio\DuckDB\Type\Timestamp;
 use Saturio\DuckDB\Type\Type;
@@ -19,7 +20,7 @@ trait GetDuckDBValue
      * @throws UnsupportedTypeException
      */
     public static function getDuckDBValue(
-        string|bool|int|float|Date|Time|Timestamp $value, FFIDuckDB $ffi, ?Type $type = null,
+        string|bool|int|float|Date|Time|Timestamp|Interval $value, FFIDuckDB $ffi, ?Type $type = null,
     ): CDataInterface {
         $type = $type ?? self::getInferredType($value);
 
@@ -39,6 +40,7 @@ trait GetDuckDBValue
             Type::DUCKDB_TYPE_DATE => self::createFromDate($value, $ffi),
             Type::DUCKDB_TYPE_TIME => self::createFromTime($value, $ffi),
             Type::DUCKDB_TYPE_TIMESTAMP => self::createFromTimestamp($value, $ffi),
+            Type::DUCKDB_TYPE_INTERVAL => self::createFromInterval($value, $ffi),
             default => throw new UnsupportedTypeException("Unsupported type: {$type->name}"),
         };
     }
@@ -101,6 +103,18 @@ trait GetDuckDBValue
         $timestampStruct->time = self::getTimeStruct($ffi, $timestamp->getTime())->cdata;
 
         return $ffi->createTimestamp($ffi->toTimestamp($timestampStruct));
+    }
+
+    private static function createFromInterval(
+        Interval $interval, FFIDuckDB $ffi): CDataInterface
+    {
+        $intervalStruct = $ffi->new('duckdb_interval');
+
+        $intervalStruct->months = $interval->getMonths();
+        $intervalStruct->days = $interval->getDays();
+        $intervalStruct->micros = $interval->getMicroseconds();
+
+        return $ffi->createInterval($intervalStruct);
     }
 
     public static function getTimeStruct(FFIDuckDB $ffi, Time $time): ?CDataInterface

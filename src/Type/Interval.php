@@ -27,4 +27,9 @@ class Interval
     {
         return $this->microseconds;
     }
+
+    public function __toString(): string
+    {
+        return sprintf("%s months %s days %s microseconds", $this->months, $this->days, $this->microseconds);
+    }
 }

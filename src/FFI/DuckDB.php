@@ -374,6 +374,11 @@ class DuckDB
         return new DuckDBCData(self::$ffi->duckdb_create_timestamp($time->cdata));
     }
 
+    public function createInterval(CDataInterface $interval): CDataInterface
+    {
+        return new DuckDBCData(self::$ffi->duckdb_create_interval($interval->cdata));
+    }
+
     public function getValueType(CDataInterface $value): CDataInterface
     {
         return new DuckDBCData(self::$ffi->duckdb_get_value_type($value->cdata));
