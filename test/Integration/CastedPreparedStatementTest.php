@@ -7,6 +7,9 @@ namespace Integration;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
+use Saturio\DuckDB\Type\Date;
+use Saturio\DuckDB\Type\Time;
+use Saturio\DuckDB\Type\Timestamp;
 use Saturio\DuckDB\Type\Type;
 
 class CastedPreparedStatementTest extends TestCase
@@ -41,24 +44,28 @@ class CastedPreparedStatementTest extends TestCase
     private function createTableAndInsert(string $tableName, string $type, ...$values): void
     {
         $this->db->query("CREATE TABLE '{$tableName}' (x {$type});");
-        $values = implode(', ', array_map(fn (mixed $v) => "($v)", $values));
+        $values = implode(', ', array_map(fn (mixed $v) => is_string($v) || is_object($v) ? "('$v')" : ( is_null($v) ? "(null)" : "($v)"), $values));
         $this->db->query("INSERT INTO '{$tableName}' VALUES $values;");
     }
 
     public static function typesProvider(): array
     {
+        $timestampSearch = new Timestamp(new Date(1521, 4, 23), new Time(12, 3, 2, microseconds: 56201));
+        $timestampResult = [[clone $timestampSearch],[clone $timestampSearch]];
+        $timestampInsert = [clone $timestampSearch, null, clone $timestampSearch, new Timestamp(new Date(100, 1, 2), new Time(12, 3, 2, microseconds: 56201))];
         return [
-            [Type::DUCKDB_TYPE_TINYINT, 'TINYINT', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
-            [Type::DUCKDB_TYPE_SMALLINT, 'SMALLINT', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
-            [Type::DUCKDB_TYPE_INTEGER, 'INTEGER', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
-            [Type::DUCKDB_TYPE_BIGINT, 'BIGINT', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
-            [Type::DUCKDB_TYPE_UTINYINT, 'UTINYINT', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
-            [Type::DUCKDB_TYPE_USMALLINT, 'USMALLINT', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
-            [Type::DUCKDB_TYPE_UINTEGER, 'UINTEGER', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
-            [Type::DUCKDB_TYPE_UBIGINT, 'UBIGINT', 3, [[3], [3]], [3, 5, 6, 3, 'null']],
-            [Type::DUCKDB_TYPE_UBIGINT, 'UBIGINT', '3', [[3], [3]], [3, 5, 6, 3, 'null']],
-            [Type::DUCKDB_TYPE_FLOAT, 'FLOAT', 3.0, [[3.0], [3.0]], [3, 5, 6, 3, 'null']],
-            [Type::DUCKDB_TYPE_DOUBLE, 'DOUBLE', 3.0, [[3.0], [3.0]], [3, 5, 6, 3, 'null']],
+            [Type::DUCKDB_TYPE_TINYINT, 'TINYINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            [Type::DUCKDB_TYPE_SMALLINT, 'SMALLINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            [Type::DUCKDB_TYPE_INTEGER, 'INTEGER', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            [Type::DUCKDB_TYPE_BIGINT, 'BIGINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            [Type::DUCKDB_TYPE_UTINYINT, 'UTINYINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            [Type::DUCKDB_TYPE_USMALLINT, 'USMALLINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            [Type::DUCKDB_TYPE_UINTEGER, 'UINTEGER', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            [Type::DUCKDB_TYPE_UBIGINT, 'UBIGINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            [Type::DUCKDB_TYPE_UBIGINT, 'UBIGINT', '3', [[3], [3]], [3, 5, 6, 3, null]],
+            [Type::DUCKDB_TYPE_FLOAT, 'FLOAT', 3.0, [[3.0], [3.0]], [3, 5, 6, 3, null]],
+            [Type::DUCKDB_TYPE_DOUBLE, 'DOUBLE', 3.0, [[3.0], [3.0]], [3, 5, 6, 3, null]],
+            [Type::DUCKDB_TYPE_TIMESTAMP, 'TIMESTAMP', $timestampSearch, $timestampResult, $timestampInsert],
         ];
     }
 }
