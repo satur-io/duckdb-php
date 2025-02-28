@@ -1,0 +1,10 @@
+name: PHP Unit (stable)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  phpunit:
+    uses: ./.github/workflows/php_test.yml

@@ -1,0 +1,11 @@
+name: nightly.yml
+
+on:
+  schedule:
+    - cron: "4 4 * * *"
+
+jobs:
+  phpunit:
+    uses: ./.github/workflows/php_test.yml
+    with:
+      lib-path: 'lib-nightly'

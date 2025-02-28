@@ -1,10 +1,11 @@
 name: PHPUnit
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_call:
+    inputs:
+      lib-path:
+        required: false
+        type: string
 
 permissions:
   contents: read
