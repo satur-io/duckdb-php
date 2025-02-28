@@ -46,26 +46,26 @@ class CastedPreparedStatementTest extends TestCase
     private function createTableAndInsert(string $tableName, string $type, ...$values): void
     {
         $this->db->query("CREATE TABLE '{$tableName}' (x {$type});");
-        $values = implode(', ', array_map(fn (mixed $v) => is_string($v) || is_object($v) ? "('$v')" : ( is_null($v) ? "(null)" : "($v)"), $values));
+        $values = implode(', ', array_map(fn (mixed $v) => is_string($v) || is_object($v) ? "('$v')" : (is_null($v) ? '(null)' : "($v)"), $values));
         $this->db->query("INSERT INTO '{$tableName}' VALUES $values;");
     }
 
     public static function timeProvider(): array
     {
         $timestampSearch = new Timestamp(new Date(1521, 4, 23), new Time(12, 3, 2));
-        $timestampResult = [[clone $timestampSearch],[clone $timestampSearch]];
+        $timestampResult = [[clone $timestampSearch], [clone $timestampSearch]];
         $timestampInsert = [clone $timestampSearch, null, clone $timestampSearch, new Timestamp(new Date(100, 1, 2), new Time(12, 3, 2))];
 
         $dateSearch = new Date(1521, 4, 23);
-        $dateResult = [[clone $dateSearch],[clone $dateSearch]];
+        $dateResult = [[clone $dateSearch], [clone $dateSearch]];
         $dateInsert = [clone $dateSearch, null, clone $dateSearch, new Date(100, 1, 2)];
 
         $timeSearch = new Time(12, 0, 23);
-        $timeResult = [[clone $timeSearch],[clone $timeSearch]];
+        $timeResult = [[clone $timeSearch], [clone $timeSearch]];
         $timeInsert = [clone $timeSearch, null, clone $timeSearch, new Time(10, 1, 2)];
 
         $intervalSearch = new Interval(10, 1);
-        $intervalResult = [[clone $intervalSearch],[clone $intervalSearch]];
+        $intervalResult = [[clone $intervalSearch], [clone $intervalSearch]];
         $intervalInsert = [clone $intervalSearch, null, clone $intervalSearch, new Interval(10, 1, 2)];
 
         return [

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Unit\Type;
 
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -18,7 +20,7 @@ class TimeTypeTest extends TestCase
     public function testInvalidTime(): void
     {
         $this->expectException(InvalidTimeException::class);
-        new Time(12,3,4,1,2);
+        new Time(12, 3, 4, 1, 2);
     }
 
     public static function timesProvider(): array
