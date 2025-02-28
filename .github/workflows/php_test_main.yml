@@ -1,4 +1,4 @@
-name: PHP Unit (stable)
+name: PHPUnit (stable)
 
 on:
   push:
@@ -8,5 +8,3 @@ on:
 jobs:
   phpunit:
     uses: ./.github/workflows/php_test.yml
-    with:
-      lib-path: 'lib_nightly'

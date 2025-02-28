@@ -1,4 +1,4 @@
-name: PHP Unit (unstable nightly C library build)
+name: PHPUnit (unstable - nightly C library)
 
 on:
   schedule:
