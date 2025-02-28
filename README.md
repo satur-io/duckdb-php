@@ -4,6 +4,7 @@
 
 [![Github Actions Badge](https://github.com/satur-io/duckdb-php/actions/workflows/php_test.yml/badge.svg?branch=main)](https://github.com/satur-io/duckdb-php/actions)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=satur-io_duckdb-php&metric=alert_status&token=4a4bd82eff843d2b4a93bf4552b6db78e598ecfa)](https://sonarcloud.io/summary/new_code?id=satur-io_duckdb-php)
+[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-highlight.svg)](https://sonarcloud.io/summary/new_code?id=satur-io_duckdb-php)
 
 This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API for PHP.
 
