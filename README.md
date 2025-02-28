@@ -10,7 +10,7 @@ This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API fo
 
 Focus on performance, it uses the official [C API](https://duckdb.org/docs/api/c/overview.html) internally through [FFI](https://www.php.net/manual/en/book.ffi.php) obtaining good benchmarks.
 However, it is not just a wrapper for the C API and provides custom methods PHP flavored to work with DuckDB in a simple way.
-It works on linux, windows and macOS with PHP versions greater than 8.2.
+It works on linux, windows and macOS with PHP versions greater than 8.3.
 
 ### Quick start
 
@@ -54,6 +54,15 @@ $result->print();
 > [!TIP]
 > Do you want more use cases? Check the [examples folder](examples)
 
+### Requirements
+- Linux, MacOS or Windows
+- x64 platform
+- PHP >= 8.3
+- ext-ffi
+
+#### Recommended
+- ext-bcmath - Needed for big integers (> PHP_INT_MAX)
+- ext-zend-opcache - For a better performance
 
 ### Types support
 | DuckDB type                | SQL type     | PHP type                      |           Read           |          Bind           |
