@@ -8,7 +8,7 @@
 
 This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API for PHP.
 
-Focused on performance, it uses the official [C API](https://duckdb.org/docs/api/c/overview.html) internally through [FFI](https://www.php.net/manual/en/book.ffi.php) obtaining good benchmarks.
+Focus on performance, it uses the official [C API](https://duckdb.org/docs/api/c/overview.html) internally through [FFI](https://www.php.net/manual/en/book.ffi.php) obtaining good benchmarks.
 However, it is not just a wrapper for the C API and provides custom methods PHP flavored to work with DuckDB in a simple way.
 It works on linux, windows and macOS with PHP versions greater than 8.2.
 
@@ -101,3 +101,15 @@ $result->print();
 :grey_question: Pending to check and cover with tests
 
 :small_blue_diamond: Not applied
+
+### Other PHP Duckdb integrations
+This project takes some ideas from [thbley/php-duckdb-integration](https://github.com/thbley/php-duckdb-integration)
+and from [kambo-1st/duckdb-php](https://github.com/kambo-1st/duckdb-php). Without theses previous works probably
+satur-io/duckdb-php couldn't exist.
+
+Nevertheless, there are some important differences:
+- satur-io/duckdb-php use all modern C API methods, avoiding the deprecated ones
+- satur-io/duckdb-php is available for all platforms (Linux, MacOS and Windows) and select the appropriated C library
+- satur-io/duckdb-php is focus on performance
+- satur-io/duckdb-php is easy to install and use
+- satur-io/duckdb-php package all needed resources into one composer package
