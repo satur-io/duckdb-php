@@ -6,10 +6,10 @@ namespace Saturio\DuckDB\Type\Converter;
 
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
-use Saturio\DuckDB\FFI\CData;
-use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Native\FFI;
+use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
 use Saturio\DuckDB\Type\Math\MathLib;
@@ -24,26 +24,26 @@ class TypeConverter
     use GetDuckDBValue;
 
     private static MathLibInterface $math;
-    private static CDataInterface $decimal;
+    private static NativeCData $decimal;
 
-    public static function getVarChar(CDataInterface $data, FFIDuckDB $ffi): string
+    public static function getVarChar(NativeCData $data, FFIDuckDB $ffi): string
     {
-        $value = &$data->cdata->value;
+        $value = $data->value;
         if ($value->inlined->length <= 12) {
             $inlined = $value->inlined;
             $length = $inlined->length;
-            $data->cdata = $inlined->inlined;
+            $data = $inlined->inlined;
 
-            return $ffi->string($data, $length);
+            return FFI::string($data, $length);
         }
         $pointer = $value->pointer;
         $length = $pointer->length;
-        $data->cdata = $pointer->ptr;
+        $data = $pointer->ptr;
 
-        return $ffi->string($data, $length);
+        return FFI::string($data, $length);
     }
 
-    public static function getStringFromBlob(CDataInterface $data, FFIDuckDB $ffi): string
+    public static function getStringFromBlob(NativeCData $data, FFIDuckDB $ffi): string
     {
         $string = self::getVarChar($data, $ffi);
 
@@ -56,7 +56,7 @@ class TypeConverter
     }
 
     public static function getDateFromDuckDBDate(
-        CDataInterface $date,
+        NativeCData $date,
         FFIDuckDB $ffi,
     ): Date {
         $dateStruct = $ffi->fromDate($date);
@@ -68,7 +68,7 @@ class TypeConverter
      * @throws InvalidTimeException
      */
     public static function getTimeFromDuckDBTime(
-        CDataInterface $time,
+        NativeCData $time,
         FFIDuckDB $ffi,
     ): Time {
         $timeStruct = $ffi->fromTime($time);
@@ -80,12 +80,12 @@ class TypeConverter
      * @throws InvalidTimeException
      */
     public static function getTimeFromDuckDBTimeTz(
-        CDataInterface $time,
+        NativeCData $time,
         FFIDuckDB $ffi,
     ): Time {
         $timeStruct = $ffi->fromTimeTz($time);
 
-        $time = self::getTime(CData::from($timeStruct->time), true);
+        $time = self::getTime($timeStruct->time, true);
 
         return $time->setOffset($timeStruct->offset);
     }
@@ -94,14 +94,14 @@ class TypeConverter
      * @throws InvalidTimeException
      */
     public static function getTimestampFromDuckDBTimestamp(
-        CDataInterface $timestamp,
+        NativeCData $timestamp,
         FFIDuckDB $ffi,
     ): Timestamp {
         $timestampStruct = $ffi->fromTimestamp($timestamp);
 
         return new Timestamp(
-            self::getDate(new CData($timestampStruct->date)),
-            self::getTime(new CData($timestampStruct->time)),
+            self::getDate($timestampStruct->date),
+            self::getTime($timestampStruct->time),
         );
     }
 
@@ -110,7 +110,7 @@ class TypeConverter
      * @throws InvalidTimeException
      */
     public static function getTimestampFromDuckDBTimestampMs(
-        CDataInterface $timestamp,
+        NativeCData $timestamp,
     ): Timestamp {
         $datetime = new \DateTime('1970-01-01 00:00:00');
         $datetime->modify("+ $timestamp->millis milliseconds");
@@ -123,7 +123,7 @@ class TypeConverter
      * @throws InvalidTimeException
      */
     public static function getTimestampFromDuckDBTimestampS(
-        CDataInterface $timestamp,
+        NativeCData $timestamp,
     ): Timestamp {
         $datetime = new \DateTime('1970-01-01 00:00:00');
         $datetime->modify("+ $timestamp->seconds seconds");
@@ -135,7 +135,7 @@ class TypeConverter
      * @throws InvalidTimeException|\DateMalformedStringException
      */
     public static function getTimestampFromDuckDBTimestampNs(
-        CDataInterface $timestamp,
+        NativeCData $timestamp,
     ): Timestamp {
         $datetime = new \DateTime('1970-01-01 00:00:00');
         $nanoseconds = $timestamp->nanos;
@@ -151,18 +151,18 @@ class TypeConverter
      * @throws InvalidTimeException
      */
     public static function getTimestampFromDuckDBTimestampTz(
-        CDataInterface $timestamp,
+        NativeCData $timestamp,
         DuckDB $ffi,
     ): Timestamp {
         $timestampStruct = $ffi->fromTimestamp($timestamp);
 
         return new Timestamp(
-            self::getDate(new CData($timestampStruct->date)),
-            self::getTime(new CData($timestampStruct->time), isTimezoned: true),
+            self::getDate($timestampStruct->date),
+            self::getTime($timestampStruct->time, isTimezoned: true),
         );
     }
 
-    public static function getDate(CDataInterface $dateStruct): Date
+    public static function getDate(NativeCData $dateStruct): Date
     {
         return new Date($dateStruct->year, $dateStruct->month, $dateStruct->day);
     }
@@ -170,7 +170,7 @@ class TypeConverter
     /**
      * @throws InvalidTimeException
      */
-    public static function getTime(CDataInterface $timeStruct, bool $isTimezoned = false): Time
+    public static function getTime(NativeCData $timeStruct, bool $isTimezoned = false): Time
     {
         return new Time(
             $timeStruct->hour,
@@ -181,7 +181,7 @@ class TypeConverter
         );
     }
 
-    public static function getIntervalFromDuckDBInterval(CDataInterface $data): Interval
+    public static function getIntervalFromDuckDBInterval(NativeCData $data): Interval
     {
         return new Interval(
             months: $data->months,
@@ -205,7 +205,7 @@ class TypeConverter
     /**
      * @throws BigNumbersNotSupportedException
      */
-    public static function getHugeIntFromDuckDBHugeInt(CDataInterface $data): int|string
+    public static function getHugeIntFromDuckDBHugeInt(NativeCData $data): int|string
     {
         $lower = self::getUBigIntFromDuckDBUBigInt($data->lower);
         $upper = self::getUBigIntFromDuckDBUBigInt($data->upper);
@@ -216,23 +216,23 @@ class TypeConverter
     /**
      * @throws BigNumbersNotSupportedException
      */
-    public static function getUUIDFromDuckDBHugeInt(CDataInterface $data): UUID
+    public static function getUUIDFromDuckDBHugeInt(NativeCData $data): UUID
     {
         $hugeint = self::getHugeIntFromDuckDBHugeInt($data);
 
         return UUID::fromHugeint($hugeint, self::getMath());
     }
 
-    public static function getBitDuckDBBit(?CDataInterface $data, FFIDuckDB $ffi): string
+    public static function getBitDuckDBBit(?NativeCData $data, FFIDuckDB $ffi): string
     {
         $value = $ffi->createBit($data);
 
         return $ffi->getVarchar($value);
     }
 
-    public static function getBlobDuckDBlob(?CDataInterface $data, FFIDuckDB $ffi): string
+    public static function getBlobDuckDBlob(?NativeCData $data, FFIDuckDB $ffi): string
     {
-        $value = $ffi->createBlob(CData::from($data->cdata->data), $data->cdata->size);
+        $value = $ffi->createBlob($data->data, $data->size);
 
         return $ffi->getVarchar($value);
     }
@@ -249,7 +249,7 @@ class TypeConverter
         return self::$math;
     }
 
-    public static function getStringFromEnum(CDataInterface $logicalType, int $entry, FFIDuckDB $ffi): string
+    public static function getStringFromEnum(NativeCData $logicalType, int $entry, FFIDuckDB $ffi): string
     {
         return $ffi->enumDictionaryValue($logicalType, $entry);
     }

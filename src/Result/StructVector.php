@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Result;
 
-use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB;
+use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 
 class StructVector implements NestedTypeVector
 {
@@ -13,13 +13,13 @@ class StructVector implements NestedTypeVector
 
     /** @var Vector[] */
     private array $children;
-    private CDataInterface $logicalType;
+    private NativeCData $logicalType;
 
     public function __construct(
         private readonly DuckDB $ffi,
-        private readonly CDataInterface $vector,
+        private readonly NativeCData $vector,
         private readonly int $rows,
-        private readonly CDataInterface $parentLogicalType,
+        private readonly NativeCData $parentLogicalType,
     ) {
         foreach (range(0, $this->ffi->structTypeChildCount($this->parentLogicalType) - 1) as $childIndex) {
             $this->children[$childIndex] =

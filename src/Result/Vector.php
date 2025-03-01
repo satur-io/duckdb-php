@@ -7,8 +7,8 @@ namespace Saturio\DuckDB\Result;
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
-use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Converter\NumericConverter;
 use Saturio\DuckDB\Type\Converter\TypeConverter;
 use Saturio\DuckDB\Type\Type;
@@ -18,17 +18,17 @@ class Vector
 {
     use ValidityTrait;
     private TypeC $type;
-    private CDataInterface $typedData;
-    private CDataInterface $logicalType;
-    private ?CDataInterface $validity;
+    private ?NativeCData $typedData;
+    private NativeCData $logicalType;
+    private ?NativeCData $validity;
 
     public ?NestedTypeVector $nestedTypeVector = null;
-    private CDataInterface $currentValue;
+    private NativeCData $currentValue;
     private NumericConverter $numericConverter;
 
     public function __construct(
         private readonly FFIDuckDB $ffi,
-        private readonly CDataInterface $vector,
+        private readonly NativeCData $vector,
         public readonly int $rows,
         public readonly ?string $name = null,
     ) {
@@ -81,7 +81,7 @@ class Vector
         }
     }
 
-    public function getValidity(): ?CDataInterface
+    public function getValidity(): ?NativeCData
     {
         $validity = $this->ffi->vectorGetValidity($this->vector);
 
@@ -106,7 +106,7 @@ class Vector
         )->name};
     }
 
-    private function cast(TypeC $type): CDataInterface
+    private function cast(TypeC $type): NativeCData
     {
         return $this->ffi->cast(
             "{$type->value} *",
@@ -126,10 +126,10 @@ class Vector
             return null;
         }
 
-        $data = $this->typedData->get($rowIndex);
+        $data = $this->typedData[$rowIndex];
 
         if (!is_scalar($data)) {
-            $this->currentValue->cdata = $data;
+            $this->currentValue = $data;
         }
 
         return match ($this->type) {

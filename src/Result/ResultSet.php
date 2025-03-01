@@ -6,29 +6,27 @@ namespace Saturio\DuckDB\Result;
 
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
-use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 
 class ResultSet
 {
     use ValidityTrait;
 
-    public CDataInterface $currentChunk;
-
     public function __construct(
         public readonly FFIDuckDB $ffi,
-        public readonly CDataInterface $result,
+        public readonly NativeCData $result,
     ) {
-        $this->currentChunk = $this->ffi->new('duckdb_data_chunk');
     }
 
     public function fetchChunk(): ?DataChunk
     {
-        $newChunk = $this->ffi->fetchChunkToCDataInterface($this->result, $this->currentChunk);
+        $newChunk = $this->ffi->fetchChunk($this->result);
 
         return $newChunk ? new DataChunk(
             $this->ffi,
-            $this->currentChunk,
+            $newChunk,
+            reusable: false,
         ) : null;
     }
 
@@ -63,6 +61,10 @@ class ResultSet
                 }
                 yield $rowData ?? null;
             }
+            foreach ($dataGenerators as $id => $dataGenerator) {
+                unset($dataGenerators[$id]);
+            }
+
             $chunk->destroy();
         }
     }
