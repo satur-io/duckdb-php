@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Integration;
 
+use Integration\Helper\IntegrationTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
@@ -15,6 +16,7 @@ use Saturio\DuckDB\Type\Type;
 
 class CastedPreparedStatementTest extends TestCase
 {
+    use IntegrationTestTrait;
     private DuckDB $db;
 
     protected function setUp(): void

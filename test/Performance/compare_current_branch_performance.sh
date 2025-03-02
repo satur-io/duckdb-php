@@ -122,7 +122,7 @@ MAX_TIME_PERCENTAGE_INCREASE_ALLOWED="1.1"
 MAX_MEMORY_PERCENTAGE_INCREASE_ALLOWED="1.1"
 
 rm -rf /tmp/master-branch
-git clone --branch main --depth 1 file://${PWD} /tmp/master-branch
+git clone --branch 3-avoid-wrappers --depth 1 file://${PWD} /tmp/master-branch
 
 orig=${PWD}
 

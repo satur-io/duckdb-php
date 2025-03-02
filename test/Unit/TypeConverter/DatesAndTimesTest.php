@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace Unit\TypeConverter;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Type\Converter\TypeConverter;
 use Saturio\DuckDB\Type\Date;
+use Unit\Abstract\TestWithInterfaces;
 use Unit\Helper\DummyCData;
 
-class DatesAndTimesTest extends TestCase
+#[RunClassInSeparateProcess]
+class DatesAndTimesTest extends TestWithInterfaces
 {
     private FFIDuckDB $ffi;
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->ffi = $this->createMock(FFIDuckDB::class);
     }
 
@@ -35,6 +38,7 @@ class DatesAndTimesTest extends TestCase
             ->with($date)
             ->willReturn($dateStruct);
 
-        self::assertEquals($expectedDate, TypeConverter::getDateFromDuckDBDate($date, $this->ffi));
+        $converter = new TypeConverter($this->ffi);
+        self::assertEquals($expectedDate, $converter->getDateFromDuckDBDate($date));
     }
 }
