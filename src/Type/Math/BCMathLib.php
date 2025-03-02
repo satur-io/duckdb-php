@@ -49,6 +49,7 @@ class BCMathLib implements MathLibInterface
                 bcmod($x, $y),
             ];
         }
+
         return bcdivmod($x, $y);
     }
 

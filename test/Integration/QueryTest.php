@@ -600,7 +600,7 @@ class QueryTest extends TestCase
     public function testArray(): void
     {
         $expectedValues = [[1, 2, 3]];
-        $result = $this->db->query("SELECT array_value(1, 2, 3);");
+        $result = $this->db->query('SELECT array_value(1, 2, 3);');
 
         $this->assertEquals($expectedValues, $result->rows()->current());
     }

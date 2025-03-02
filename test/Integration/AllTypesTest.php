@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Integration;
 
 use Integration\Helper\IntegrationTestTrait;
@@ -20,19 +22,19 @@ class AllTypesTest extends TestCase
 
     public function testAllTypes()
     {
-            $exclude = [
-                'varint',
-                'timestamptz_array',
-                'varchar_array',
-                'timestamp_array',
-                'bit'
-            ];
+        $exclude = [
+            'varint',
+            'timestamptz_array',
+            'varchar_array',
+            'timestamp_array',
+            'bit',
+        ];
 
-            $excludeSql = implode(", ", array_map(fn($v) => "'$v'", $exclude));
+        $excludeSql = implode(', ', array_map(fn ($v) => "'$v'", $exclude));
 
-            $result = $this->db->query("SELECT * EXCLUDE($excludeSql) FROM test_all_types();");
+        $result = $this->db->query("SELECT * EXCLUDE($excludeSql) FROM test_all_types();");
 
-            self::assertEquals(54 - count($exclude), $result->columnCount());
-            iterator_to_array($result->rows(columnNameAsKey: true));
+        self::assertEquals(54 - count($exclude), $result->columnCount());
+        iterator_to_array($result->rows(columnNameAsKey: true));
     }
 }
