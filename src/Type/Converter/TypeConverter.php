@@ -92,6 +92,14 @@ class TypeConverter
      */
     public function getTimestampFromDuckDBTimestamp(NativeCData $timestamp): Timestamp
     {
+        if (-9223372036854775807 === $timestamp->micros) {
+            return new Timestamp(infinity: -1);
+        }
+
+        if (9223372036854775807 === $timestamp->micros) {
+            return new Timestamp(infinity: 1);
+        }
+
         $timestampStruct = $this->ffi->fromTimestamp($timestamp);
 
         return new Timestamp(

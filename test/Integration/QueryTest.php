@@ -294,6 +294,21 @@ class QueryTest extends TestCase
 
     #[Group('primitives')]
     #[Group('timestamp')]
+    public function testTimestampInfinityAndEpochSelect(): void
+    {
+        $expectedValues = [
+            new Timestamp(infinity: -1),
+            new Timestamp(new Date(1970, 1, 1), new Time(0, 0, 0)),
+            new Timestamp(infinity: 1),
+        ];
+        $result = $this->db->query("SELECT '-infinity'::TIMESTAMP, 'epoch'::TIMESTAMP, 'infinity'::TIMESTAMP;");
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row);
+    }
+
+    #[Group('primitives')]
+    #[Group('timestamp')]
     public function testTimestampMsSelect(): void
     {
         $expectedValues = [new Timestamp(

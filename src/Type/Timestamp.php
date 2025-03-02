@@ -9,8 +9,9 @@ use Saturio\DuckDB\Exception\InvalidTimeException;
 class Timestamp
 {
     public function __construct(
-        private readonly Date $date,
-        private readonly Time $time,
+        private readonly ?Date $date = null,
+        private readonly ?Time $time = null,
+        private readonly int $infinity = 0,
     ) {
     }
 
@@ -26,7 +27,12 @@ class Timestamp
 
     public function __toString(): string
     {
-        return $this->date.' '.$this->time;
+        return 0 === $this->infinity ? $this->date.' '.$this->time : $this->infinityToString();
+    }
+
+    private function infinityToString(): string
+    {
+        return $this->infinity < 0 ? '-infinity' : '+infinity';
     }
 
     // @todo - Add unit tests for this
