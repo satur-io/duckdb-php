@@ -24,7 +24,6 @@ class AllTypesTest extends TestCase
     {
         $exclude = [
             'varint',
-            'timestamptz_array',
             'bit',
         ];
 

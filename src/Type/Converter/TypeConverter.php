@@ -90,7 +90,7 @@ class TypeConverter
     /**
      * @throws InvalidTimeException
      */
-    public function getTimestampFromDuckDBTimestamp(NativeCData $timestamp): Timestamp
+    public function getTimestampFromDuckDBTimestamp(NativeCData $timestamp, bool $timezoned = false): Timestamp
     {
         if (-9223372036854775807 === $timestamp->micros) {
             return new Timestamp(infinity: -1);
@@ -104,7 +104,7 @@ class TypeConverter
 
         return new Timestamp(
             $this->getDate($timestampStruct->date),
-            $this->getTime($timestampStruct->time),
+            $this->getTime($timestampStruct->time, isTimezoned: $timezoned),
         );
     }
 
@@ -152,12 +152,7 @@ class TypeConverter
      */
     public function getTimestampFromDuckDBTimestampTz(NativeCData $timestamp): Timestamp
     {
-        $timestampStruct = $this->ffi->fromTimestamp($timestamp);
-
-        return new Timestamp(
-            $this->getDate($timestampStruct->date),
-            $this->getTime($timestampStruct->time, isTimezoned: true),
-        );
+        return $this->getTimestampFromDuckDBTimestamp($timestamp, timezoned: true);
     }
 
     public function getDate(NativeCData $dateStruct): Date
