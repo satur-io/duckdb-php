@@ -8,11 +8,11 @@
 
 This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API for PHP.
 
-Focus on performance, it uses the official [C API](https://duckdb.org/docs/api/c/overview.html) internally through [FFI](https://www.php.net/manual/en/book.ffi.php) obtaining good benchmarks.
-However, it is not just a wrapper for the C API and provides custom methods PHP flavored to work with DuckDB in a simple way.
-It works on linux, windows and macOS with PHP versions greater than 8.3.
+Focused on performance, it uses the official [C API](https://duckdb.org/docs/api/c/overview.html) internally through [FFI](https://www.php.net/manual/en/book.ffi.php), achieving good benchmarks.
+However, it is not just a wrapper for the C API; it provides custom methods with a PHP flavor to work with DuckDB in a simple way.
+It works on Linux, Windows, and macOS with PHP versions greater than 8.3.
 
-### Quick start
+### Quick Start
 
 ```php
 $duckDB = DuckDB::create();
@@ -31,13 +31,13 @@ $result->print();
 
 > It's that simple! :duck:
 
-Let's see how prepared statements work
+Let's see how prepared statements work.
 
-#### Prepared statements
+#### Prepared Statements
 ```php
 $duckDB = DuckDB::create();
 
-$duckDB->query( "CREATE TABLE test (i INTEGER, b BOOL, f FLOAT);");
+$duckDB->query("CREATE TABLE test (i INTEGER, b BOOL, f FLOAT);");
 $duckDB->query('INSERT INTO test VALUES (3, true, 1.1), (5, true, 1.2), (3, false, 1.1), (3, null, 1.2);');
 
 $boolPreparedStatement = $duckDB->preparedStatement('SELECT * FROM test WHERE b = $1');
@@ -52,20 +52,20 @@ $result->print();
 ```
 
 > [!TIP]
-> Do you want more use cases? Check the [examples folder](examples)
+> Do you want more use cases? Check the [examples folder](examples).
 
 ### Requirements
-- Linux, MacOS or Windows
+- Linux, macOS, or Windows
 - x64 platform
 - PHP >= 8.3
 - ext-ffi
 
 #### Recommended
 - ext-bcmath - Needed for big integers (> PHP_INT_MAX)
-- ext-zend-opcache - For a better performance
+- ext-zend-opcache - For better performance
 
-### Types support
-| DuckDB type                | SQL type     | PHP type                      |                                    Read                                    |                                    Bind                                     |
+### Type Support
+| DuckDB Type                | SQL Type     | PHP Type                      |                                    Read                                    |                                    Bind                                     |
 |----------------------------|--------------|-------------------------------|:--------------------------------------------------------------------------:|:---------------------------------------------------------------------------:|
 | DUCKDB_TYPE_BOOLEAN        | BOOLEAN      | bool                          |                             :white_check_mark:                             |                             :white_check_mark:                              |
 | DUCKDB_TYPE_TINYINT        | TINYINT      | int                           |                             :white_check_mark:                             |                             :white_check_mark:                              |
@@ -81,7 +81,7 @@ $result->print();
 | DUCKDB_TYPE_TIMESTAMP      | TIMESTAMP    | Saturio\DuckDB\Type\Timestamp |                             :white_check_mark:                             |                             :white_check_mark:                              |
 | DUCKDB_TYPE_DATE           | DATE         | Saturio\DuckDB\Type\Date      |                             :white_check_mark:                             |                             :white_check_mark:                              |
 | DUCKDB_TYPE_TIME           | TIME         | Saturio\DuckDB\Type\Time      |                             :white_check_mark:                             |                             :white_check_mark:                              |
-| DUCKDB_TYPE_INTERVAL	      | INTERVAL     | Saturio\DuckDB\Type\Interval  |                             :white_check_mark:                             |                             :white_check_mark:                              |
+| DUCKDB_TYPE_INTERVAL       | INTERVAL     | Saturio\DuckDB\Type\Interval  |                             :white_check_mark:                             |                             :white_check_mark:                              |
 | DUCKDB_TYPE_HUGEINT        | HUGEINT      | string                        | [:ballot_box_with_check:](https://github.com/satur-io/duckdb-php/issues/1) |                               :grey_question:                               |
 | DUCKDB_TYPE_UHUGEINT       | UHUGEINT     | string                        | [:ballot_box_with_check:](https://github.com/satur-io/duckdb-php/issues/1) |                               :grey_question:                               |
 | DUCKDB_TYPE_VARCHAR        | VARCHAR      | string                        |                             :white_check_mark:                             |                               :grey_question:                               |
@@ -103,22 +103,22 @@ $result->print();
 
 :white_check_mark: Fully supported
 
-:ballot_box_with_check: Partially supported / Need improvements
+:ballot_box_with_check: Partially supported / Needs improvements
 
 :x: Not supported
 
 :grey_question: Pending to check and cover with tests
 
-:small_blue_diamond: Not applied
+:small_blue_diamond: Not applicable
 
-### Other PHP Duckdb integrations
+### Other PHP DuckDB Integrations
 This project takes some ideas from [thbley/php-duckdb-integration](https://github.com/thbley/php-duckdb-integration)
-and from [kambo-1st/duckdb-php](https://github.com/kambo-1st/duckdb-php). Without theses previous works probably
-satur-io/duckdb-php couldn't exist.
+and from [kambo-1st/duckdb-php](https://github.com/kambo-1st/duckdb-php). Without these previous works,
+satur-io/duckdb-php probably wouldn't exist.
 
 Nevertheless, there are some important differences:
-- satur-io/duckdb-php use all modern C API methods, avoiding the deprecated ones
-- satur-io/duckdb-php is available for all platforms (Linux, MacOS and Windows) and select the appropriated C library
-- satur-io/duckdb-php is focus on performance
-- satur-io/duckdb-php is easy to install and use
-- satur-io/duckdb-php package all needed resources into one composer package
+- **satur-io/duckdb-php** uses all modern C API methods, avoiding deprecated ones.
+- It is available for all platforms (Linux, macOS, and Windows) and selects the appropriate C library.
+- Focused on performance.
+- Easy to install and use.
+- All needed resources into one Composer package.
