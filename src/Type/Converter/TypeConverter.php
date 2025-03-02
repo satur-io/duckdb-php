@@ -107,7 +107,7 @@ class TypeConverter
     public function getTimestampFromDuckDBTimestampMs(NativeCData $timestamp): Timestamp
     {
         $datetime = new \DateTime('1970-01-01 00:00:00');
-        $datetime->modify("+ $timestamp->millis milliseconds");
+        $datetime->modify(sprintf("%+d milliseconds", $timestamp->millis));
 
         return Timestamp::fromDateTime($datetime, TimePrecision::MILLISECONDS);
     }
@@ -119,7 +119,7 @@ class TypeConverter
     public function getTimestampFromDuckDBTimestampS(NativeCData $timestamp): Timestamp
     {
         $datetime = new \DateTime('1970-01-01 00:00:00');
-        $datetime->modify("+ $timestamp->seconds seconds");
+        $datetime->modify(sprintf("%+d seconds", $timestamp->seconds));
 
         return Timestamp::fromDateTime($datetime, TimePrecision::SECONDS);
     }
@@ -134,7 +134,7 @@ class TypeConverter
         $milliseconds = intval($nanoseconds / 1000000);
         $nanosecondsReminder = $nanoseconds % 1000000000;
 
-        $datetime->modify("+ $milliseconds milliseconds");
+        $datetime->modify(sprintf("%+d milliseconds", $milliseconds));
 
         return Timestamp::fromDateTime($datetime, TimePrecision::NANOSECONDS, $nanosecondsReminder);
     }
