@@ -7,26 +7,26 @@ namespace Saturio\DuckDB\PreparedStatement;
 use Saturio\DuckDB\Exception\BindValueException;
 use Saturio\DuckDB\Exception\PreparedStatementExecuteException;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
-use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Result\ResultSet;
 use Saturio\DuckDB\Type\Converter\TypeConverter;
 use Saturio\DuckDB\Type\Type;
 
 class PreparedStatement
 {
-    private CDataInterface $preparedStatement;
+    private NativeCData $preparedStatement;
 
     private function __construct(
         private readonly FFIDuckDB $ffi,
-        private readonly CDataInterface $connection,
+        private readonly NativeCData $connection,
         private readonly string $query,
     ) {
     }
 
     public static function create(
         FFIDuckDB $ffi,
-        CDataInterface $connection,
+        NativeCData $connection,
         string $query,
     ): self {
         $newPreparedStatement = new self($ffi, $connection, $query);

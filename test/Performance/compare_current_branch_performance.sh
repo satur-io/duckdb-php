@@ -10,49 +10,6 @@ cleanup() {
 trap "exit" INT
 trap cleanup EXIT
 
-start=$(date +%s.+%N)
-errors=0
-
-bold=$(tput bold)
-normal=$(tput sgr0)
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-black=$(tput setaf 0)
-
-ITERATIONS=5
-GENERATE_PLOTS=true
-MIN_TIME_DIFFF_TO_CHECK_PERCENTAGE="0.01"
-MAX_TIME_PERCENTAGE_INCREASE_ALLOWED="1.1"
-MAX_MEMORY_PERCENTAGE_INCREASE_ALLOWED="1.1"
-
-rm -rf /tmp/master-branch
-git clone --branch main --depth 1 file://${PWD} /tmp/master-branch
-
-orig=${PWD}
-
-rm -rf /tmp/master-branch/test/_data
-ln -s ${PWD}/test/_data /tmp/master-branch/test/_data
-ln -s ${PWD}/lib /tmp/master-branch/lib
-
-rm -rf /tmp/master-branch/test/Performance/duckdb_api
-cp test/Performance/duckdb_api /tmp/master-branch/test/Performance/duckdb_api
-
-cp preload.php /tmp/master-branch
-
-printf "opcache.enable=0\nopcache.enable_cli=0" > /tmp/master-branch/.user.ini;
-cd  /tmp/master-branch && PHP_INI_SCAN_DIR=${PHP_INI_SCAN_DIR}:${PWD} composer dump-autoload;
-rm -f /tmp/master-branch/.user.ini;
-
-cd "${orig}" || exit
-
-NEW_BRANCH_COMMAND="test/Performance/duckdb_api";
-MAIN_BRANCH_COMMAND="DUCKDB_PHP_LIB_DIRECTORY=lib_nightly /tmp/master-branch/test/Performance/duckdb_api";
-REFERENCE_DUCKDB_CLI="duckdb --list -c";
-
-${NEW_BRANCH_COMMAND} "SELECT 1;" > /dev/null 2>&1
-${MAIN_BRANCH_COMMAND} "SELECT 1;" > /dev/null 2>&1
-${REFERENCE_DUCKDB_CLI} "SELECT 1;" > /dev/null 2>&1
-
 function run_query() {
   echo "${bold}${3}${normal}";
   QUERY="${1}";
@@ -148,6 +105,48 @@ function generate_plots() {
   gnuplot -e "set output '${OUTPUT_PLOT_FILE}'" test/Performance/commands.txt
   rm ${FILE};
 }
+
+start=$(date +%s.+%N)
+errors=0
+
+bold=$(tput bold)
+normal=$(tput sgr0)
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+black=$(tput setaf 0)
+
+ITERATIONS=5
+GENERATE_PLOTS=true
+MIN_TIME_DIFFF_TO_CHECK_PERCENTAGE="0.01"
+MAX_TIME_PERCENTAGE_INCREASE_ALLOWED="1.1"
+MAX_MEMORY_PERCENTAGE_INCREASE_ALLOWED="1.1"
+
+rm -rf /tmp/master-branch
+git clone --branch 3-avoid-wrappers --depth 1 file://${PWD} /tmp/master-branch
+
+orig=${PWD}
+
+rm -rf /tmp/master-branch/test/_data
+ln -s ${PWD}/test/_data /tmp/master-branch/test/_data
+
+rm -rf /tmp/master-branch/test/Performance/duckdb_api
+cp test/Performance/duckdb_api /tmp/master-branch/test/Performance/duckdb_api
+
+cp preload.php /tmp/master-branch
+
+printf "opcache.enable=0\nopcache.enable_cli=0" > /tmp/master-branch/.user.ini;
+cd  /tmp/master-branch && PHP_INI_SCAN_DIR=${PHP_INI_SCAN_DIR}:${PWD} composer dump-autoload;
+rm -f /tmp/master-branch/.user.ini;
+
+cd "${orig}" || exit
+
+NEW_BRANCH_COMMAND="test/Performance/duckdb_api";
+MAIN_BRANCH_COMMAND="/tmp/master-branch/test/Performance/duckdb_api";
+REFERENCE_DUCKDB_CLI="duckdb --list -c";
+
+${NEW_BRANCH_COMMAND} "SELECT 1;" > /dev/null 2>&1
+${MAIN_BRANCH_COMMAND} "SELECT 1;" > /dev/null 2>&1
+${REFERENCE_DUCKDB_CLI} "SELECT 1;" > /dev/null 2>&1
 
 
 FILE=$1;

@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Saturio\DuckDB\DB;
 
 use Saturio\DuckDB\Exception\ConnectionException;
-use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB;
+use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 
 class Connection
 {
-    public CDataInterface $connection;
+    public NativeCData $connection;
 
     /**
      * @throws ConnectionException
      */
-    public function __construct(CDataInterface $db, DuckDB $ffi)
+    public function __construct(NativeCData $db, DuckDB $ffi)
     {
         $this->connection = $ffi->new('duckdb_connection');
         $result = $ffi->connect($db, $ffi->addr($this->connection));

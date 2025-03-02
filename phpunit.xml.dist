@@ -31,4 +31,7 @@
             <directory>./src</directory>
         </include>
     </source>
+    <php>
+        <env name="DUCKDB_PHP_LIB_TEST" value="true" force="true" />
+    </php>
 </phpunit>

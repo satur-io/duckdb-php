@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Saturio\DuckDB\Type\Converter;
 
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
-use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
 use Saturio\DuckDB\Type\Time;
@@ -21,7 +21,7 @@ trait GetDuckDBValue
      */
     public static function getDuckDBValue(
         string|bool|int|float|Date|Time|Timestamp|Interval $value, FFIDuckDB $ffi, ?Type $type = null,
-    ): CDataInterface {
+    ): NativeCData {
         $type = $type ?? self::getInferredType($value);
 
         return match ($type) {
@@ -72,14 +72,14 @@ trait GetDuckDBValue
 
     private static function createFromScalar(
         string|bool|int|float $value, Type $type, FFIDuckDB $ffi,
-    ): CDataInterface {
+    ): NativeCData {
         $ffiFunction = 'create'.ucfirst(TypeC::{$type->name}->value);
 
         return $ffi->{$ffiFunction}($value);
     }
 
     private static function createFromDate(
-        Date $date, FFIDuckDB $ffi): CDataInterface
+        Date $date, FFIDuckDB $ffi): NativeCData
     {
         $dateStruct = self::getDateStruct($ffi, $date);
 
@@ -87,7 +87,7 @@ trait GetDuckDBValue
     }
 
     private static function createFromTime(
-        Time $time, FFIDuckDB $ffi): CDataInterface
+        Time $time, FFIDuckDB $ffi): NativeCData
     {
         $timeStruct = self::getTimeStruct($ffi, $time);
 
@@ -95,18 +95,18 @@ trait GetDuckDBValue
     }
 
     private static function createFromTimestamp(
-        Timestamp $timestamp, FFIDuckDB $ffi): CDataInterface
+        Timestamp $timestamp, FFIDuckDB $ffi): NativeCData
     {
         $timestampStruct = $ffi->new('duckdb_timestamp_struct');
 
-        $timestampStruct->date = self::getDateStruct($ffi, $timestamp->getDate())->cdata;
-        $timestampStruct->time = self::getTimeStruct($ffi, $timestamp->getTime())->cdata;
+        $timestampStruct->date = self::getDateStruct($ffi, $timestamp->getDate());
+        $timestampStruct->time = self::getTimeStruct($ffi, $timestamp->getTime());
 
         return $ffi->createTimestamp($ffi->toTimestamp($timestampStruct));
     }
 
     private static function createFromInterval(
-        Interval $interval, FFIDuckDB $ffi): CDataInterface
+        Interval $interval, FFIDuckDB $ffi): NativeCData
     {
         $intervalStruct = $ffi->new('duckdb_interval');
 
@@ -117,7 +117,7 @@ trait GetDuckDBValue
         return $ffi->createInterval($intervalStruct);
     }
 
-    public static function getTimeStruct(FFIDuckDB $ffi, Time $time): ?CDataInterface
+    public static function getTimeStruct(FFIDuckDB $ffi, Time $time): ?NativeCData
     {
         $timeStruct = $ffi->new('duckdb_time_struct');
 
@@ -129,7 +129,7 @@ trait GetDuckDBValue
         return $timeStruct;
     }
 
-    public static function getDateStruct(FFIDuckDB $ffi, Date $date): ?CDataInterface
+    public static function getDateStruct(FFIDuckDB $ffi, Date $date): ?NativeCData
     {
         $dateStruct = $ffi->new('duckdb_date_struct');
 

@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Result;
 
-use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 
 class DataChunk
 {
-    private CDataInterface $currentVector;
-
     public function __construct(
         private readonly FFIDuckDB $ffi,
-        private readonly CDataInterface $dataChunk,
+        private readonly NativeCData $dataChunk,
         private readonly bool $reusable = true,
     ) {
-        $this->currentVector = $this->ffi->new('duckdb_vector');
     }
 
     public function rowCount(): int
@@ -31,11 +28,9 @@ class DataChunk
 
     public function getVector(int $columnIndex, ?int $rows = null): Vector
     {
-        $this->ffi->dataChunkGetVectorToCDataInterface($this->dataChunk, $columnIndex, $this->currentVector);
-
         return new Vector(
             $this->ffi,
-            $this->currentVector,
+            $this->ffi->dataChunkGetVector($this->dataChunk, $columnIndex),
             $rows ?? $this->rowCount()
         );
     }

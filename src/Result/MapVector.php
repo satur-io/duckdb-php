@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Result;
 
-use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB;
+use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 
 class MapVector implements NestedTypeVector
 {
@@ -13,7 +13,7 @@ class MapVector implements NestedTypeVector
 
     public function __construct(
         private readonly DuckDB $ffi,
-        private readonly CDataInterface $vector,
+        private readonly NativeCData $vector,
         private readonly int $rows,
     ) {
         $this->list = new ListVector(

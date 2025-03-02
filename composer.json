@@ -6,10 +6,15 @@
     "autoload": {
         "psr-4": {
             "Saturio\\DuckDB\\": "src/"
-        }
+        },
+        "files": [ "aliases.php" ]
     },
     "autoload-dev": {
-        "psr-4": { "Unit\\Helper\\": "test/Unit/Helper" }
+        "psr-4": {
+            "Unit\\Helper\\": "test/Unit/Helper",
+            "Unit\\Abstract\\": "test/Unit/Abstract",
+            "Integration\\Helper\\": "test/Integration/Helper"
+        }
     },
     "authors": [
         {

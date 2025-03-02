@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Saturio\DuckDB\DB;
 
 use Saturio\DuckDB\Exception\ConnectionException;
-use Saturio\DuckDB\FFI\CDataInterface;
 use Saturio\DuckDB\FFI\DuckDB;
+use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 
 class DB
 {
-    public CDataInterface $db;
+    public NativeCData $db;
 
     /**
      * @throws ConnectionException
