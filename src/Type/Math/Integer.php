@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type\Math;
 
-class Integer
+class Integer implements \Stringable
 {
     private function __construct(
         private readonly string $integerString,
@@ -14,5 +14,10 @@ class Integer
     public static function fromString(string $integerString): self
     {
         return new self($integerString);
+    }
+
+    public function __toString(): string
+    {
+        return $this->integerString;
     }
 }

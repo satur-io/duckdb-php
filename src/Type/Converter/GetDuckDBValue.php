@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Saturio\DuckDB\Type\Converter;
 
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
-use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
+use Saturio\DuckDB\Type\Math\Integer;
+use Saturio\DuckDB\Type\Math\Integer as BigInteger;
 use Saturio\DuckDB\Type\Time;
 use Saturio\DuckDB\Type\Timestamp;
 use Saturio\DuckDB\Type\Type;
@@ -19,10 +20,10 @@ trait GetDuckDBValue
     /**
      * @throws UnsupportedTypeException
      */
-    public static function getDuckDBValue(
-        string|bool|int|float|Date|Time|Timestamp|Interval $value, FFIDuckDB $ffi, ?Type $type = null,
+    public function getDuckDBValue(
+        string|bool|int|float|Date|Time|Timestamp|Interval|BigInteger $value, ?Type $type = null,
     ): NativeCData {
-        $type = $type ?? self::getInferredType($value);
+        $type = $type ?? $this->getInferredType($value);
 
         return match ($type) {
             Type::DUCKDB_TYPE_VARCHAR,
@@ -36,11 +37,13 @@ trait GetDuckDBValue
             Type::DUCKDB_TYPE_BIGINT,
             Type::DUCKDB_TYPE_UBIGINT,
             Type::DUCKDB_TYPE_FLOAT,
-            Type::DUCKDB_TYPE_DOUBLE => self::createFromScalar($value, $type, $ffi),
-            Type::DUCKDB_TYPE_DATE => self::createFromDate($value, $ffi),
-            Type::DUCKDB_TYPE_TIME => self::createFromTime($value, $ffi),
-            Type::DUCKDB_TYPE_TIMESTAMP => self::createFromTimestamp($value, $ffi),
-            Type::DUCKDB_TYPE_INTERVAL => self::createFromInterval($value, $ffi),
+            Type::DUCKDB_TYPE_DOUBLE => $this->createFromScalar($value, $type),
+            Type::DUCKDB_TYPE_DATE => $this->createFromDate($value),
+            Type::DUCKDB_TYPE_TIME => $this->createFromTime($value),
+            Type::DUCKDB_TYPE_TIMESTAMP => $this->createFromTimestamp($value),
+            Type::DUCKDB_TYPE_INTERVAL => $this->createFromInterval($value),
+            Type::DUCKDB_TYPE_HUGEINT => $this->createFromHugeInt($value, false),
+            Type::DUCKDB_TYPE_UHUGEINT => $this->createFromUhugeInt($value),
             default => throw new UnsupportedTypeException("Unsupported type: {$type->name}"),
         };
     }
@@ -48,7 +51,7 @@ trait GetDuckDBValue
     /**
      * @throws UnsupportedTypeException
      */
-    private static function getInferredType(string|bool|int|float|Date|Time|Timestamp $value): Type
+    private function getInferredType(string|bool|int|float|Date|Time|Timestamp $value): Type
     {
         if (is_bool($value)) {
             return Type::DUCKDB_TYPE_BOOLEAN;
@@ -70,56 +73,85 @@ trait GetDuckDBValue
         throw new UnsupportedTypeException("Couldn't get inferred type: {$type}");
     }
 
-    private static function createFromScalar(
-        string|bool|int|float $value, Type $type, FFIDuckDB $ffi,
+    private function createFromScalar(
+        string|bool|int|float $value, Type $type,
     ): NativeCData {
         $ffiFunction = 'create'.ucfirst(TypeC::{$type->name}->value);
 
-        return $ffi->{$ffiFunction}($value);
+        return $this->ffi->{$ffiFunction}($value);
     }
 
-    private static function createFromDate(
-        Date $date, FFIDuckDB $ffi): NativeCData
+    private function createFromDate(Date $date): NativeCData
     {
-        $dateStruct = self::getDateStruct($ffi, $date);
+        $dateStruct = $this->getDateStruct($date);
 
-        return $ffi->createDate($ffi->toDate($dateStruct));
+        return $this->ffi->createDate($this->ffi->toDate($dateStruct));
     }
 
-    private static function createFromTime(
-        Time $time, FFIDuckDB $ffi): NativeCData
+    private function createFromTime(Time $time): NativeCData
     {
-        $timeStruct = self::getTimeStruct($ffi, $time);
+        $timeStruct = $this->getTimeStruct($time);
 
-        return $ffi->createTime($ffi->toTime($timeStruct));
+        return $this->ffi->createTime($this->ffi->toTime($timeStruct));
     }
 
-    private static function createFromTimestamp(
-        Timestamp $timestamp, FFIDuckDB $ffi): NativeCData
+    private function createFromTimestamp(Timestamp $timestamp): NativeCData
     {
-        $timestampStruct = $ffi->new('duckdb_timestamp_struct');
+        $timestampStruct = $this->ffi->new('duckdb_timestamp_struct');
 
-        $timestampStruct->date = self::getDateStruct($ffi, $timestamp->getDate());
-        $timestampStruct->time = self::getTimeStruct($ffi, $timestamp->getTime());
+        $timestampStruct->date = $this->getDateStruct($timestamp->getDate());
+        $timestampStruct->time = $this->getTimeStruct($timestamp->getTime());
 
-        return $ffi->createTimestamp($ffi->toTimestamp($timestampStruct));
+        return $this->ffi->createTimestamp($this->ffi->toTimestamp($timestampStruct));
     }
 
-    private static function createFromInterval(
-        Interval $interval, FFIDuckDB $ffi): NativeCData
+    private function createFromInterval(Interval $interval): NativeCData
     {
-        $intervalStruct = $ffi->new('duckdb_interval');
+        $intervalStruct = $this->ffi->new('duckdb_interval');
 
         $intervalStruct->months = $interval->getMonths();
         $intervalStruct->days = $interval->getDays();
         $intervalStruct->micros = $interval->getMicroseconds();
 
-        return $ffi->createInterval($intervalStruct);
+        return $this->ffi->createInterval($intervalStruct);
     }
 
-    public static function getTimeStruct(FFIDuckDB $ffi, Time $time): ?NativeCData
+    private function createFromHugeInt(string|int|BigInteger $integer): NativeCData
     {
-        $timeStruct = $ffi->new('duckdb_time_struct');
+        $hugeint = $this->ffi->new('duckdb_hugeint');
+
+        $divmod = $this->math->divmod((string) $integer, $this->math->pow('2', '64'));
+
+        $hugeint->lower = (string) $this->createUBigInt($divmod[1]);
+        $hugeint->upper = $divmod[0];
+
+        return $this->ffi->createHugeint($hugeint);
+    }
+
+    public function createFromUhugeInt(string|int|BigInteger $integer): NativeCData
+    {
+        $uhugeint = $this->ffi->new('duckdb_uhugeint');
+
+        $divmod = $this->math->divmod((string) $integer, $this->math->pow('2', '64'));
+
+        $uhugeint->lower = (string) $this->createUBigInt($divmod[1]);
+        $uhugeint->upper = (string) $this->createUBigInt($divmod[0]);
+
+        return $this->ffi->createUhugeint($uhugeint);
+    }
+
+    private function createUBigInt(string|int|BigInteger $integer): BigInteger
+    {
+        if ($this->math->comp((string) $integer, (string) PHP_INT_MAX) <= 0) { // Less than 2^63 - 1
+            return Integer::fromString((string) $integer);
+        }
+
+        return Integer::fromString($this->math->sub((string) $integer, self::PRECOMPUTED_2_POW_64));
+    }
+
+    public function getTimeStruct(Time $time): ?NativeCData
+    {
+        $timeStruct = $this->ffi->new('duckdb_time_struct');
 
         $timeStruct->hour = $time->getHours();
         $timeStruct->min = $time->getMinutes();
@@ -129,9 +161,9 @@ trait GetDuckDBValue
         return $timeStruct;
     }
 
-    public static function getDateStruct(FFIDuckDB $ffi, Date $date): ?NativeCData
+    public function getDateStruct(Date $date): ?NativeCData
     {
-        $dateStruct = $ffi->new('duckdb_date_struct');
+        $dateStruct = $this->ffi->new('duckdb_date_struct');
 
         $dateStruct->year = $date->getYear();
         $dateStruct->month = $date->getMonth();

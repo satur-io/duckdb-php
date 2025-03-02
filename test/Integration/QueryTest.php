@@ -114,8 +114,8 @@ class QueryTest extends TestCase
     #[Group('numerics')]
     public function testUHugeInt(): void
     {
-        $expectedValue = ['170141183460469231731687303715884105728'];
-        $result = $this->db->query('SELECT (2^127 - 1)::UHUGEINT as highest_allowed_number;');
+        $expectedValue = ['340282366920938463463374607431768211455'];
+        $result = $this->db->query('SELECT 340282366920938463463374607431768211455::UHUGEINT as highest_allowed_number;');
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValue, $row);
@@ -124,10 +124,43 @@ class QueryTest extends TestCase
     #[Group('primitives')]
     #[Group('integers')]
     #[Group('numerics')]
+    public function testUHugeIntMid(): void
+    {
+        $expectedValue = ['200282366920938463463374607431768211455'];
+        $result = $this->db->query('SELECT 200282366920938463463374607431768211455::UHUGEINT as highest_allowed_number;');
+        $row = $result->rows()->current();
+
+        $result = $this->db->query('SELECT 170141183460469231731687303715884105727::UHUGEINT as highest_allowed_number;');
+        $row = $result->rows()->current();
+        $result = $this->db->query('SELECT 170141183460469231731687303715884105728::UHUGEINT as highest_allowed_number;');
+        $row = $result->rows()->current();
+        $result = $this->db->query('SELECT 340282366920938463463374607431768211455::UHUGEINT as highest_allowed_number;');
+        $row = $result->rows()->current();
+        $result = $this->db->query('SELECT 200282366920938463463374607431768211455::UHUGEINT as highest_allowed_number;');
+        $row = $result->rows()->current();
+
+        $this->assertEquals($expectedValue, $row);
+    }
+
+    #[Group('primitives')]
+    #[Group('integers')]
+    #[Group('numerics')]
     public function testHugeInt(): void
     {
-        $expectedValue = ['85070591730234615865843651857942052864'];
-        $result = $this->db->query('SELECT (2^126 - 1)::HUGEINT as highest_allowed_number;');
+        $expectedValue = ['170141183460469231731687303715884105727'];
+        $result = $this->db->query('SELECT 170141183460469231731687303715884105727::HUGEINT as highest_allowed_number;');
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValue, $row);
+    }
+
+    #[Group('primitives')]
+    #[Group('integers')]
+    #[Group('numerics')]
+    public function testHugeIntNegative(): void
+    {
+        $expectedValue = ['-170141183460469231731687303715884105727'];
+        $result = $this->db->query('SELECT -170141183460469231731687303715884105727::HUGEINT as highest_allowed_number;');
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValue, $row);

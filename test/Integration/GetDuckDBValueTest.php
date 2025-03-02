@@ -14,15 +14,17 @@ class GetDuckDBValueTest extends TestCase
 {
     use IntegrationTestTrait;
     private FFIDuckDB $ffi;
+    private TypeConverter $converter;
 
     protected function setUp(): void
     {
         $this->ffi = new FFIDuckDB();
+        $this->converter = new TypeConverter($this->ffi);
     }
 
     public function testInferredBool()
     {
-        $duckDBValue = TypeConverter::getDuckDBValue(true, $this->ffi);
+        $duckDBValue = $this->converter->getDuckDBValue(true);
         self::assertEquals(
             Type::DUCKDB_TYPE_BOOLEAN,
             Type::from($this->ffi->getTypeId($this->ffi->getValueType($duckDBValue)))
@@ -31,7 +33,7 @@ class GetDuckDBValueTest extends TestCase
 
     public function testInferredInt()
     {
-        $duckDBValue = TypeConverter::getDuckDBValue(12, $this->ffi);
+        $duckDBValue = $this->converter->getDuckDBValue(12);
         self::assertEquals(
             Type::DUCKDB_TYPE_INTEGER,
             Type::from($this->ffi->getTypeId($this->ffi->getValueType($duckDBValue)))

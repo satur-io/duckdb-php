@@ -11,6 +11,7 @@ use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Converter\NumericConverter;
 use Saturio\DuckDB\Type\Converter\TypeConverter;
+use Saturio\DuckDB\Type\Math\MathLib;
 use Saturio\DuckDB\Type\Type;
 use Saturio\DuckDB\Type\TypeC;
 
@@ -63,7 +64,7 @@ class Vector
         if (TypeC::DUCKDB_TYPE_DECIMAL === $this->type) {
             $this->numericConverter = new NumericConverter($this->ffi);
         } else {
-            $this->typeConverter = new TypeConverter($this->ffi);
+            $this->typeConverter = new TypeConverter($this->ffi, MathLib::create());
         }
     }
 
@@ -147,8 +148,9 @@ class Vector
             TypeC::DUCKDB_TYPE_TIMESTAMP_NS => $this->typeConverter->getTimestampFromDuckDBTimestampNs($this->currentValue),
             TypeC::DUCKDB_TYPE_TIMESTAMP_TZ => $this->typeConverter->getTimestampFromDuckDBTimestampTz($this->currentValue),
             TypeC::DUCKDB_TYPE_INTERVAL => $this->typeConverter->getIntervalFromDuckDBInterval($this->currentValue),
-            TypeC::DUCKDB_TYPE_UBIGINT => $this->typeConverter->getUBigIntFromDuckDBUBigInt($data),
-            TypeC::DUCKDB_TYPE_HUGEINT, TypeC::DUCKDB_TYPE_UHUGEINT => $this->typeConverter->getHugeIntFromDuckDBHugeInt($this->currentValue),
+            TypeC::DUCKDB_TYPE_UBIGINT => $this->typeConverter->getBigIntFromDuckDBBigInt($data, true),
+            TypeC::DUCKDB_TYPE_HUGEINT => $this->typeConverter->getHugeIntFromDuckDBHugeInt($this->currentValue, unsigned: false),
+            TypeC::DUCKDB_TYPE_UHUGEINT => $this->typeConverter->getHugeIntFromDuckDBHugeInt($this->currentValue, unsigned: true),
             TypeC::DUCKDB_TYPE_UUID => $this->typeConverter->getUUIDFromDuckDBHugeInt($this->currentValue),
             TypeC::DUCKDB_TYPE_ENUM => $this->typeConverter->getStringFromEnum($this->logicalType, $data),
             TypeC::DUCKDB_TYPE_BIT => throw new UnsupportedTypeException('Type BIT/BITSTRING is not supported by duckdb-php yet'), // @todo - Check why does not work $this->typeConverter->getBitDuckDBBit($this->currentValue),

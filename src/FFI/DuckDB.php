@@ -359,6 +359,16 @@ class DuckDB
         return self::$ffi->duckdb_create_interval($interval);
     }
 
+    public function createHugeint(NativeCData $hugeint): NativeCData
+    {
+        return self::$ffi->duckdb_create_hugeint($hugeint);
+    }
+
+    public function createUhugeint(?NativeCData $uhugeint): NativeCData
+    {
+        return self::$ffi->duckdb_create_uhugeint($uhugeint);
+    }
+
     public function getValueType(NativeCData $value): NativeCData
     {
         return self::$ffi->duckdb_get_value_type($value);

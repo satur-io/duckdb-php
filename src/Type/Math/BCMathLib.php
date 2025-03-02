@@ -40,4 +40,14 @@ class BCMathLib implements MathLibInterface
     {
         return bcdiv($x, $y);
     }
+
+    public function divmod(string $x, string $y): array
+    {
+        return bcdivmod($x, $y);
+    }
+
+    public function comp(string $x, string $y): int
+    {
+        return bccomp($x, $y);
+    }
 }

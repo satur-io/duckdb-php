@@ -11,7 +11,6 @@ use Saturio\DuckDB\Native\FFI as NativeFFI;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
-use Saturio\DuckDB\Type\Math\MathLib;
 use Saturio\DuckDB\Type\Math\MathLibInterface;
 use Saturio\DuckDB\Type\Time;
 use Saturio\DuckDB\Type\TimePrecision;
@@ -21,12 +20,12 @@ use Saturio\DuckDB\Type\UUID;
 class TypeConverter
 {
     use GetDuckDBValue;
-
-    private static MathLibInterface $math;
+    private const PRECOMPUTED_2_POW_64 = '18446744073709551616';
     private static NativeCData $decimal;
 
     public function __construct(
         private readonly FFIDuckDB $ffi,
+        private readonly ?MathLibInterface $math = null,
     ) {
     }
 
@@ -63,7 +62,7 @@ class TypeConverter
     {
         $dateStruct = $this->ffi->fromDate($date);
 
-        return self::getDate($dateStruct);
+        return $this->getDate($dateStruct);
     }
 
     /**
@@ -73,7 +72,7 @@ class TypeConverter
     {
         $timeStruct = $this->ffi->fromTime($time);
 
-        return self::getTime($timeStruct);
+        return $this->getTime($timeStruct);
     }
 
     /**
@@ -83,7 +82,7 @@ class TypeConverter
     {
         $timeStruct = $this->ffi->fromTimeTz($time);
 
-        $time = self::getTime($timeStruct->time, true);
+        $time = $this->getTime($timeStruct->time, true);
 
         return $time->setOffset($timeStruct->offset);
     }
@@ -96,8 +95,8 @@ class TypeConverter
         $timestampStruct = $this->ffi->fromTimestamp($timestamp);
 
         return new Timestamp(
-            self::getDate($timestampStruct->date),
-            self::getTime($timestampStruct->time),
+            $this->getDate($timestampStruct->date),
+            $this->getTime($timestampStruct->time),
         );
     }
 
@@ -148,8 +147,8 @@ class TypeConverter
         $timestampStruct = $this->ffi->fromTimestamp($timestamp);
 
         return new Timestamp(
-            self::getDate($timestampStruct->date),
-            self::getTime($timestampStruct->time, isTimezoned: true),
+            $this->getDate($timestampStruct->date),
+            $this->getTime($timestampStruct->time, isTimezoned: true),
         );
     }
 
@@ -184,24 +183,26 @@ class TypeConverter
     /**
      * @throws BigNumbersNotSupportedException
      */
-    public function getUBigIntFromDuckDBUBigInt(int $data): int|string
+    public function getBigIntFromDuckDBBigInt(int $data, bool $unsigned): int|string
     {
-        if ($data >= 0) {
+        $this->checkMath();
+        if (!$unsigned || $data >= 0) {
             return $data;
         }
 
-        return self::getMath()->add((string) PHP_INT_MAX, self::getMath()->add((string) PHP_INT_MAX, (string) ($data + 2)));
+        return $this->math->add((string) $data, self::PRECOMPUTED_2_POW_64);
     }
 
     /**
      * @throws BigNumbersNotSupportedException
      */
-    public function getHugeIntFromDuckDBHugeInt(NativeCData $data): int|string
+    public function getHugeIntFromDuckDBHugeInt(NativeCData $data, bool $unsigned): int|string
     {
-        $lower = self::getUBigIntFromDuckDBUBigInt($data->lower);
-        $upper = self::getUBigIntFromDuckDBUBigInt($data->upper);
+        $this->checkMath();
+        $lower = $this->getBigIntFromDuckDBBigInt($data->lower, true);
+        $upper = $this->getBigIntFromDuckDBBigInt($data->upper, $unsigned);
 
-        return self::getMath()->add(self::getMath()->mul((string) $upper, self::getMath()->pow('2', '64')), (string) $lower);
+        return $this->math->add($this->math->mul((string) $upper, $this->math->pow('2', '64')), (string) $lower);
     }
 
     /**
@@ -209,9 +210,10 @@ class TypeConverter
      */
     public function getUUIDFromDuckDBHugeInt(NativeCData $data): UUID
     {
-        $hugeint = self::getHugeIntFromDuckDBHugeInt($data);
+        $this->checkMath();
+        $hugeint = $this->getHugeIntFromDuckDBHugeInt($data, unsigned: true);
 
-        return UUID::fromHugeint($hugeint, self::getMath());
+        return UUID::fromHugeint($hugeint, $this->math);
     }
 
     public function getBitDuckDBBit(?NativeCData $data): string
@@ -228,20 +230,18 @@ class TypeConverter
         return $this->ffi->getVarchar($value);
     }
 
-    /**
-     * @throws BigNumbersNotSupportedException
-     */
-    public function getMath(): MathLibInterface
-    {
-        if (empty(self::$math)) {
-            self::$math = new MathLib();
-        }
-
-        return self::$math;
-    }
-
     public function getStringFromEnum(NativeCData $logicalType, int $entry): string
     {
         return $this->ffi->enumDictionaryValue($logicalType, $entry);
+    }
+
+    /**
+     * @throws BigNumbersNotSupportedException
+     */
+    private function checkMath(): void
+    {
+        if (!isset($this->math)) {
+            throw new BigNumbersNotSupportedException('You are trying to read a number greater than PHP_INT_MAX or a  UUID, but bcmath extension is not available.');
+        }
     }
 }

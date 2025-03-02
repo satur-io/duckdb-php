@@ -11,17 +11,20 @@ use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Result\ResultSet;
 use Saturio\DuckDB\Type\Converter\TypeConverter;
+use Saturio\DuckDB\Type\Math\MathLib;
 use Saturio\DuckDB\Type\Type;
 
 class PreparedStatement
 {
     private NativeCData $preparedStatement;
+    private TypeConverter $converter;
 
     private function __construct(
         private readonly FFIDuckDB $ffi,
         private readonly NativeCData $connection,
         private readonly string $query,
     ) {
+        $this->converter = new TypeConverter($this->ffi, MathLib::create());
     }
 
     public static function create(
@@ -48,7 +51,7 @@ class PreparedStatement
         if ($this->ffi->bindValue(
             $this->preparedStatement,
             $parameter,
-            TypeConverter::getDuckDBValue($value, $this->ffi, $type)
+            $this->converter->getDuckDBValue($value, $type)
         ) === $this->ffi->error()) {
             $error = $this->ffi->prepareError($this->preparedStatement);
             throw new BindValueException("Couldn't bind parameter {$parameter} to prepared statement {$this->query}. Error: {$error}");

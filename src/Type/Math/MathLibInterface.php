@@ -18,5 +18,9 @@ interface MathLibInterface
 
     public function div(string $x, string $y): string;
 
+    public function divmod(string $x, string $y): array;
+
+    public function comp(string $x, string $y): int;
+
     public static function available(): bool;
 }

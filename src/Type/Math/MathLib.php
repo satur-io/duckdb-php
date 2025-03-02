@@ -13,13 +13,23 @@ class MathLib implements MathLibInterface
     /**
      * @throws BigNumbersNotSupportedException
      */
-    public function __construct()
+    private function __construct()
     {
         if (BCMathLib::available()) {
             $this->math = new BCMathLib();
-        } else {
-            throw new BigNumbersNotSupportedException('You are trying to read a number greater than PHP_INT_MAX, but bcmath extension is not available.');
         }
+    }
+
+    public static function create(): ?self
+    {
+        if (BCMathLib::available()) {
+            $math = new self();
+            $math->math = new BCMathLib();
+
+            return $math;
+        }
+
+        return null;
     }
 
     public function add(string $x, string $y): string
@@ -50,6 +60,16 @@ class MathLib implements MathLibInterface
     public function div(string $x, string $y): string
     {
         return $this->math->div($x, $y);
+    }
+
+    public function divmod(string $x, string $y): array
+    {
+        return $this->math->divmod($x, $y);
+    }
+
+    public function comp(string $x, string $y): int
+    {
+        return $this->math->comp($x, $y);
     }
 
     public static function available(): bool

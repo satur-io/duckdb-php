@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
+use Saturio\DuckDB\Type\Math\Integer;
 use Saturio\DuckDB\Type\Time;
 use Saturio\DuckDB\Type\Timestamp;
 use Saturio\DuckDB\Type\Type;
@@ -48,8 +49,14 @@ class CastedPreparedStatementTest extends TestCase
 
     private function createTableAndInsert(string $tableName, string $type, ...$values): void
     {
+        $formatValue = fn ($v) => match (true) {
+            is_a($v, Integer::class) => "($v)",
+            is_string($v), is_object($v) => "('$v')",
+            is_null($v) => '(null)',
+            default => "($v)",
+        };
         $this->db->query("CREATE TABLE '{$tableName}' (x {$type});");
-        $values = implode(', ', array_map(fn (mixed $v) => is_string($v) || is_object($v) ? "('$v')" : (is_null($v) ? '(null)' : "($v)"), $values));
+        $values = implode(', ', array_map($formatValue, $values));
         $this->db->query("INSERT INTO '{$tableName}' VALUES $values;");
     }
 
@@ -72,34 +79,45 @@ class CastedPreparedStatementTest extends TestCase
         $intervalInsert = [clone $intervalSearch, null, clone $intervalSearch, new Interval(10, 1, 2)];
 
         return [
-            [Type::DUCKDB_TYPE_TIMESTAMP, 'TIMESTAMP', $timestampSearch, $timestampResult, $timestampInsert],
-            [Type::DUCKDB_TYPE_DATE, 'DATE', $dateSearch, $dateResult, $dateInsert],
-            [Type::DUCKDB_TYPE_TIME, 'TIME', $timeSearch, $timeResult, $timeInsert],
-            [Type::DUCKDB_TYPE_INTERVAL, 'INTERVAL', $intervalSearch, $intervalResult, $intervalInsert],
+            'Timestamp' => [Type::DUCKDB_TYPE_TIMESTAMP, 'TIMESTAMP', $timestampSearch, $timestampResult, $timestampInsert],
+            'Date' => [Type::DUCKDB_TYPE_DATE, 'DATE', $dateSearch, $dateResult, $dateInsert],
+            'Time' => [Type::DUCKDB_TYPE_TIME, 'TIME', $timeSearch, $timeResult, $timeInsert],
+            'Interval' => [Type::DUCKDB_TYPE_INTERVAL, 'INTERVAL', $intervalSearch, $intervalResult, $intervalInsert],
         ];
     }
 
     public static function numericsProvider(): array
     {
+        $hugeint = Integer::fromString('1701411834604692317316873037');
+        $otherHugeint = Integer::fromString('1701411834604692317316873038');
+
+        $uhugeint = Integer::fromString('170141183460469231731687303715884105728');
+        $otherUhugeint = Integer::fromString('170141183460469231731687303715884105');
+
+        $uhugeint = Integer::fromString('1701411834604692317316873037');
+        $otherUhugeint = Integer::fromString('1701411834604692317316873038');
+
         return [
-            [Type::DUCKDB_TYPE_TINYINT, 'TINYINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
-            [Type::DUCKDB_TYPE_SMALLINT, 'SMALLINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
-            [Type::DUCKDB_TYPE_INTEGER, 'INTEGER', 3, [[3], [3]], [3, 5, 6, 3, null]],
-            [Type::DUCKDB_TYPE_BIGINT, 'BIGINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
-            [Type::DUCKDB_TYPE_UTINYINT, 'UTINYINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
-            [Type::DUCKDB_TYPE_USMALLINT, 'USMALLINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
-            [Type::DUCKDB_TYPE_UINTEGER, 'UINTEGER', 3, [[3], [3]], [3, 5, 6, 3, null]],
-            [Type::DUCKDB_TYPE_UBIGINT, 'UBIGINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
-            [Type::DUCKDB_TYPE_UBIGINT, 'UBIGINT', '3', [[3], [3]], [3, 5, 6, 3, null]],
-            [Type::DUCKDB_TYPE_FLOAT, 'FLOAT', 3.0, [[3.0], [3.0]], [3, 5, 6, 3, null]],
-            [Type::DUCKDB_TYPE_DOUBLE, 'DOUBLE', 3.0, [[3.0], [3.0]], [3, 5, 6, 3, null]],
+            'TINYINT' => [Type::DUCKDB_TYPE_TINYINT, 'TINYINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            'SMALLINT' => [Type::DUCKDB_TYPE_SMALLINT, 'SMALLINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            'INTEGER' => [Type::DUCKDB_TYPE_INTEGER, 'INTEGER', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            'BIGINT' => [Type::DUCKDB_TYPE_BIGINT, 'BIGINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            'UTINYINT' => [Type::DUCKDB_TYPE_UTINYINT, 'UTINYINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            'USMALL' => [Type::DUCKDB_TYPE_USMALLINT, 'USMALLINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            'UINTEGER' => [Type::DUCKDB_TYPE_UINTEGER, 'UINTEGER', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            'UBIGINT' => [Type::DUCKDB_TYPE_UBIGINT, 'UBIGINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
+            'UBIGINT as string' => [Type::DUCKDB_TYPE_UBIGINT, 'UBIGINT', '3', [[3], [3]], [3, 5, 6, 3, null]],
+            'FLOAT' => [Type::DUCKDB_TYPE_FLOAT, 'FLOAT', 3.0, [[3.0], [3.0]], [3, 5, 6, 3, null]],
+            'DOUBLE' => [Type::DUCKDB_TYPE_DOUBLE, 'DOUBLE', 3.0, [[3.0], [3.0]], [3, 5, 6, 3, null]],
+            'HUGEINT' => [Type::DUCKDB_TYPE_HUGEINT, 'HUGEINT', $hugeint, [[$hugeint], [$hugeint]], [$hugeint, $otherHugeint, $otherHugeint, $hugeint, null]],
+            'UHUGEINT' => [Type::DUCKDB_TYPE_UHUGEINT, 'UHUGEINT', $uhugeint, [[$uhugeint], [$uhugeint]], [$uhugeint, $otherUhugeint, $otherUhugeint, $uhugeint, null]],
         ];
     }
 
     public static function varcharProvider(): array
     {
         return [
-            [Type::DUCKDB_TYPE_VARCHAR, 'VARCHAR', 'quack', [['quack'], ['quack']], ['quack', 'quick', 'quick', 'quack', null]],
+            'VARCHAR' => [Type::DUCKDB_TYPE_VARCHAR, 'VARCHAR', 'quack', [['quack'], ['quack']], ['quack', 'quick', 'quick', 'quack', null]],
         ];
     }
 }
