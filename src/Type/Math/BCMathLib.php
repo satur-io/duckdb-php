@@ -43,6 +43,12 @@ class BCMathLib implements MathLibInterface
 
     public function divmod(string $x, string $y): array
     {
+        if (PHP_VERSION_ID < 804000) {
+            return [
+                bcdiv($x, $y),
+                bcmod($x, $y),
+            ];
+        }
         return bcdivmod($x, $y);
     }
 
