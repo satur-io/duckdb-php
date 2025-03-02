@@ -25,7 +25,6 @@ class AllTypesTest extends TestCase
         $exclude = [
             'varint',
             'timestamptz_array',
-            'varchar_array',
             'timestamp_array',
             'bit',
         ];

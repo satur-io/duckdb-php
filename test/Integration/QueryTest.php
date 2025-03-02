@@ -471,6 +471,39 @@ class QueryTest extends TestCase
 
     #[Group('primitives')]
     #[Group('string')]
+    public function testLongString(): void
+    {
+        $expectedValue = ['quack quack quack quack quack quack quack quack quack quack'];
+        $result = $this->db->query("SELECT 'quack quack quack quack quack quack quack quack quack quack' as my_column;");
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValue, $row);
+    }
+
+    #[Group('primitives')]
+    #[Group('string')]
+    public function testVarcharEmojis(): void
+    {
+        $expectedValue = ['🦆🦆🦆🦆'];
+        $result = $this->db->query("SELECT '🦆🦆🦆🦆'::VARCHAR as my_column;");
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValue, $row);
+    }
+
+    #[Group('primitives')]
+    #[Group('nested')]
+    public function testVarcharArray(): void
+    {
+        $expectedValue = [['🦆🦆🦆🦆🦆🦆', 'goose', null, '']];
+        $result = $this->db->query("SELECT ['🦆🦆🦆🦆🦆🦆', 'goose', null, '']::VARCHAR[] as my_column;");
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValue, $row);
+    }
+
+    #[Group('primitives')]
+    #[Group('string')]
     public function testMultipleStringSelect(): void
     {
         $expectedValues = [
