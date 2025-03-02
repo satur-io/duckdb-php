@@ -26,6 +26,7 @@ class CastedPreparedStatementTest extends TestCase
 
     #[DataProvider('numericsProvider')]
     #[DataProvider('timeProvider')]
+    #[DataProvider('varcharProvider')]
     public function testCastedPreparedStatement(Type $type, string $sqlType, mixed $searchValue, array $expectedResult, $values): void
     {
         $this->testType($type, $sqlType, $searchValue, $expectedResult, ...$values);
@@ -92,6 +93,13 @@ class CastedPreparedStatementTest extends TestCase
             [Type::DUCKDB_TYPE_UBIGINT, 'UBIGINT', '3', [[3], [3]], [3, 5, 6, 3, null]],
             [Type::DUCKDB_TYPE_FLOAT, 'FLOAT', 3.0, [[3.0], [3.0]], [3, 5, 6, 3, null]],
             [Type::DUCKDB_TYPE_DOUBLE, 'DOUBLE', 3.0, [[3.0], [3.0]], [3, 5, 6, 3, null]],
+        ];
+    }
+
+    public static function varcharProvider(): array
+    {
+        return [
+            [Type::DUCKDB_TYPE_VARCHAR, 'VARCHAR', 'quack', [['quack'], ['quack']], ['quack', 'quick', 'quick', 'quack', null]],
         ];
     }
 }
