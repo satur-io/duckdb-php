@@ -106,9 +106,6 @@ class CastedPreparedStatementTest extends TestCase
         $uhugeint = Integer::fromString('170141183460469231731687303715884105728');
         $otherUhugeint = Integer::fromString('170141183460469231731687303715884105');
 
-        $uhugeint = Integer::fromString('1701411834604692317316873037');
-        $otherUhugeint = Integer::fromString('1701411834604692317316873038');
-
         return [
             'TINYINT' => [Type::DUCKDB_TYPE_TINYINT, 'TINYINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
             'SMALLINT' => [Type::DUCKDB_TYPE_SMALLINT, 'SMALLINT', 3, [[3], [3]], [3, 5, 6, 3, null]],
