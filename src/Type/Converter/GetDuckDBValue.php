@@ -22,7 +22,7 @@ trait GetDuckDBValue
      * @throws UnsupportedTypeException
      */
     public function getDuckDBValue(
-        string|bool|int|float|Date|Time|Timestamp|Interval|BigInteger $value, ?Type $type = null,
+        string|bool|int|float|Date|Time|Timestamp|Interval|BigInteger|UUID $value, ?Type $type = null,
     ): NativeCData {
         $type = $type ?? $this->getInferredType($value);
 
@@ -55,7 +55,7 @@ trait GetDuckDBValue
     /**
      * @throws UnsupportedTypeException
      */
-    private function getInferredType(string|bool|int|float|Date|Time|Timestamp $value): Type
+    private function getInferredType(string|bool|int|float|Date|Time|Timestamp|UUID $value): Type
     {
         if (is_bool($value)) {
             return Type::DUCKDB_TYPE_BOOLEAN;
@@ -71,6 +71,8 @@ trait GetDuckDBValue
             return Type::DUCKDB_TYPE_TIME;
         } elseif (is_a($value, Timestamp::class)) {
             return Type::DUCKDB_TYPE_TIMESTAMP;
+        } elseif (is_a($value, UUID::class)) {
+            return Type::DUCKDB_TYPE_UUID;
         }
 
         $type = gettype($value);
@@ -139,9 +141,10 @@ trait GetDuckDBValue
         return $this->ffi->createUhugeint($uhugeint);
     }
 
-    public function createFromUUID(string $value): NativeCData
+    public function createFromUUID(string|UUID $value): NativeCData
     {
-        $uhugeintString = (new UUID($value))->toInt($this->math);
+        $value = is_string($value) ? new UUID($value) : $value;
+        $uhugeintString = $value->toInt($this->math);
         $uhugeint = $this->getUHugeint($uhugeintString);
 
         return $this->ffi->createUUID($uhugeint);

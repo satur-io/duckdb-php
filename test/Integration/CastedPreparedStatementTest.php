@@ -14,6 +14,7 @@ use Saturio\DuckDB\Type\Math\Integer;
 use Saturio\DuckDB\Type\Time;
 use Saturio\DuckDB\Type\Timestamp;
 use Saturio\DuckDB\Type\Type;
+use Saturio\DuckDB\Type\UUID;
 
 class CastedPreparedStatementTest extends TestCase
 {
@@ -142,6 +143,7 @@ class CastedPreparedStatementTest extends TestCase
                 'UUID Min + 1' => '00000000-0000-0000-0000-000000000001',
                 'UUID Mid' => '7fffffff-ffff-ffff-ffff-ffffffffffff',
                 'UUID Mid + 1' => '80000000-0000-0000-0000-000000000000',
+                'An UUID object' => new UUID('bfdea094-0cd3-4168-aa81-c965d7d0d325'),
             ];
         $otherUuid = 'a8a83d6e-0603-4c4f-bdb7-fde9fd7785ab';
 
