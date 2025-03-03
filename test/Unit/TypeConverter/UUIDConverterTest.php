@@ -50,7 +50,7 @@ class UUIDConverterTest extends TestWithInterfaces
             );
 
         array_map(function ($uuidCase) {
-            $uHugeInt = $this->converter->createFromUUID($uuidCase[1]);
+            $uHugeInt = $this->converter->createFromUUID((string) $uuidCase[1]);
             self::assertEquals($uuidCase[0]->lower, $uHugeInt->pointerToUUID->lower);
             self::assertEquals($uuidCase['expectedUpperForUHugeInt'], $uHugeInt->pointerToUUID->upper);
         }, self::uuidProvider());
