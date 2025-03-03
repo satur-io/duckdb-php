@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type;
 
+use Saturio\DuckDB\Type\Math\Integer as BigInteger;
 use Saturio\DuckDB\Type\Math\MathLibInterface;
 
 class UUID
 {
+    public const string BASE = '170141183460469231731687303715884105728';
+    public const string PRECOMPUTED_2_POW_128 = '340282366920938463463374607431768211456';
+
     public function __construct(
         private readonly string $uuid,
     ) {
@@ -15,18 +19,10 @@ class UUID
 
     public static function fromHugeint(string $hugeint, MathLibInterface $math): self
     {
-        $base = '170141183460469231731687303715884105727';
         $hyphensPositions = [8, 13, 18, 23];
 
         $hexString = str_pad(
-            self::dechex(
-                $math->sub(
-                    $math->sub(
-                        $hugeint,
-                        $base
-                    ),
-                    '1'
-                ), $math
+            self::dechex($hugeint, $math
             ),
             32,
             '0',
@@ -34,8 +30,16 @@ class UUID
         );
 
         return new self(
-            array_reduce($hyphensPositions, function ($carry, $pos) { return self::addHyphen($carry, $pos); }, $hexString)
+            array_reduce($hyphensPositions, fn ($carry, $pos) => self::addHyphen($carry, $pos), $hexString)
         );
+    }
+
+    public function toInt(MathLibInterface $math): BigInteger
+    {
+        $hexString = str_replace('-', '', $this->uuid);
+        $hexdec = self::hexdec($hexString, $math);
+
+        return BigInteger::fromString($hexdec);
     }
 
     private static function dechex(string $dec, MathLibInterface $math): string
@@ -48,6 +52,20 @@ class UUID
         } else {
             return self::dechex($remain, $math).dechex((int) $last);
         }
+    }
+
+    private static function hexdec(string $hex, MathLibInterface $math): string
+    {
+        $dec = '0';
+        $length = strlen($hex);
+
+        for ($i = 0; $i < $length; ++$i) {
+            $char = $hex[$i];
+            $value = hexdec($char);
+            $dec = $math->add($math->mul($dec, '16'), (string) $value);
+        }
+
+        return $dec;
     }
 
     private static function addHyphen(string $string, int $pos): string

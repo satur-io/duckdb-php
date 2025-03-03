@@ -121,6 +121,17 @@ class QueryTest extends TestCase
         $this->assertEquals($expectedValue, $row);
     }
 
+    #[Group('integers')]
+    #[Group('numerics')]
+    public function testUHugeInt2(): void
+    {
+        $expectedValue = ['3446217245712155457173499895997437'];
+        $result = $this->db->query('SELECT 3446217245712155457173499895997437::UHUGEINT as highest_allowed_number;');
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValue, $row);
+    }
+
     #[Group('primitives')]
     #[Group('integers')]
     #[Group('numerics')]
@@ -465,9 +476,20 @@ class QueryTest extends TestCase
     #[Group('primitives')]
     public function testUUIDSelect(): void
     {
-        $expectedValues = [new UUID('0000a9e9-607c-4c8a-84f3-843f0191e3fd')];
+        $expectedValues = [new UUID('8000a9e9-607c-4c8a-84f3-843f0191e3fd')];
+        $result = $this->db->query("SELECT '8000a9e9-607c-4c8a-84f3-843f0191e3fd'::UUID;");
 
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row);
+
+        $expectedValues = [new UUID('0000a9e9-607c-4c8a-84f3-843f0191e3fd')];
         $result = $this->db->query("SELECT '0000a9e9-607c-4c8a-84f3-843f0191e3fd'::UUID;");
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row);
+
+        $expectedValues = [new UUID('d259392c-3f7a-46bf-9d09-692ae7582058')];
+        $result = $this->db->query("SELECT 'd259392c-3f7a-46bf-9d09-692ae7582058'::UUID;");
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValues, $row);

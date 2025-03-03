@@ -28,6 +28,7 @@ class CastedPreparedStatementTest extends TestCase
     #[DataProvider('numericsProvider')]
     #[DataProvider('timeProvider')]
     #[DataProvider('varcharProvider')]
+    #[DataProvider('uuidProvider')]
     public function testCastedPreparedStatement(Type $type, string $sqlType, mixed $searchValue, array $expectedResult, $values): void
     {
         $this->testType($type, $sqlType, $searchValue, $expectedResult, ...$values);
@@ -129,5 +130,26 @@ class CastedPreparedStatementTest extends TestCase
         return [
             'VARCHAR' => [Type::DUCKDB_TYPE_VARCHAR, 'VARCHAR', 'quack', [['quack'], ['quack']], ['quack', 'quick', 'quick', 'quack', null]],
         ];
+    }
+
+    public static function uuidProvider(): array
+    {
+        $uuids =
+            ['UUID' => '0000a9e9-607c-4c8a-84f3-843f0191e3fd',
+                'UUID Max' => 'ffffffff-ffff-ffff-ffff-ffffffffffff',
+                'UUID Max - 1' => 'ffffffff-ffff-ffff-ffff-fffffffffffe',
+                'UUID Min' => '00000000-0000-0000-0000-000000000000',
+                'UUID Min + 1' => '00000000-0000-0000-0000-000000000001',
+                'UUID Mid' => '7fffffff-ffff-ffff-ffff-ffffffffffff',
+                'UUID Mid + 1' => '80000000-0000-0000-0000-000000000000',
+            ];
+        $otherUuid = 'a8a83d6e-0603-4c4f-bdb7-fde9fd7785ab';
+
+        array_walk($uuids,
+            function (&$uuid) use ($otherUuid) {
+                $uuid = [Type::DUCKDB_TYPE_UUID, 'UUID', $uuid, [[$uuid], [$uuid]], [$uuid, $otherUuid, $otherUuid, $uuid, null]];
+            });
+
+        return $uuids;
     }
 }

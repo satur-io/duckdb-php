@@ -14,6 +14,7 @@ use Saturio\DuckDB\Type\Time;
 use Saturio\DuckDB\Type\Timestamp;
 use Saturio\DuckDB\Type\Type;
 use Saturio\DuckDB\Type\TypeC;
+use Saturio\DuckDB\Type\UUID;
 
 trait GetDuckDBValue
 {
@@ -46,6 +47,7 @@ trait GetDuckDBValue
             Type::DUCKDB_TYPE_INTERVAL => $this->createFromInterval($value),
             Type::DUCKDB_TYPE_HUGEINT => $this->createFromHugeInt($value),
             Type::DUCKDB_TYPE_UHUGEINT => $this->createFromUhugeInt($value),
+            Type::DUCKDB_TYPE_UUID => $this->createFromUUID($value),
             default => throw new UnsupportedTypeException("Unsupported type: {$type->name}"),
         };
     }
@@ -132,14 +134,17 @@ trait GetDuckDBValue
 
     public function createFromUhugeInt(string|int|BigInteger $integer): NativeCData
     {
-        $uhugeint = $this->ffi->new('duckdb_uhugeint');
-
-        $divmod = $this->math->divmod((string) $integer, $this->math->pow('2', '64'));
-
-        $uhugeint->lower = (string) $this->createUBigInt($divmod[1]);
-        $uhugeint->upper = (string) $this->createUBigInt($divmod[0]);
+        $uhugeint = $this->getUHugeint($integer);
 
         return $this->ffi->createUhugeint($uhugeint);
+    }
+
+    public function createFromUUID(string $value): NativeCData
+    {
+        $uhugeintString = (new UUID($value))->toInt($this->math);
+        $uhugeint = $this->getUHugeint($uhugeintString);
+
+        return $this->ffi->createUUID($uhugeint);
     }
 
     private function createUBigInt(string|int|BigInteger $integer): BigInteger
@@ -172,5 +177,17 @@ trait GetDuckDBValue
         $dateStruct->day = $date->getDay();
 
         return $dateStruct;
+    }
+
+    public function getUHugeint(int|string|BigInteger $integer): ?NativeCData
+    {
+        $uhugeint = $this->ffi->new('duckdb_uhugeint');
+
+        $divmod = $this->math->divmod((string) $integer, $this->math->pow('2', '64'));
+
+        $uhugeint->lower = (string) $this->createUBigInt($divmod[1]);
+        $uhugeint->upper = (string) $this->createUBigInt($divmod[0]);
+
+        return $uhugeint;
     }
 }

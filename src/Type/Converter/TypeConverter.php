@@ -21,6 +21,7 @@ class TypeConverter
 {
     use GetDuckDBValue;
     private const PRECOMPUTED_2_POW_64 = '18446744073709551616';
+    private const PRECOMPUTED_2_POW_63 = '9223372036854775808';
     private static NativeCData $decimal;
 
     public function __construct(
@@ -207,6 +208,11 @@ class TypeConverter
         return $this->math->add((string) $data, self::PRECOMPUTED_2_POW_64);
     }
 
+    public function getSignedBitInt(string|int $data): string
+    {
+        return $this->math->sub((string) $data, self::PRECOMPUTED_2_POW_64);
+    }
+
     /**
      * @throws BigNumbersNotSupportedException
      */
@@ -219,15 +225,25 @@ class TypeConverter
         return $this->math->add($this->math->mul((string) $upper, self::PRECOMPUTED_2_POW_64), (string) $lower);
     }
 
+    public function getHugeIntFromUUID(NativeCData $data, bool $unsigned): int|string
+    {
+        $this->checkMath();
+        $lower = $this->getBigIntFromDuckDBBigInt($data->lower, true);
+        $upper = $this->math->add((string) $data->upper, self::PRECOMPUTED_2_POW_63);
+
+        return $this->math->add($this->math->mul($upper, self::PRECOMPUTED_2_POW_64), (string) $lower);
+    }
+
     /**
      * @throws BigNumbersNotSupportedException
      */
     public function getUUIDFromDuckDBHugeInt(NativeCData $data): UUID
     {
         $this->checkMath();
-        $hugeint = $this->getHugeIntFromDuckDBHugeInt($data, unsigned: true);
 
-        return UUID::fromHugeint($hugeint, $this->math);
+        $hugeintString = $this->getHugeIntFromUUID($data, true);
+
+        return UUID::fromHugeint($hugeintString, $this->math);
     }
 
     public function getBitDuckDBBit(?NativeCData $data): string
@@ -255,7 +271,7 @@ class TypeConverter
     private function checkMath(): void
     {
         if (!isset($this->math)) {
-            throw new BigNumbersNotSupportedException('You are trying to read a number greater than PHP_INT_MAX or a  UUID, but bcmath extension is not available.');
+            throw new BigNumbersNotSupportedException('You are querying a type that use integers > PHP_INT_MAX. Extension bcmath is not available.');
         }
     }
 

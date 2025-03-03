@@ -364,6 +364,11 @@ class DuckDB
         return self::$ffi->duckdb_create_hugeint($hugeint);
     }
 
+    public function createUUID(NativeCData $hugeint): NativeCData
+    {
+        return self::$ffi->duckdb_create_uuid($hugeint);
+    }
+
     public function createUhugeint(?NativeCData $uhugeint): NativeCData
     {
         return self::$ffi->duckdb_create_uhugeint($uhugeint);

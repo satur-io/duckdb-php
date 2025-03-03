@@ -52,7 +52,7 @@ class Vector
         $this->typedData = match ($this->type) {
             TypeC::DUCKDB_TYPE_DECIMAL => $this->cast(TypeC::{Type::from($this->ffi->decimalInternalType($this->logicalType))->name}),
             TypeC::DUCKDB_TYPE_TIMESTAMP_TZ => $this->cast(TypeC::DUCKDB_TYPE_TIMESTAMP),
-            TypeC::DUCKDB_TYPE_UUID => $this->cast(TypeC::DUCKDB_TYPE_HUGEINT),
+            TypeC::DUCKDB_TYPE_UUID => $this->cast(TypeC::DUCKDB_TYPE_UHUGEINT),
             TypeC::DUCKDB_TYPE_ENUM => $this->cast(TypeC::{Type::from($this->ffi->enumInternalType($this->logicalType))->name}),
             TypeC::DUCKDB_TYPE_BLOB => $this->cast(TypeC::DUCKDB_TYPE_VARCHAR),
             default => $this->cast($this->type),
