@@ -115,7 +115,13 @@ class TypeConverter
     public function getTimestampFromDuckDBTimestampMs(NativeCData $timestamp): Timestamp
     {
         $datetime = new \DateTime('1970-01-01 00:00:00');
-        $datetime->modify(sprintf('%+d milliseconds', $timestamp->millis));
+
+        if (strlen((string) abs($timestamp->millis)) >= 14) {
+            // \DateTime does not support a modify string with a number > 14 digits
+            $this->modifyTimestampInBatches($timestamp, $datetime, $timestamp->millis, 'milliseconds');
+        } else {
+            $datetime->modify(sprintf('%+d milliseconds', $timestamp->millis));
+        }
 
         return Timestamp::fromDateTime($datetime, TimePrecision::MILLISECONDS);
     }
@@ -142,7 +148,12 @@ class TypeConverter
         $milliseconds = intval($nanoseconds / 1000000);
         $nanosecondsReminder = $nanoseconds % 1000000000;
 
-        $datetime->modify(sprintf('%+d milliseconds', $milliseconds));
+        if (strlen((string) abs($milliseconds)) >= 14) {
+            // \DateTime does not support a modify string with a number > 14 digits
+            $this->modifyTimestampInBatches($timestamp, $datetime, $milliseconds, 'milliseconds');
+        } else {
+            $datetime->modify(sprintf('%+d milliseconds', $milliseconds));
+        }
 
         return Timestamp::fromDateTime($datetime, TimePrecision::NANOSECONDS, $nanosecondsReminder);
     }
@@ -205,7 +216,7 @@ class TypeConverter
         $lower = $this->getBigIntFromDuckDBBigInt($data->lower, true);
         $upper = $this->getBigIntFromDuckDBBigInt($data->upper, $unsigned);
 
-        return $this->math->add($this->math->mul((string) $upper, $this->math->pow('2', '64')), (string) $lower);
+        return $this->math->add($this->math->mul((string) $upper, self::PRECOMPUTED_2_POW_64), (string) $lower);
     }
 
     /**
@@ -246,5 +257,21 @@ class TypeConverter
         if (!isset($this->math)) {
             throw new BigNumbersNotSupportedException('You are trying to read a number greater than PHP_INT_MAX or a  UUID, but bcmath extension is not available.');
         }
+    }
+
+    /**
+     * @throws \DateMalformedStringException
+     */
+    private function modifyTimestampInBatches(NativeCData $timestamp, \DateTime $datetime, int $number, string $unit): void
+    {
+        $positive = ($number >= 0);
+        $sign = $positive ? '+' : '-';
+        list($quotient, $mod) = $this->math->divmod((string) $number, sprintf('%s%d', $sign, 9999999999999));
+
+        for ($i = 0; $i < $quotient; ++$i) {
+            $datetime->modify(sprintf('%s%d %s', $sign, 9999999999999, $unit));
+        }
+
+        $datetime->modify(sprintf('%+d %s', $mod, $unit));
     }
 }

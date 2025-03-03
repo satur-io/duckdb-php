@@ -27,7 +27,9 @@ class Time
             throw new InvalidTimeException('Only one second fraction time is allowed.');
         }
 
-        $this->nanoseconds = $nanoseconds ?? ($microseconds ? $microseconds * 1000 : ($milliseconds ? $milliseconds * 1000000 : 0));
+        $nanoFromMicro = $microseconds ? $microseconds * 1000 : null;
+        $nanoFromMilli = $milliseconds ? $milliseconds * 1000000 : null;
+        $this->nanoseconds = $nanoseconds ?? $nanoFromMicro ?? $nanoFromMilli ?? 0;
     }
 
     public function getHours(): int
@@ -54,7 +56,12 @@ class Time
 
     public function getMicroseconds(): int
     {
-        return $this->nanoseconds / 1000;
+        return intdiv($this->nanoseconds, 1000);
+    }
+
+    public function getReminderNanoSeconds(): int
+    {
+        return $this->nanoseconds % 1000;
     }
 
     public function __toString(): string

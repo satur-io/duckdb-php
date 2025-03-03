@@ -84,4 +84,9 @@ class Timestamp
             $time,
         );
     }
+
+    public function toDateTime(): \DateTime
+    {
+        return new \DateTime($this->__toString());
+    }
 }

@@ -40,9 +40,11 @@ trait GetDuckDBValue
             Type::DUCKDB_TYPE_DOUBLE => $this->createFromScalar($value, $type),
             Type::DUCKDB_TYPE_DATE => $this->createFromDate($value),
             Type::DUCKDB_TYPE_TIME => $this->createFromTime($value),
-            Type::DUCKDB_TYPE_TIMESTAMP => $this->createFromTimestamp($value),
+            Type::DUCKDB_TYPE_TIMESTAMP,
+            Type::DUCKDB_TYPE_TIMESTAMP_S,
+            Type::DUCKDB_TYPE_TIMESTAMP_MS => $this->createFromTimestamp($value),
             Type::DUCKDB_TYPE_INTERVAL => $this->createFromInterval($value),
-            Type::DUCKDB_TYPE_HUGEINT => $this->createFromHugeInt($value, false),
+            Type::DUCKDB_TYPE_HUGEINT => $this->createFromHugeInt($value),
             Type::DUCKDB_TYPE_UHUGEINT => $this->createFromUhugeInt($value),
             default => throw new UnsupportedTypeException("Unsupported type: {$type->name}"),
         };

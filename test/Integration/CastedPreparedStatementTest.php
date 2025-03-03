@@ -66,6 +66,14 @@ class CastedPreparedStatementTest extends TestCase
         $timestampResult = [[clone $timestampSearch], [clone $timestampSearch]];
         $timestampInsert = [clone $timestampSearch, null, clone $timestampSearch, new Timestamp(new Date(100, 1, 2), new Time(12, 3, 2))];
 
+        $timestampSSearch = new Timestamp(new Date(1521, 4, 23), new Time(12, 3, 2));
+        $timestampSResult = [[clone $timestampSSearch], [clone $timestampSSearch]];
+        $timestampSInsert = [clone $timestampSSearch, null, clone $timestampSSearch, new Timestamp(new Date(100, 1, 2), new Time(12, 3, 2))];
+
+        $timestampMSSearch = new Timestamp(new Date(1521, 4, 23), new Time(12, 3, seconds: 2));
+        $timestampMSResult = [[clone $timestampMSSearch], [clone $timestampMSSearch]];
+        $timestampMSInsert = [clone $timestampMSSearch, null, clone $timestampMSSearch, new Timestamp(new Date(100, 1, 2), new Time(12, 3, 2))];
+
         $dateSearch = new Date(1521, 4, 23);
         $dateResult = [[clone $dateSearch], [clone $dateSearch]];
         $dateInsert = [clone $dateSearch, null, clone $dateSearch, new Date(100, 1, 2)];
@@ -83,6 +91,8 @@ class CastedPreparedStatementTest extends TestCase
             'Date' => [Type::DUCKDB_TYPE_DATE, 'DATE', $dateSearch, $dateResult, $dateInsert],
             'Time' => [Type::DUCKDB_TYPE_TIME, 'TIME', $timeSearch, $timeResult, $timeInsert],
             'Interval' => [Type::DUCKDB_TYPE_INTERVAL, 'INTERVAL', $intervalSearch, $intervalResult, $intervalInsert],
+            'TimestampS' => [Type::DUCKDB_TYPE_TIMESTAMP_S, 'TIMESTAMP_S', $timestampSSearch, $timestampSResult, $timestampSInsert],
+            'TimestampMS' => [Type::DUCKDB_TYPE_TIMESTAMP_MS, 'TIMESTAMP_MS', $timestampMSSearch, $timestampMSResult, $timestampMSInsert],
         ];
     }
 
