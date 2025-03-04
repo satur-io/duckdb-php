@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-use Saturio\DuckDB\FFI\FindLibrary;
+require __DIR__ . '/src/FFI/FindLibrary.php';
 
-require __DIR__ . '/vendor/autoload.php';
+use Saturio\DuckDB\FFI\FindLibrary;
 
 FFI::load(FindLibrary::headerPath());
 

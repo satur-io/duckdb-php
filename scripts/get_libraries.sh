@@ -17,6 +17,7 @@ for platform in "${platforms[@]}"; do
   sed -i.bak '/#include <std/d'  "/tmp/${platform}/duckdb.h"
   (echo "#define FFI_SCOPE \"DUCKDB\""; echo "#define FFI_LIB \"/tmp/${platform}/${platformLibFiles[${counter}]}\"") >> "/tmp/${platform}/duckdb-ffi.h"
   cpp -P -C -D"attribute(ARGS)=" "/tmp/${platform}/duckdb.h" >> "/tmp/${platform}/duckdb-ffi.h"
+  sed -i \~ "s/#define FFI_LIB \"\/tmp\/${platform}\/${platformLibFiles[${counter}]}\"/#define FFI_LIB \"lib\/${platform}\/${platformLibFiles[${counter}]}\"/" /tmp/${platform}/duckdb-ffi.h
   cp "/tmp/${platform}/${platformLibFiles[${counter}]}" "./lib/${platform}/${platformLibFiles[${counter}]}"
   cp "/tmp/${platform}/duckdb-ffi.h" "./lib/${platform}/duckdb-ffi.h"
   rm -rf "/tmp/${platform}"

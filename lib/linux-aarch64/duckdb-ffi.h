@@ -1,5 +1,5 @@
 #define FFI_SCOPE "DUCKDB"
-#define FFI_LIB "/tmp/linux-aarch64/libduckdb.so"
+#define FFI_LIB "lib/linux-aarch64/libduckdb.so"
 //===----------------------------------------------------------------------===//
 //
 //                         DuckDB

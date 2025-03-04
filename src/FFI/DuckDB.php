@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Saturio\DuckDB\FFI;
 
 use FFI;
+use FFI\CType;
 use Saturio\DuckDB\Exception\MissedLibraryException;
 use Saturio\DuckDB\Exception\NotSupportedException;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
@@ -42,7 +43,7 @@ class DuckDB
         }
     }
 
-    public function new(string $name, bool $owned = true): ?NativeCData
+    public function new(string|CType $name, bool $owned = true): ?NativeCData
     {
         return self::$ffi->new($name, $owned);
     }
@@ -55,6 +56,11 @@ class DuckDB
     public function free(NativeCData $pointer): void
     {
         \FFI::free($pointer);
+    }
+
+    public function type(string $type): CType
+    {
+        return self::$ffi->type($type);
     }
 
     public function error(): int
@@ -449,7 +455,7 @@ class DuckDB
         return self::$ffi->duckdb_column_count($result);
     }
 
-    public function string(NativeCData $string, ?int $length = null): string
+    public static function string(NativeCData $string, ?int $length = null): string
     {
         return \FFI::string($string, $length);
     }

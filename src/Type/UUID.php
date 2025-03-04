@@ -9,9 +9,6 @@ use Saturio\DuckDB\Type\Math\MathLibInterface;
 
 class UUID
 {
-    public const string BASE = '170141183460469231731687303715884105728';
-    public const string PRECOMPUTED_2_POW_128 = '340282366920938463463374607431768211456';
-
     public function __construct(
         private readonly string $uuid,
     ) {

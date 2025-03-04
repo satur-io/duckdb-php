@@ -7,7 +7,6 @@ namespace Saturio\DuckDB\Type\Converter;
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
-use Saturio\DuckDB\Native\FFI as NativeFFI;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
@@ -38,13 +37,13 @@ class TypeConverter
             $length = $inlined->length;
             $data = $inlined->inlined;
 
-            return NativeFFI::string($data, $length);
+            return $this->ffi::string($data, $length);
         }
         $pointer = $value->pointer;
         $length = $pointer->length;
         $data = $pointer->ptr;
 
-        return NativeFFI::string($data, $length);
+        return $this->ffi::string($data, $length);
     }
 
     public function getStringFromBlob(NativeCData $data): string

@@ -24,7 +24,6 @@ class Vector
     private ?NativeCData $validity;
 
     public ?NestedTypeVector $nestedTypeVector = null;
-    private NativeCData $currentValue;
     private NumericConverter $numericConverter;
     private TypeConverter $typeConverter;
 
@@ -59,7 +58,6 @@ class Vector
         };
 
         $this->validity = $this->getValidity();
-        $this->currentValue = $ffi->new(TypeC::DUCKDB_TYPE_BOOLEAN->value);
 
         if (TypeC::DUCKDB_TYPE_DECIMAL === $this->type) {
             $this->numericConverter = new NumericConverter($this->ffi);
@@ -71,7 +69,7 @@ class Vector
     /**
      * @throws BigNumbersNotSupportedException
      * @throws \DateMalformedStringException
-     * @throws InvalidTimeException
+     * @throws InvalidTimeException|UnsupportedTypeException
      */
     public function getDataGenerator(): \Generator
     {
@@ -132,29 +130,25 @@ class Vector
 
         $data = $this->typedData[$rowIndex];
 
-        if (!is_scalar($data)) {
-            $this->currentValue = $data;
-        }
-
         return match ($this->type) {
-            TypeC::DUCKDB_TYPE_VARCHAR => $this->typeConverter->getVarChar($this->currentValue),
-            TypeC::DUCKDB_TYPE_DECIMAL => $this->numericConverter->getFloatFromDecimal(is_scalar($data) ? $data : $this->currentValue, $this->logicalType),
-            TypeC::DUCKDB_TYPE_DATE => $this->typeConverter->getDateFromDuckDBDate($this->currentValue),
-            TypeC::DUCKDB_TYPE_TIME => $this->typeConverter->getTimeFromDuckDBTime($this->currentValue),
-            TypeC::DUCKDB_TYPE_TIME_TZ => $this->typeConverter->getTimeFromDuckDBTimeTz($this->currentValue),
-            TypeC::DUCKDB_TYPE_TIMESTAMP => $this->typeConverter->getTimestampFromDuckDBTimestamp($this->currentValue),
-            TypeC::DUCKDB_TYPE_TIMESTAMP_MS => $this->typeConverter->getTimestampFromDuckDBTimestampMs($this->currentValue),
-            TypeC::DUCKDB_TYPE_TIMESTAMP_S => $this->typeConverter->getTimestampFromDuckDBTimestampS($this->currentValue),
-            TypeC::DUCKDB_TYPE_TIMESTAMP_NS => $this->typeConverter->getTimestampFromDuckDBTimestampNs($this->currentValue),
-            TypeC::DUCKDB_TYPE_TIMESTAMP_TZ => $this->typeConverter->getTimestampFromDuckDBTimestampTz($this->currentValue),
-            TypeC::DUCKDB_TYPE_INTERVAL => $this->typeConverter->getIntervalFromDuckDBInterval($this->currentValue),
+            TypeC::DUCKDB_TYPE_VARCHAR => $this->typeConverter->getVarChar($data),
+            TypeC::DUCKDB_TYPE_DECIMAL => $this->numericConverter->getFloatFromDecimal(is_scalar($data) ? $data : $data, $this->logicalType),
+            TypeC::DUCKDB_TYPE_DATE => $this->typeConverter->getDateFromDuckDBDate($data),
+            TypeC::DUCKDB_TYPE_TIME => $this->typeConverter->getTimeFromDuckDBTime($data),
+            TypeC::DUCKDB_TYPE_TIME_TZ => $this->typeConverter->getTimeFromDuckDBTimeTz($data),
+            TypeC::DUCKDB_TYPE_TIMESTAMP => $this->typeConverter->getTimestampFromDuckDBTimestamp($data),
+            TypeC::DUCKDB_TYPE_TIMESTAMP_MS => $this->typeConverter->getTimestampFromDuckDBTimestampMs($data),
+            TypeC::DUCKDB_TYPE_TIMESTAMP_S => $this->typeConverter->getTimestampFromDuckDBTimestampS($data),
+            TypeC::DUCKDB_TYPE_TIMESTAMP_NS => $this->typeConverter->getTimestampFromDuckDBTimestampNs($data),
+            TypeC::DUCKDB_TYPE_TIMESTAMP_TZ => $this->typeConverter->getTimestampFromDuckDBTimestampTz($data),
+            TypeC::DUCKDB_TYPE_INTERVAL => $this->typeConverter->getIntervalFromDuckDBInterval($data),
             TypeC::DUCKDB_TYPE_UBIGINT => $this->typeConverter->getBigIntFromDuckDBBigInt($data, true),
-            TypeC::DUCKDB_TYPE_HUGEINT => $this->typeConverter->getHugeIntFromDuckDBHugeInt($this->currentValue, unsigned: false),
-            TypeC::DUCKDB_TYPE_UHUGEINT => $this->typeConverter->getHugeIntFromDuckDBHugeInt($this->currentValue, unsigned: true),
-            TypeC::DUCKDB_TYPE_UUID => $this->typeConverter->getUUIDFromDuckDBHugeInt($this->currentValue),
+            TypeC::DUCKDB_TYPE_HUGEINT => $this->typeConverter->getHugeIntFromDuckDBHugeInt($data, unsigned: false),
+            TypeC::DUCKDB_TYPE_UHUGEINT => $this->typeConverter->getHugeIntFromDuckDBHugeInt($data, unsigned: true),
+            TypeC::DUCKDB_TYPE_UUID => $this->typeConverter->getUUIDFromDuckDBHugeInt($data),
             TypeC::DUCKDB_TYPE_ENUM => $this->typeConverter->getStringFromEnum($this->logicalType, $data),
-            TypeC::DUCKDB_TYPE_BIT => throw new UnsupportedTypeException('Type BIT/BITSTRING is not supported by duckdb-php yet'), // @todo - Check why does not work $this->typeConverter->getBitDuckDBBit($this->currentValue),
-            TypeC::DUCKDB_TYPE_BLOB => $this->typeConverter->getStringFromBlob($this->currentValue),
+            TypeC::DUCKDB_TYPE_BIT => throw new UnsupportedTypeException('Type BIT/BITSTRING is not supported by duckdb-php yet'), // @todo - Check why does not work $this->typeConverter->getBitDuckDBBit($data),
+            TypeC::DUCKDB_TYPE_BLOB => $this->typeConverter->getStringFromBlob($data),
             default => $data,
         };
     }

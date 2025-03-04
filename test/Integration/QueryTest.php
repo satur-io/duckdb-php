@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Integration;
 
-use Integration\Helper\IntegrationTestTrait;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
@@ -18,8 +17,6 @@ use Saturio\DuckDB\Type\UUID;
 
 class QueryTest extends TestCase
 {
-    use IntegrationTestTrait;
-
     private DuckDB $db;
 
     protected function setUp(): void
