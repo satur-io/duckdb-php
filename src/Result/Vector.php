@@ -132,7 +132,7 @@ class Vector
 
         return match ($this->type) {
             TypeC::DUCKDB_TYPE_VARCHAR => $this->typeConverter->getVarChar($data),
-            TypeC::DUCKDB_TYPE_DECIMAL => $this->numericConverter->getFloatFromDecimal(is_scalar($data) ? $data : $data, $this->logicalType),
+            TypeC::DUCKDB_TYPE_DECIMAL => $this->numericConverter->getFloatFromDecimal($data, $this->logicalType),
             TypeC::DUCKDB_TYPE_DATE => $this->typeConverter->getDateFromDuckDBDate($data),
             TypeC::DUCKDB_TYPE_TIME => $this->typeConverter->getTimeFromDuckDBTime($data),
             TypeC::DUCKDB_TYPE_TIME_TZ => $this->typeConverter->getTimeFromDuckDBTimeTz($data),
