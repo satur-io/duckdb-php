@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require __DIR__ . '/src/FFI/FindLibrary.php';
+require_once __DIR__ . '/src/FFI/FindLibrary.php';
 
 use Saturio\DuckDB\FFI\FindLibrary;
 
