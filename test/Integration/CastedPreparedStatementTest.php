@@ -22,6 +22,7 @@ class CastedPreparedStatementTest extends TestCase
     protected function setUp(): void
     {
         $this->db = DuckDB::create();
+        $this->db->query("SET TimeZone = 'UTC';");
     }
 
     #[DataProvider('numericsProvider')]
@@ -86,6 +87,14 @@ class CastedPreparedStatementTest extends TestCase
         $intervalResult = [[clone $intervalSearch], [clone $intervalSearch]];
         $intervalInsert = [clone $intervalSearch, null, clone $intervalSearch, new Interval(10, 1, 2)];
 
+        $timestampTzSearch = new Timestamp(new Date(1521, 4, 23), new Time(12, 3, 2, isTimeZoned: true));
+        $timestampTzResult = [[clone $timestampTzSearch], [clone $timestampTzSearch]];
+        $timestampTzInsert = [clone $timestampTzSearch, null, clone $timestampTzSearch, new Timestamp(new Date(100, 1, 2), new Time(12, 3, 2))];
+
+        $timeTzSearch = new Time(12, 0, 23, isTimeZoned: true);
+        $timeTzResult = [[clone $timeTzSearch], [clone $timeTzSearch]];
+        $timeTzInsert = [clone $timeTzSearch, null, clone $timeTzSearch, new Time(10, 1, 2)];
+
         return [
             'Timestamp' => [Type::DUCKDB_TYPE_TIMESTAMP, 'TIMESTAMP', $timestampSearch, $timestampResult, $timestampInsert],
             'Date' => [Type::DUCKDB_TYPE_DATE, 'DATE', $dateSearch, $dateResult, $dateInsert],
@@ -93,6 +102,8 @@ class CastedPreparedStatementTest extends TestCase
             'Interval' => [Type::DUCKDB_TYPE_INTERVAL, 'INTERVAL', $intervalSearch, $intervalResult, $intervalInsert],
             'TimestampS' => [Type::DUCKDB_TYPE_TIMESTAMP_S, 'TIMESTAMP_S', $timestampSSearch, $timestampSResult, $timestampSInsert],
             'TimestampMS' => [Type::DUCKDB_TYPE_TIMESTAMP_MS, 'TIMESTAMP_MS', $timestampMSSearch, $timestampMSResult, $timestampMSInsert],
+            'TimestampTz' => [Type::DUCKDB_TYPE_TIMESTAMP_TZ, 'TIMESTAMPTZ', $timestampTzSearch, $timestampTzResult, $timestampTzInsert],
+            'TimeTz' => [Type::DUCKDB_TYPE_TIME_TZ, 'TIMETZ', $timeTzSearch, $timeTzResult, $timeTzInsert],
         ];
     }
 
