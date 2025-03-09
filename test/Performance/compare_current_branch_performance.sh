@@ -101,7 +101,7 @@ function generate_plots() {
   printf "\"New branch\" \t %10.4f \t %10.4f \n" "${4}" "${5}" >> ${FILE}
   printf "\"Main branch\" \t %10.4f \t %10.4f \n" "${6}" "${7}" >> ${FILE}
 
-  OUTPUT_PLOT_FILE="out/$(cat /dev/urandom | env LC_CTYPE=C tr -cd 'a-f0-9' | head -c 32).png"
+  OUTPUT_PLOT_FILE="out/$(cat /dev/urandom | env LC_CTYPE=alnum tr -cd 'a-f0-9' | head -c 32).png"
   gnuplot -e "set output '${OUTPUT_PLOT_FILE}'" test/Performance/commands.txt
   rm ${FILE};
 }
@@ -122,7 +122,7 @@ MAX_TIME_PERCENTAGE_INCREASE_ALLOWED="1.1" # An increase of 10% in time is consi
 MAX_MEMORY_PERCENTAGE_INCREASE_ALLOWED="1.1" # An increase of 10% in memory usage is considered performance degradation
 
 rm -rf /tmp/master-branch
-git clone --branch 3-avoid-wrappers --depth 1 file://${PWD} /tmp/master-branch
+git clone --branch main --depth 1 file://${PWD} /tmp/master-branch
 
 orig=${PWD}
 
