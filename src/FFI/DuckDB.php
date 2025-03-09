@@ -255,7 +255,7 @@ class DuckDB
         return self::$ffi->duckdb_create_bit($bit);
     }
 
-    public function createBlob(?NativeCData $blob, int $size)
+    public function createBlob(?NativeCData $blob, int $size): NativeCData
     {
         return self::$ffi->duckdb_create_blob($blob, $size);
     }

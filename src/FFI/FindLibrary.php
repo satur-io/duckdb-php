@@ -24,6 +24,7 @@ class FindLibrary
             'Windows NT' => implode(DIRECTORY_SEPARATOR, [self::path(), 'duckdb.dll']),
             'Linux' => implode(DIRECTORY_SEPARATOR, [self::path(), 'libduckdb.so']),
             'Darwin' => implode(DIRECTORY_SEPARATOR, [self::path(), 'libduckdb.dylib']),
+            default => throw new NotSupportedException("Unsupported OS: {$os}"),
         };
     }
 

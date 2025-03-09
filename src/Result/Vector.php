@@ -19,7 +19,7 @@ class Vector
 {
     use ValidityTrait;
     private TypeC $type;
-    private ?NativeCData $typedData;
+    private NativeCData $typedData;
     private NativeCData $logicalType;
     private ?NativeCData $validity;
 
