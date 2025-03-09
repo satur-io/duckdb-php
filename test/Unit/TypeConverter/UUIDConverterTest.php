@@ -4,90 +4,76 @@ declare(strict_types=1);
 
 namespace Unit\TypeConverter;
 
-use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Type\Converter\TypeConverter;
 use Saturio\DuckDB\Type\Math\MathLib;
+use Saturio\DuckDB\Type\TypeC;
 use Saturio\DuckDB\Type\UUID;
-use Unit\Abstract\TestWithInterfaces;
-use Unit\Helper\DummyCData;
+use Unit\Helper\PartiallyMockedFFITrait;
 
-#[RunClassInSeparateProcess]
-class UUIDConverterTest extends TestWithInterfaces
+class UUIDConverterTest extends TestCase
 {
+    use PartiallyMockedFFITrait;
     private FFIDuckDB $ffi;
     private TypeConverter $converter;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->ffi = $this->createMock(FFIDuckDB::class);
+        $this->ffi = $this->getPartiallyMockedFFI();
         $this->converter = new TypeConverter($this->ffi, MathLib::create());
     }
 
-    public function testFromUUID(): void
+    #[DataProvider('uuidProvider')]
+    public function testFromUUID($hugeintValues, $uuid, $expectedUpperForUHugeInt): void
     {
-        $uHugeInt = new class extends DummyCData {
-            public $lower;
-            public $upper;
-        };
         $this->ffi
-            ->expects(self::exactly(3))
-            ->method('new')
-            ->willReturn($uHugeInt);
-
-        $this->ffi
-            ->expects(self::exactly(3))
+            ->expects(self::once())
             ->method('createUUID')
-            ->willReturnCallback(
-                function ($uHugeInt) {
-                    return new class($uHugeInt) extends DummyCData {
-                        public function __construct(public $pointerToUUID)
-                        {
-                        }
-                    };
-                }
-            );
+            ->willReturnArgument(0);
 
-        array_map(function ($uuidCase) {
-            $uHugeInt = $this->converter->createFromUUID((string) $uuidCase[1]);
-            self::assertEquals($uuidCase[0]->lower, $uHugeInt->pointerToUUID->lower);
-            self::assertEquals($uuidCase['expectedUpperForUHugeInt'], $uHugeInt->pointerToUUID->upper);
-        }, self::uuidProvider());
+        $uHugeInt = $this->converter->createFromUUID((string) $uuid);
+        self::assertEquals($hugeintValues->lower, $uHugeInt->lower);
+        self::assertEquals($expectedUpperForUHugeInt, $uHugeInt->upper);
     }
 
-    public function testFromUHugeInt(): void
+    #[DataProvider('uuidProvider')]
+    public function testFromUHugeInt($hugeintValues, $uuid, $expectedUpperForUHugeInt): void
     {
-        array_map(function ($uuidCase) {
-            $uuid = $this->converter->getUUIDFromDuckDBHugeInt($uuidCase[0]);
-            $this->assertEquals($uuidCase[1], $uuid);
-        }, self::uuidProvider());
+        $hugeint = $this->ffi->new(TypeC::DUCKDB_TYPE_HUGEINT->value);
+        $hugeint->lower = $hugeintValues->lower;
+        $hugeint->upper = $hugeintValues->upper;
+        $returnedUUID = $this->converter->getUUIDFromDuckDBHugeInt($hugeint);
+        $this->assertEquals($uuid, $returnedUUID);
     }
 
     public static function uuidProvider(): array
     {
-        return [[
-            new class extends DummyCData {
-                public $lower = -8866597835218230275;
-                public $upper = 186819811232906;
-            },
-            new UUID('8000a9e9-607c-4c8a-84f3-843f0191e3fd'),
-            'expectedUpperForUHugeInt' => -9223185217043542902,
-        ],
+        return [
             [
-                new class extends DummyCData {
+                'hugeintValues' => new class {
+                    public $lower = -8866597835218230275;
+                    public $upper = 186819811232906;
+                },
+                'uuid' => new UUID('8000a9e9-607c-4c8a-84f3-843f0191e3fd'),
+                'expectedUpperForUHugeInt' => -9223185217043542902,
+            ],
+            [
+                'hugeintValues' => new class {
                     public $lower = -1;
                     public $upper = -1;
                 },
-                new UUID('7fffffff-ffff-ffff-ffff-ffffffffffff'),
+                'uuid' => new UUID('7fffffff-ffff-ffff-ffff-ffffffffffff'),
                 'expectedUpperForUHugeInt' => 9223372036854775807,
             ],
             [
-                new class extends DummyCData {
+                'hugeintValues' => new class {
                     public $lower = 0;
                     public $upper = 0;
                 },
-                new UUID('80000000-0000-0000-0000-000000000000'),
+                'uuid' => new UUID('80000000-0000-0000-0000-000000000000'),
                 'expectedUpperForUHugeInt' => -9223372036854775808,
             ]];
     }

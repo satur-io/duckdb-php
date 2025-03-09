@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Integration;
 
-use Integration\Helper\IntegrationTestTrait;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
 use Saturio\DuckDB\Exception\ConnectionException;
 
 class DuckDBTest extends TestCase
 {
-    use IntegrationTestTrait;
-
     public function testInMemory(): void
     {
         $db = DuckDB::create();

@@ -32,7 +32,7 @@ class StructVector implements NestedTypeVector
         }
     }
 
-    private function getStructChildName(int $index): ?string
+    private function getStructChildName(int $index): string
     {
         $this->logicalType = $this->ffi->vectorGetColumnType($this->vector);
 

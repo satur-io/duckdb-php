@@ -1,0 +1,8 @@
+parameters:
+    level: 6
+    paths:
+        - src
+    ignoreErrors:
+        - '#Access to an undefined property FFI\\CData::.*#'
+        - '#Access to an undefined property FFI::.*#'
+        - '#Call to an undefined method FFI::.*#'

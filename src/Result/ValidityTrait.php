@@ -17,6 +17,6 @@ trait ValidityTrait
 
     protected function newValid(?NativeCData $validity, int $index): bool
     {
-        return null === $validity || ($validity->get(intval($index / 64)) & (1 << $index % 64)) !== 0;
+        return null === $validity || ($validity[intval($index / 64)] & (1 << $index % 64)) !== 0;
     }
 }

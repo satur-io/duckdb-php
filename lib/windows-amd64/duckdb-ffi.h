@@ -1,5 +1,5 @@
 #define FFI_SCOPE "DUCKDB"
-#define FFI_LIB "/tmp/windows-amd64/duckdb.dll"
+#define FFI_LIB "lib/windows-amd64/duckdb.dll"
 //===----------------------------------------------------------------------===//
 //
 //                         DuckDB

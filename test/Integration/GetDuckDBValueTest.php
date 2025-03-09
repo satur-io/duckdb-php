@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Integration;
 
-use Integration\Helper\IntegrationTestTrait;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Type\Converter\TypeConverter;
@@ -12,7 +11,6 @@ use Saturio\DuckDB\Type\Type;
 
 class GetDuckDBValueTest extends TestCase
 {
-    use IntegrationTestTrait;
     private FFIDuckDB $ffi;
     private TypeConverter $converter;
 

@@ -3,6 +3,7 @@
 **/.DS_Store
 **.log
 test.db
+performance_results.db
 **/measurements*.csv
 composer.lock
 **/cachegrind.out.*

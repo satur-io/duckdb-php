@@ -7,7 +7,6 @@ namespace Saturio\DuckDB\Type\Converter;
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
-use Saturio\DuckDB\Native\FFI as NativeFFI;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
@@ -22,7 +21,6 @@ class TypeConverter
     use GetDuckDBValue;
     private const PRECOMPUTED_2_POW_64 = '18446744073709551616';
     private const PRECOMPUTED_2_POW_63 = '9223372036854775808';
-    private static NativeCData $decimal;
 
     public function __construct(
         private readonly FFIDuckDB $ffi,
@@ -38,13 +36,13 @@ class TypeConverter
             $length = $inlined->length;
             $data = $inlined->inlined;
 
-            return NativeFFI::string($data, $length);
+            return $this->ffi::string($data, $length);
         }
         $pointer = $value->pointer;
         $length = $pointer->length;
         $data = $pointer->ptr;
 
-        return NativeFFI::string($data, $length);
+        return $this->ffi::string($data, $length);
     }
 
     public function getStringFromBlob(NativeCData $data): string

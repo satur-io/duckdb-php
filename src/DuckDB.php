@@ -83,7 +83,11 @@ class DuckDB
 
     public function __destruct()
     {
-        isset($this->connection) ?? self::$ffi->disconnect(self::$ffi->addr($this->connection->connection));
-        isset($this->db) ?? self::$ffi->close(self::$ffi->addr($this->db->db));
+        if (isset($this->connection)) {
+            self::$ffi->disconnect(self::$ffi->addr($this->connection->connection));
+        }
+        if (isset($this->db)) {
+            self::$ffi->close(self::$ffi->addr($this->db->db));
+        }
     }
 }

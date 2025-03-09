@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Integration;
 
-use Integration\Helper\IntegrationTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
@@ -18,7 +17,6 @@ use Saturio\DuckDB\Type\UUID;
 
 class CastedPreparedStatementTest extends TestCase
 {
-    use IntegrationTestTrait;
     private DuckDB $db;
 
     protected function setUp(): void
@@ -105,9 +103,6 @@ class CastedPreparedStatementTest extends TestCase
 
         $uhugeint = Integer::fromString('170141183460469231731687303715884105728');
         $otherUhugeint = Integer::fromString('170141183460469231731687303715884105');
-
-        $uhugeint = Integer::fromString('1701411834604692317316873037');
-        $otherUhugeint = Integer::fromString('1701411834604692317316873038');
 
         return [
             'TINYINT' => [Type::DUCKDB_TYPE_TINYINT, 'TINYINT', 3, [[3], [3]], [3, 5, 6, 3, null]],

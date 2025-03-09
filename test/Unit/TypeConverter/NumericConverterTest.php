@@ -4,85 +4,65 @@ declare(strict_types=1);
 
 namespace Unit\TypeConverter;
 
-use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
-use Saturio\DuckDB\FFI\CDataInterface;
+use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
+use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Converter\NumericConverter;
-use Unit\Abstract\TestWithInterfaces;
-use Unit\Helper\DummyCData;
+use Saturio\DuckDB\Type\TypeC;
+use Unit\Helper\PartiallyMockedFFITrait;
 
-#[RunClassInSeparateProcess]
-class NumericConverterTest extends TestWithInterfaces
+class NumericConverterTest extends TestCase
 {
+    use PartiallyMockedFFITrait;
     private FFIDuckDB $ffi;
 
     public function setUp(): void
     {
-        parent::setUp();
-        $this->ffi = $this->createMock(FFIDuckDB::class);
+        $this->ffi = $this->getPartiallyMockedFFI();
     }
 
     public function testFloatFromDecimalComingAsInteger()
     {
         $decimal = 1000;
 
-        $hugeInt = new class('This is a Hugeint') extends DummyCData {
-            public function __construct(public $content)
-            {
-            }
-        };
+        $hugeInt = $this->ffi->new(TypeC::DUCKDB_TYPE_HUGEINT->value);
+        $hugeInt->lower = 20;
+        $hugeInt->upper = 20;
+
         $this->ffi
             ->expects(self::once())
             ->method('doubleToHugeint')
-            ->willReturn($hugeInt);
+            ->willReturnCallback(fn () => $hugeInt);
 
         $this->floatFromDecimalAssertions($decimal, $hugeInt);
     }
 
     public function testFloatFromDecimalComingAsHugeint()
     {
-        $data = new class('This is a Hugeint') extends DummyCData {
-            public function __construct(public $content)
-            {
-            }
-        };
+        $hugeInt = $this->ffi->new(TypeC::DUCKDB_TYPE_HUGEINT->value);
+        $hugeInt->lower = 20;
+        $hugeInt->upper = 20;
 
         $this->ffi
             ->expects(self::never())
             ->method('doubleToHugeint');
 
-        $this->floatFromDecimalAssertions($data, $data);
+        $this->floatFromDecimalAssertions($hugeInt, $hugeInt);
     }
 
-    public function floatFromDecimalAssertions(int|CDataInterface $decimal, $hugeInt): void
+    public function floatFromDecimalAssertions(int|NativeCData $decimal, $hugeInt): void
     {
-        $logicalType = new DummyCData();
+        $logicalType = $this->ffi->new('duckdb_logical_type');
 
         $expectedFloat = 1.1;
 
         $decimalWidth = 20;
         $decimalScale = 25;
 
-        $duckDBTypeDecimal = new class extends DummyCData {
-            public $width;
-            public $scale;
-            public $value;
-        };
-        $duckDBTypeDecimalFilled = clone $duckDBTypeDecimal;
+        $duckDBTypeDecimalFilled = $this->ffi->new(TypeC::DUCKDB_TYPE_DECIMAL->value);
         $duckDBTypeDecimalFilled->width = $decimalWidth;
         $duckDBTypeDecimalFilled->scale = $decimalScale;
         $duckDBTypeDecimalFilled->value = $hugeInt;
-
-        $this->ffi
-            ->expects(self::any())
-            ->method('new')
-            ->with('duckdb_decimal', false)
-            ->willReturn($duckDBTypeDecimal);
-
-        $this->ffi
-            ->expects(self::any())
-            ->method('addr')
-            ->willReturn(new class extends DummyCData {});
 
         $this->ffi
             ->expects(self::once())

@@ -32,6 +32,8 @@ class NumericConverter
 
     public function __destruct()
     {
-        isset($this->intermediateDecimal) ?? $this->ffi->free($this->ffi->addr($this->intermediateDecimal));
+        if (isset($this->intermediateDecimal)) {
+            $this->ffi->free($this->ffi->addr($this->intermediateDecimal));
+        }
     }
 }

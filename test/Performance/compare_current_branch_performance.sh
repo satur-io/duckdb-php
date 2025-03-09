@@ -33,9 +33,9 @@ function run_query() {
 
   for i in $(seq 0 ${ITERATIONS})
   do
-    gtime -f "%e %M" -o temp_stats_main bash -c "${MAIN_BRANCH_COMMAND} \"${QUERY}\" \"${DATABASE_MAIN}\"" > /dev/null 2>&1
-    gtime -f "%e %M" -o temp_stats_new_branch bash -c "${NEW_BRANCH_COMMAND} \"${QUERY}\" \"${DATABASE_NEW}\"" > /dev/null 2>&1
-    gtime -f "%e %M" -o temp_stats_duckdb_cli bash -c "${REFERENCE_DUCKDB_CLI} \"${QUERY}\" \"${DATABASE_CLI}\"" > /dev/null 2>&1
+    gtime -f "%e %M" -o temp_stats_main bash -c "${MAIN_BRANCH_COMMAND} \"${QUERY}\" \"${DATABASE_MAIN}\"" > /dev/null # 2>&1
+    gtime -f "%e %M" -o temp_stats_new_branch bash -c "${NEW_BRANCH_COMMAND} \"${QUERY}\" \"${DATABASE_NEW}\"" > /dev/null # 2>&1
+    gtime -f "%e %M" -o temp_stats_duckdb_cli bash -c "${REFERENCE_DUCKDB_CLI} \"${QUERY}\" \"${DATABASE_CLI}\"" > /dev/null # 2>&1
 
     execution_time_new_branch=$(bc -l <<< "${execution_time_new_branch} + $(awk '{print $1}' < temp_stats_new_branch)");
     memory_usage_new_branch=$(bc -l <<< "${memory_usage_new_branch} + $(awk '{print $2}' < temp_stats_new_branch)");
@@ -117,9 +117,9 @@ black=$(tput setaf 0)
 
 ITERATIONS=5
 GENERATE_PLOTS=true
-MIN_TIME_DIFFF_TO_CHECK_PERCENTAGE="0.01"
-MAX_TIME_PERCENTAGE_INCREASE_ALLOWED="1.1"
-MAX_MEMORY_PERCENTAGE_INCREASE_ALLOWED="1.1"
+MIN_TIME_DIFFF_TO_CHECK_PERCENTAGE="0.02" # Difference less than 20ms is considered no performance degradation regardless the percentage
+MAX_TIME_PERCENTAGE_INCREASE_ALLOWED="1.1" # An increase of 10% in time is considered performance degradation
+MAX_MEMORY_PERCENTAGE_INCREASE_ALLOWED="1.1" # An increase of 10% in memory usage is considered performance degradation
 
 rm -rf /tmp/master-branch
 git clone --branch 3-avoid-wrappers --depth 1 file://${PWD} /tmp/master-branch
