@@ -31,18 +31,17 @@ class TypeConverter
     public function getVarChar(NativeCData $data): string
     {
         $value = $data->value;
-        if ($value->inlined->length <= 12) {
-            $inlined = $value->inlined;
-            $length = $inlined->length;
+        $inlined = $value->inlined;
+        $length = $inlined->length;
+        if ($length <= 12) {
             $data = $inlined->inlined;
 
-            return $this->ffi::string($data, $length);
+            return \FFI::string($data);
         }
         $pointer = $value->pointer;
-        $length = $pointer->length;
         $data = $pointer->ptr;
 
-        return $this->ffi::string($data, $length);
+        return \FFI::string($data, $length);
     }
 
     public function getStringFromBlob(NativeCData $data): string

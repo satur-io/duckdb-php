@@ -58,6 +58,11 @@ class DuckDB
         \FFI::free($pointer);
     }
 
+    public function duckDBFree(NativeCData $pointer): void
+    {
+        self::$ffi->duckdb_free($pointer);
+    }
+
     public function type(string $type): CType
     {
         return self::$ffi->type($type);
@@ -235,7 +240,7 @@ class DuckDB
         self::$ffi->duckdb_destroy_prepare($preparedStatement);
     }
 
-    public function createDuckdb_string_t(string $value): NativeCData
+    public function createDuckdb_string_t(string|NativeCData $value): NativeCData
     {
         return self::$ffi->duckdb_create_varchar($value);
     }
@@ -460,6 +465,12 @@ class DuckDB
         return \FFI::string($string, $length);
     }
 
+    // Low performance function
+    public function stringFromStringT(NativeCData $string): ?string
+    {
+        return self::$ffi->duckdb_string_t_data($string);
+    }
+
     public function destroyLogicalType(NativeCData $logicalType): void
     {
         self::$ffi->duckdb_destroy_logical_type($logicalType);
@@ -467,6 +478,6 @@ class DuckDB
 
     public function getVarchar(NativeCData $duckdbValue): string
     {
-        return \FFI::string(self::$ffi->duckdb_get_varchar($duckdbValue));
+        return self::$ffi->duckdb_get_varchar($duckdbValue);
     }
 }

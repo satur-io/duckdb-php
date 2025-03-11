@@ -129,8 +129,8 @@ orig=${PWD}
 rm -rf /tmp/master-branch/test/_data
 ln -s ${PWD}/test/_data /tmp/master-branch/test/_data
 
-rm -rf /tmp/master-branch/test/Performance/duckdb_api
-cp test/Performance/duckdb_api /tmp/master-branch/test/Performance/duckdb_api
+# rm -rf /tmp/master-branch/test/Performance/duckdb_api
+# cp test/Performance/duckdb_api /tmp/master-branch/test/Performance/duckdb_api
 
 cp preload.php /tmp/master-branch
 

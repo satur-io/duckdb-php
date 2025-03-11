@@ -71,15 +71,16 @@ class Vector
      * @throws \DateMalformedStringException
      * @throws InvalidTimeException|UnsupportedTypeException
      */
-    public function getDataGenerator(): \Generator
+    public function getDataGenerator(): iterable
     {
-        for ($rowIndex = 0; $rowIndex < $this->rows; ++$rowIndex) {
-            if ($this->isNestedType()) {
+        if ($this->isNestedType()) {
+            for ($rowIndex = 0; $rowIndex < $this->rows; ++$rowIndex) {
                 yield $this->nestedTypeVector->getChildren($rowIndex);
-                continue;
             }
-
-            yield $this->getTypedData($rowIndex);
+        } else {
+            for ($rowIndex = 0; $rowIndex < $this->rows; ++$rowIndex) {
+                yield $this->getTypedData($rowIndex);
+            }
         }
     }
 
