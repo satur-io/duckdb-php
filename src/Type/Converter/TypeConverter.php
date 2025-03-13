@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type\Converter;
 
+use DateMalformedStringException;
+use DateTime;
+use FFI;
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
@@ -36,12 +39,12 @@ class TypeConverter
         if ($length <= 12) {
             $data = $inlined->inlined;
 
-            return \FFI::string($data);
+            return FFI::string($data);
         }
         $pointer = $value->pointer;
         $data = $pointer->ptr;
 
-        return \FFI::string($data, $length);
+        return FFI::string($data, $length);
     }
 
     public function getStringFromBlob(NativeCData $data): string
@@ -107,12 +110,12 @@ class TypeConverter
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      * @throws InvalidTimeException
      */
     public function getTimestampFromDuckDBTimestampMs(NativeCData $timestamp): Timestamp
     {
-        $datetime = new \DateTime('1970-01-01 00:00:00');
+        $datetime = new DateTime('1970-01-01 00:00:00');
 
         if (strlen((string) abs($timestamp->millis)) >= 14) {
             // \DateTime does not support a modify string with a number > 14 digits
@@ -125,23 +128,23 @@ class TypeConverter
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      * @throws InvalidTimeException
      */
     public function getTimestampFromDuckDBTimestampS(NativeCData $timestamp): Timestamp
     {
-        $datetime = new \DateTime('1970-01-01 00:00:00');
+        $datetime = new DateTime('1970-01-01 00:00:00');
         $datetime->modify(sprintf('%+d seconds', $timestamp->seconds));
 
         return Timestamp::fromDateTime($datetime, TimePrecision::SECONDS);
     }
 
     /**
-     * @throws InvalidTimeException|\DateMalformedStringException
+     * @throws InvalidTimeException|DateMalformedStringException
      */
     public function getTimestampFromDuckDBTimestampNs(NativeCData $timestamp): Timestamp
     {
-        $datetime = new \DateTime('1970-01-01 00:00:00');
+        $datetime = new DateTime('1970-01-01 00:00:00');
         $nanoseconds = $timestamp->nanos;
         $milliseconds = intval($nanoseconds / 1000000);
         $nanosecondsReminder = $nanoseconds % 1000000000;
@@ -273,9 +276,9 @@ class TypeConverter
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    private function modifyTimestampInBatches(NativeCData $timestamp, \DateTime $datetime, int $number, string $unit): void
+    private function modifyTimestampInBatches(NativeCData $timestamp, DateTime $datetime, int $number, string $unit): void
     {
         $positive = ($number >= 0);
         $sign = $positive ? '+' : '-';

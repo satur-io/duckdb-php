@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Result;
 
+use DateMalformedStringException;
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
+use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 
@@ -39,8 +41,8 @@ class ResultSet
 
     /**
      * @throws BigNumbersNotSupportedException
-     * @throws \DateMalformedStringException
-     * @throws InvalidTimeException
+     * @throws DateMalformedStringException
+     * @throws InvalidTimeException|UnsupportedTypeException
      */
     public function rows(bool $columnNameAsKey = false): iterable
     {

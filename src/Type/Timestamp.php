@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type;
 
+use DateTime;
+use DateTimeInterface;
 use Saturio\DuckDB\Exception\InvalidTimeException;
 
 class Timestamp
@@ -41,7 +43,7 @@ class Timestamp
      * @throws InvalidTimeException
      */
     public static function fromDatetime(
-        \DateTimeInterface $dateTime,
+        DateTimeInterface $dateTime,
         TimePrecision $precision = TimePrecision::MICROSECONDS,
         ?int $nanoseconds = null,
     ): self {
@@ -85,8 +87,8 @@ class Timestamp
         );
     }
 
-    public function toDateTime(): \DateTime
+    public function toDateTime(): DateTime
     {
-        return new \DateTime($this->__toString());
+        return new DateTime($this->__toString());
     }
 }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type\Math;
 
-class Integer implements \Stringable
+use Stringable;
+
+class Integer implements Stringable
 {
     private function __construct(
         private readonly string $integerString,

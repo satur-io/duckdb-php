@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\FFI;
 
+use ReflectionClass;
 use Saturio\DuckDB\Exception\NotSupportedException;
 
 class FindLibrary
@@ -41,7 +42,7 @@ class FindLibrary
         $machine = ('Linux' === $os && 'x86_64' === $machine) ? 'amd64' : $machine;
         $machine = ('Windows NT' === $os && 'AMD64' === $machine) ? 'amd64' : $machine;
 
-        $thisClassReflection = new \ReflectionClass(self::class);
+        $thisClassReflection = new ReflectionClass(self::class);
         $path = dirname($thisClassReflection->getFileName());
 
         return match ($os) {

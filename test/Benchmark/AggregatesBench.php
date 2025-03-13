@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Benchmark;
 
+use Generator;
 use PhpBench\Attributes as Bench;
 use Saturio\DuckDB\DuckDB;
 
@@ -21,7 +22,7 @@ class AggregatesBench
         }
     }
 
-    public function queries(): \Generator
+    public function queries(): Generator
     {
         yield 'aggregation-from-long-dataset' => [
             'query' => implode(' ', [

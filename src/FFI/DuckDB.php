@@ -12,7 +12,7 @@ use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 
 class DuckDB
 {
-    private static ?\FFI $ffi = null;
+    private static ?FFI $ffi = null;
 
     /**
      * @throws NotSupportedException
@@ -22,7 +22,7 @@ class DuckDB
     {
         if (is_null(self::$ffi)) {
             try {
-                self::$ffi = \FFI::scope('DUCKDB');
+                self::$ffi = FFI::scope('DUCKDB');
             } catch (FFI\Exception) {
                 $headerPath = FindLibrary::headerPath();
                 $libPath = FindLibrary::libPath();
@@ -35,7 +35,7 @@ class DuckDB
                     throw new MissedLibraryException("Could not load library '$libPath'.");
                 }
 
-                self::$ffi = \FFI::cdef(
+                self::$ffi = FFI::cdef(
                     file_get_contents($headerPath),
                     $libPath,
                 );
@@ -50,12 +50,12 @@ class DuckDB
 
     public function addr(NativeCData $name): ?NativeCData
     {
-        return \FFI::addr($name);
+        return FFI::addr($name);
     }
 
     public function free(NativeCData $pointer): void
     {
-        \FFI::free($pointer);
+        FFI::free($pointer);
     }
 
     public function duckDBFree(NativeCData $pointer): void
@@ -417,7 +417,7 @@ class DuckDB
 
     public function enumDictionaryValue(NativeCData $logicalType, int $entry): string
     {
-        return \FFI::string(self::$ffi->duckdb_enum_dictionary_value($logicalType, $entry));
+        return FFI::string(self::$ffi->duckdb_enum_dictionary_value($logicalType, $entry));
     }
 
     public function valueDecimal(NativeCData $result, int $col, int $row): NativeCData
@@ -462,7 +462,7 @@ class DuckDB
 
     public static function string(NativeCData $string, ?int $length = null): string
     {
-        return \FFI::string($string, $length);
+        return FFI::string($string, $length);
     }
 
     // Low performance function

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Result;
 
+use DateMalformedStringException;
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
@@ -68,7 +69,7 @@ class Vector
 
     /**
      * @throws BigNumbersNotSupportedException
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      * @throws InvalidTimeException|UnsupportedTypeException
      */
     public function getDataGenerator(): iterable
@@ -119,7 +120,7 @@ class Vector
 
     /**
      * @throws InvalidTimeException
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      * @throws BigNumbersNotSupportedException
      * @throws UnsupportedTypeException
      */

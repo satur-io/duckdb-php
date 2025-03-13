@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\Type\Converter\GetDuckDBValue;
 use Saturio\DuckDB\Type\Type;
+use TypeError;
 
 class GetDuckDBValueTest extends TestCase
 {
@@ -22,7 +23,7 @@ class GetDuckDBValueTest extends TestCase
 
     public function testInvalidType()
     {
-        $this->expectException(\TypeError::class);
+        $this->expectException(TypeError::class);
         $this->testTrait->getDuckDBValue(new class {});
     }
 
