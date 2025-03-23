@@ -25,7 +25,6 @@ class DuckDB
     private function __construct()
     {
         $this->initCollectMetrics();
-        $this->collectMetrics && collect_time($_, 'total');
         self::init();
     }
 

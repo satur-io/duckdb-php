@@ -1,6 +1,7 @@
 <?php
 
 if (!empty(getenv('DUCKDB_PHP_COLLECT_METRICS'))) {
+    $GLOBALS['duckdb_metrics'] = [];
     register_shutdown_function(function () {
         foreach ($GLOBALS['duckdb_metrics'] as $group => $metric) {
             fwrite(STDERR, sprintf("%s\t%s\t%s\n", $group, 'total', $metric['time']));
@@ -28,7 +29,7 @@ function collect_time(?object &$context, string $group): void
         public function __destruct()
         {
             $total = hrtime(true) - $this->start;
-            is_null($GLOBALS['duckdb_metrics'][$this->group])
+            !array_key_exists($this->group, $GLOBALS['duckdb_metrics'])
             ?
                 $GLOBALS['duckdb_metrics'][$this->group] = [
                     'time' => $total,

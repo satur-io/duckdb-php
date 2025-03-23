@@ -5,6 +5,8 @@ require $_composer_autoload_path ?? __DIR__ . '/../../vendor/autoload.php';
 
 use Saturio\DuckDB\DuckDB;
 
+duckdb_php_collect_metrics() && collect_time($_, 'total');
+
 $printBatchSize = 10000;
 
 $duckDB = DuckDB::create($argv[2] ?? null);
@@ -19,3 +21,4 @@ foreach ($result->rows() as $id => $row) {
 }
 ob_flush();
 unset($result);
+unset($_);

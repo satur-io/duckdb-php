@@ -12,7 +12,7 @@ set style line 4 lt 1 lc rgb '#FFFF99' # pale yellow
 set style line 5 lt 1 lc rgb '#386CB0' # blue
 set style line 6 lt 1 lc rgb '#F0027F' # magenta
 set style line 7 lt 1 lc rgb '#BF5B17' # brown
-set style line 8 lt 1 lc rgb '#666666' # grey
+set style line 8 lt 1 lc rgb '#BEAED4' # pale purple
 
 # palette
 set palette maxcolors 8
@@ -23,4 +23,4 @@ set palette defined ( 0 '#7FC97F',\
 		      4 '#386CB0',\
 		      5 '#F0027F',\
 		      6 '#BF5B17',\
-		      7 '#666666' )
+		      7 '#BEAED4' )
