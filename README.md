@@ -47,6 +47,57 @@ $intPreparedStatement->bindParam(1, 3);
 $result = $intPreparedStatement->execute();
 $result->print();
 ```
+#### DuckDB powerful
+
+DuckDB provides some amazing features. For example, 
+you can query remote files directly.
+
+Let's use an aggregate function to calculate the average of a column
+for a parquet remote file:
+
+```php
+DuckDB::sql(
+    'SELECT "Reporting Year", avg("Gas Produced, MCF") as "AVG Gas Produced" 
+                FROM "https://github.com/plotly/datasets/raw/refs/heads/master/oil-and-gas.parquet" 
+                WHERE "Reporting Year" BETWEEN 1985 AND 1990
+                GROUP BY "Reporting Year";'
+)->print();
+```
+
+```
+--------------------------------------
+| Reporting Year   | AVG Gas Produce |
+--------------------------------------
+| 1985             | 2461.4047344111 |
+| 1986             | 6060.8575605681 |
+| 1987             | 5047.5813074014 |
+| 1988             | 4763.4090541633 |
+| 1989             | 4175.2989758837 |
+| 1990             | 3706.9404742437 |
+--------------------------------------
+```
+
+Or summarize a remote csv:
+
+```php
+DuckDB::sql('SUMMARIZE TABLE "https://blobs.duckdb.org/data/Star_Trek-Season_1.csv";')->print();
+```
+
+```
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| column_name      | column_type      | min              | max              | approx_unique    | avg              | std              | q25              | q50              | q75              | count            | null_percentage |
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| season_num       | BIGINT           | 1                | 1                | 1                | 1.0              | 0.0              | 1                | 1                | 1                | 30               | 0               |
+| episode_num      | BIGINT           | 0                | 29               | 29               | 14.5             | 8.8034084308295  | 7                | 14               | 22               | 30               | 0               |
+| aired_date       | DATE             | 1965-02-28       | 1967-04-13       | 35               |                  |                  | 1966-10-20       | 1966-12-22       | 1967-02-16       | 30               | 0               |
+| cnt_kirk_hookup  | BIGINT           | 0                | 2                | 3                | 0.3333333333333  | 0.6064784348631  | 0                | 0                | 1                | 30               | 0               |
+
+...
+
+```
+
+I would recommend taking a look at the [DuckDB documentation](https://duckdb.org/docs/stable/sql/introduction) to figure out
+all possibilities.
 
 > [!TIP]
 > Do you want more use cases? Check the [examples folder](examples).

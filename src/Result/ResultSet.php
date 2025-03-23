@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Saturio\DuckDB\Result;
 
 use DateMalformedStringException;
+use Iterator;
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
@@ -47,7 +48,7 @@ class ResultSet
      * @throws DateMalformedStringException
      * @throws InvalidTimeException|UnsupportedTypeException
      */
-    public function rows(bool $columnNameAsKey = false): iterable
+    public function rows(bool $columnNameAsKey = false): Iterator
     {
         /** @var DataChunk $chunk */
         foreach ($this->chunks() as $chunk) {
@@ -103,7 +104,12 @@ class ResultSet
         printf($bold, $hyphenLine);
 
         // Body - rows
-        array_map(function ($row) use ($mask) {printf($mask, ...$row); }, iterator_to_array($this->rows()));
+        $rows = $this->rows();
+        iterator_apply($rows, function ($rows) use ($mask) {
+            printf($mask, ...$rows->current());
+
+            return true;
+        }, [$rows]);
         echo $hyphenLine.PHP_EOL.PHP_EOL;
     }
 
