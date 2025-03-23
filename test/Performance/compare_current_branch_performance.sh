@@ -33,9 +33,9 @@ function run_query() {
 
   for i in $(seq 0 ${ITERATIONS})
   do
-    gtime -f "%e %M" -o temp_stats_main ${MAIN_BRANCH_COMMAND} "${QUERY}" "${DATABASE_MAIN}" > /dev/null
-    gtime -f "%e %M" -o temp_stats_new_branch ${NEW_BRANCH_COMMAND} "${QUERY}" "${DATABASE_NEW}" > /dev/null
-    gtime -f "%e %M" -o temp_stats_duckdb_cli ${REFERENCE_DUCKDB_CLI} "${QUERY}" "${DATABASE_CLI}" > /dev/null
+    gtime -f "%e %M" -o temp_stats_main ${MAIN_BRANCH_COMMAND} "${QUERY}" "${DATABASE_MAIN}" &> /dev/null
+    gtime -f "%e %M" -o temp_stats_new_branch ${NEW_BRANCH_COMMAND} "${QUERY}" "${DATABASE_NEW}" &> /dev/null
+    gtime -f "%e %M" -o temp_stats_duckdb_cli ${REFERENCE_DUCKDB_CLI} "${QUERY}" "${DATABASE_CLI}" &> /dev/null
 
     execution_time_new_branch=$(bc -l <<< "${execution_time_new_branch} + $(awk '{print $1}' < temp_stats_new_branch)");
     memory_usage_new_branch=$(bc -l <<< "${memory_usage_new_branch} + $(awk '{print $2}' < temp_stats_new_branch)");

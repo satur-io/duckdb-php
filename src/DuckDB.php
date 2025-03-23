@@ -11,10 +11,12 @@ use Saturio\DuckDB\Exception\DuckDBException;
 use Saturio\DuckDB\Exception\QueryException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\PreparedStatement\PreparedStatement;
+use Saturio\DuckDB\Result\CollectMetrics;
 use Saturio\DuckDB\Result\ResultSet;
 
 class DuckDB
 {
+    use CollectMetrics;
     private DB $db;
     private Connection $connection;
 
@@ -22,6 +24,8 @@ class DuckDB
 
     private function __construct()
     {
+        $this->initCollectMetrics();
+        $this->collectMetrics && collect_time($_, 'total');
         self::init();
     }
 
@@ -63,6 +67,7 @@ class DuckDB
      */
     public function query(string $query): ResultSet
     {
+        $this->collectMetrics && collect_time($_, 'query');
         $queryResult = self::$ffi->new('duckdb_result');
 
         $result = self::$ffi->query($this->connection->connection, $query, self::$ffi->addr($queryResult));
@@ -74,6 +79,14 @@ class DuckDB
         }
 
         return new ResultSet(self::$ffi, $queryResult);
+    }
+
+    /**
+     * @throws DuckDBException
+     */
+    public static function sql(string $query): ResultSet
+    {
+        return self::create()->query($query);
     }
 
     public function preparedStatement(string $query): PreparedStatement

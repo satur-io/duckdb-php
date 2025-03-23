@@ -7,7 +7,7 @@
         "psr-4": {
             "Saturio\\DuckDB\\": "src/"
         },
-        "files": [ "aliases.php" ]
+        "files": [ "aliases.php", "collect_time.php" ]
     },
     "autoload-dev": {
         "psr-4": {

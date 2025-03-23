@@ -14,15 +14,18 @@ use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 class ResultSet
 {
     use ValidityTrait;
+    use CollectMetrics;
 
     public function __construct(
         public readonly FFIDuckDB $ffi,
         public readonly NativeCData $result,
     ) {
+        $this->initCollectMetrics();
     }
 
     public function fetchChunk(): ?DataChunk
     {
+        $this->collectMetrics && collect_time($_, 'fetchChunk');
         $newChunk = $this->ffi->fetchChunk($this->result);
 
         return $newChunk ? new DataChunk(

@@ -15,10 +15,7 @@ It works on Linux, Windows, and macOS with PHP versions greater than 8.3.
 ### Quick Start
 
 ```php
-$duckDB = DuckDB::create();
-
-$result = $duckDB->query("SELECT 'quack' as my_column;");
-$result->print();
+DuckDB::sql("SELECT 'quack' as my_column")->print();
 ```
 
 ```
