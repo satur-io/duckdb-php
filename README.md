@@ -156,8 +156,6 @@ all possibilities.
 
 :x: Not supported
 
-:grey_question: Pending to check and cover with tests
-
 :small_blue_diamond: Not applicable
 
 ### Other PHP DuckDB Integrations
