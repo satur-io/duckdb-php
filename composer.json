@@ -34,7 +34,7 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit test",
-        "performance": ".test/Performance/compare_current_branch_performance.sh test/_data/test_file_queries.sql",
+        "performance": "./test/Performance/compare_current_branch_performance.sh",
         "get-libraries": "./scripts/get_libraries.sh",
         "fix": "PHP_CS_FIXER_IGNORE_ENV=1 tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes",
         "benchmark": "php -d \"error_reporting=E_ALL & ~E_DEPRECATED\" vendor/bin/phpbench run --report=aggregate"

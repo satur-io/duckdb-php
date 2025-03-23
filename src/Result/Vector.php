@@ -89,6 +89,25 @@ class Vector
         }
     }
 
+    /**
+     * @throws DateMalformedStringException
+     * @throws UnsupportedTypeException
+     * @throws BigNumbersNotSupportedException
+     * @throws InvalidTimeException
+     */
+    public function getBatchRows(int $from, int $size): array
+    {
+        $rows = [];
+        for ($i = $from; $i < $from + $size; ++$i) {
+            if ($i >= $this->rows) {
+                return $rows;
+            }
+            $rows[] = $this->getTypedData($i);
+        }
+
+        return $rows;
+    }
+
     public function getValidity(): ?NativeCData
     {
         $validity = $this->ffi->vectorGetValidity($this->vector);

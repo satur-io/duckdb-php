@@ -17,6 +17,8 @@ class ResultSet
     use ValidityTrait;
     use CollectMetrics;
 
+    private const int ROW_BATCH_SIZE = 1024;
+
     public function __construct(
         public readonly FFIDuckDB $ffi,
         public readonly NativeCData $result,
@@ -71,6 +73,30 @@ class ResultSet
                 unset($dataGenerators[$id]);
             }
 
+            $chunk->destroy();
+        }
+    }
+
+    /**
+     * @throws DateMalformedStringException
+     * @throws UnsupportedTypeException
+     * @throws BigNumbersNotSupportedException
+     * @throws InvalidTimeException
+     */
+    public function vectorChunk(): Iterator
+    {
+        /** @var DataChunk $chunk */
+        foreach ($this->chunks() as $chunk) {
+            $rowCount = $chunk->rowCount();
+
+            $columnCount = $chunk->columnCount();
+
+            $rows = [];
+            for ($columnIndex = 0; $columnIndex < $columnCount; ++$columnIndex) {
+                $vector = $chunk->getVector($columnIndex, rows: $rowCount);
+                $rows[] = $vector->getBatchRows(0, $rowCount);
+            }
+            yield $rows ?? null;
             $chunk->destroy();
         }
     }

@@ -133,20 +133,21 @@ ln -s ${PWD}/test/_data /tmp/master-branch/test/_data
 
 cp preload.php /tmp/master-branch
 
-printf "opcache.enable=0\nopcache.enable_cli=0" > /tmp/master-branch/.user.ini;
-cd  /tmp/master-branch && PHP_INI_SCAN_DIR=${PHP_INI_SCAN_DIR}:${PWD} composer dump-autoload;
-rm -f /tmp/master-branch/.user.ini;
+#printf "opcache.enable=0\nopcache.enable_cli=0" > /tmp/master-branch/.user.ini;
 
+cd  /tmp/master-branch || exit ;
+# git checkout f7dd1e659dbf5db9b51948422514209bc6a95f90;
+PHP_INI_SCAN_DIR=${PHP_INI_SCAN_DIR}:${PWD} composer dump-autoload;
+rm -f /tmp/master-branch/.user.ini;
 cd "${orig}" || exit
 
-NEW_BRANCH_COMMAND="test/Performance/duckdb_api";
+NEW_BRANCH_COMMAND="test/Performance/duckdb_api_batches";
 MAIN_BRANCH_COMMAND="/tmp/master-branch/test/Performance/duckdb_api";
 REFERENCE_DUCKDB_CLI="duckdb --list -c";
 
 ${NEW_BRANCH_COMMAND} "SELECT 1;" > /dev/null 2>&1
 ${MAIN_BRANCH_COMMAND} "SELECT 1;" > /dev/null 2>&1
 ${REFERENCE_DUCKDB_CLI} "SELECT 1;" > /dev/null 2>&1
-
 
 FILE=$1;
 

@@ -1,0 +1,33 @@
+#!/usr/bin/env php
+<?php
+
+require $_composer_autoload_path ?? __DIR__ . '/../../vendor/autoload.php';
+
+use Saturio\DuckDB\DuckDB;
+
+duckdb_php_collect_metrics() && collect_time($_, 'total');
+
+$printBatchSize = 10000;
+
+$duckDB = DuckDB::create($argv[2] ?? null);
+$result = $duckDB->query($argv[1]);
+
+print implode('|', iterator_to_array($result->columnNames())) . PHP_EOL;
+
+ob_start(chunk_size: $printBatchSize);
+foreach ($result->vectorChunk() as $rowBatch) {
+    $rows = sizeof($rowBatch[0]);
+    $columns = sizeof($rowBatch);
+
+    for ($i = 0; $i < $rows; $i++) {
+        foreach ($rowBatch as $columnIndex => $column) {
+            print $column[$i];
+            print ($columnIndex === ($columns - 1)) ? PHP_EOL : '|';
+        }
+    }
+    unset($rowBatch);
+}
+ob_flush();
+
+unset($result);
+unset($_);
