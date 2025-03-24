@@ -88,15 +88,15 @@ class ResultSet
         /** @var DataChunk $chunk */
         foreach ($this->chunks() as $chunk) {
             $rowCount = $chunk->rowCount();
-
-            $columnCount = $chunk->columnCount();
+            static $columnCount = $chunk->columnCount();
 
             $rows = [];
             for ($columnIndex = 0; $columnIndex < $columnCount; ++$columnIndex) {
-                $vector = $chunk->getVector($columnIndex, rows: $rowCount);
-                $rows[] = $vector->getBatchRows(0, $rowCount);
+                $rows[] = $chunk
+                    ->getVector($columnIndex, rows: $rowCount)
+                    ->getBatchRows();
             }
-            yield $rows ?? null;
+            yield $rows;
             $chunk->destroy();
         }
     }

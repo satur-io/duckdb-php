@@ -24,11 +24,9 @@ class Vector
     private NativeCData $typedData;
     private NativeCData $logicalType;
     private ?NativeCData $validity;
-
     public ?NestedTypeVector $nestedTypeVector = null;
     private NumericConverter $numericConverter;
     private TypeConverter $typeConverter;
-    // private bool $collectMetrics;
 
     public function __construct(
         private readonly FFIDuckDB $ffi,
@@ -95,13 +93,10 @@ class Vector
      * @throws BigNumbersNotSupportedException
      * @throws InvalidTimeException
      */
-    public function getBatchRows(int $from, int $size): array
+    public function getBatchRows(): array
     {
         $rows = [];
-        for ($i = $from; $i < $from + $size; ++$i) {
-            if ($i >= $this->rows) {
-                return $rows;
-            }
+        for ($i = 0; $i < $this->rows; ++$i) {
             $rows[] = $this->getTypedData($i);
         }
 

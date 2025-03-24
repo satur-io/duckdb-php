@@ -15,15 +15,15 @@ $result = $duckDB->query($argv[1]);
 print implode('|', iterator_to_array($result->columnNames())) . PHP_EOL;
 
 ob_start(chunk_size: $printBatchSize);
-foreach ($result->vectorChunk() as $rowBatch) {
-    $rows = sizeof($rowBatch[0]);
-    $columns = sizeof($rowBatch);
+foreach ($result->vectorChunk() as $vectorChunkData) {
+    $rows = count($vectorChunkData[0]);
+    static $columns = count($vectorChunkData);
 
     for ($i = 0; $i < $rows; $i++) {
-        foreach ($rowBatch as $columnIndex => $column) {
-            print $column[$i];
-            print ($columnIndex === ($columns - 1)) ? PHP_EOL : '|';
+        foreach ($vectorChunkData as $columnIndex => $column) {
+            print $column[$i] . '|';
         }
+        print PHP_EOL;
     }
     unset($rowBatch);
 }

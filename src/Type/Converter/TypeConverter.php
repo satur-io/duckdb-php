@@ -22,8 +22,8 @@ use Saturio\DuckDB\Type\UUID;
 class TypeConverter
 {
     use GetDuckDBValue;
-    private const PRECOMPUTED_2_POW_64 = '18446744073709551616';
-    private const PRECOMPUTED_2_POW_63 = '9223372036854775808';
+    private const string PRECOMPUTED_2_POW_64 = '18446744073709551616';
+    private const string PRECOMPUTED_2_POW_63 = '9223372036854775808';
 
     public function __construct(
         private readonly FFIDuckDB $ffi,
