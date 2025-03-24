@@ -25,7 +25,6 @@ foreach ($result->vectorChunk() as $vectorChunkData) {
         }
         print PHP_EOL;
     }
-    unset($rowBatch);
 }
 ob_flush();
 

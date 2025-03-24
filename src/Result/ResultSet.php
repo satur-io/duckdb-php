@@ -17,8 +17,6 @@ class ResultSet
     use ValidityTrait;
     use CollectMetrics;
 
-    private const int ROW_BATCH_SIZE = 1024;
-
     public function __construct(
         public readonly FFIDuckDB $ffi,
         public readonly NativeCData $result,

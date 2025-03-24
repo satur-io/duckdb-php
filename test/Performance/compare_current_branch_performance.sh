@@ -98,7 +98,7 @@ function generate_plots() {
   printf "\"%s\"\n" "${1}" > ${FILE}
   printf "API \t Time \t Mem \n" >> ${FILE}
   printf "\"DuckDB CLI\" \t %10.4f \t %10.4f \n" "${2}" "${3}" >> ${FILE}
-  printf "\"DuckDB PHP\" \t %10.4f \t %10.4f \n" "${6}" "${7}" >> ${FILE}
+  printf "\"DuckDB PHP\" \t %10.4f \t %10.4f \n" "${4}" "${5}" >> ${FILE}
 
   OUTPUT_PLOT_FILE="out/$(cat /dev/urandom | env LC_CTYPE=alnum tr -cd 'a-f0-9' | head -c 32).png"
   gnuplot -e "set output '${OUTPUT_PLOT_FILE}'" test/Performance/commands.txt
