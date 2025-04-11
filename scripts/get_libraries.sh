@@ -2,7 +2,7 @@
 
 platforms=("linux-aarch64" "linux-amd64" "osx-universal" "windows-amd64" "windows-arm64")
 platformLibFiles=("libduckdb.so" "libduckdb.so" "libduckdb.dylib" "duckdb.dll" "duckdb.dll")
-release="1.2.1"
+release="1.2.2"
 
 rm -rf ./lib
 
