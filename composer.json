@@ -1,6 +1,12 @@
 {
     "name": "satur.io/duckdb",
     "description": "DuckDB API for PHP",
+    "keywords": [
+        "duckdb",
+        "database",
+        "ffi",
+        "performance"
+    ],
     "type": "library",
     "license": "MIT",
     "autoload": {
