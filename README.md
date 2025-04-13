@@ -9,8 +9,7 @@
 This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API for PHP.
 
 Focused on performance, it uses the official [C API](https://duckdb.org/docs/api/c/overview.html) internally through [FFI](https://www.php.net/manual/en/book.ffi.php), achieving good benchmarks.
-However, it is not just a wrapper for the C API; it provides custom methods with a PHP flavor to work with DuckDB in a simple way.
-It works on Linux, Windows, and macOS with PHP versions greater than 8.3.
+This library is more than just a wrapper for the C API; it introduces custom, PHP-friendly methods to simplify working with DuckDB. It is compatible with Linux, Windows, and macOS, requiring PHP version 8.3 or higher.
 
 ### Quick Start
 
@@ -159,13 +158,28 @@ all possibilities.
 :small_blue_diamond: Not applicable
 
 ### Other PHP DuckDB Integrations
-This project takes some ideas from [thbley/php-duckdb-integration](https://github.com/thbley/php-duckdb-integration)
-and from [kambo-1st/duckdb-php](https://github.com/kambo-1st/duckdb-php). Without these previous works,
-satur-io/duckdb-php probably wouldn't exist.
 
-Nevertheless, there are some important differences:
-- **satur-io/duckdb-php** uses all modern C API methods, avoiding deprecated ones.
-- It is available for all platforms (Linux, macOS, and Windows) and selects the appropriate C library.
-- Focused on performance.
-- Easy to install and use.
-- All needed resources into one Composer package.
+This project takes inspiration from [thbley/php-duckdb-integration](https://github.com/thbley/php-duckdb-integration) and [kambo-1st/duckdb-php](https://github.com/kambo-1st/duckdb-php). Without these prior works, **satur-io/duckdb-php** might not exist.
+
+However, there are some key differences:
+- **satur-io/duckdb-php** leverages all modern C API methods, avoiding deprecated ones.
+- It supports all major platforms (Linux, macOS, and Windows) and automatically selects the appropriate C library.
+- Prioritizes performance.
+- Simple to install and use.
+- Bundles all necessary resources into a single Composer package.
+
+
+### Contributions Are Welcome
+
+There are several open issues you can contribute to. Feel free to create new issues for feature requests or bug reports. Contributions of any kind are highly appreciated!
+
+If you'd like to contribute, please follow these steps:
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Commit your changes with clear and concise messages.
+4. Submit a pull request with a detailed description of your changes.
+
+> [!NOTE]
+> Please include tests for any new functionality or bug fixing.
+
+Thank you for helping improve this project!
