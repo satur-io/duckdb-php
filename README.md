@@ -33,13 +33,39 @@ DuckDB::sql("SELECT 'quack' as my_column")->print();
 
 > It's that simple! :duck:
 
-Let's see how prepared statements work.
+The function we used here, `DuckDB::sql()`, performs a query in a new
+in-memory database and is destroyed after retrieving the result.
+
+This is not the most common use case, let's see how to get a persistent connection.
+
+#### Connection
+
+```php
+$duckDB = DuckDB::create('duck.db'); // or DuckDB::create() for in-memory database
+
+$duckDB->query('CREATE TABLE test (i INTEGER, b BOOL, f FLOAT);');
+$duckDB->query('INSERT INTO test VALUES (3, true, 1.1), (5, true, 1.2), (3, false, 1.1), (3, null, 1.2);');
+
+$duckDB->query('SELECT * FROM test')->print();
+```
+
+As you probably guessed, `DuckDB::create()` creates a new connection to the specified database,
+or create a new one if it doesn't exist yet and then establishes the connection.
+
+After that, we can use the function `query` to perform the requests.
+
+> [!WARNING]
+> Notice the difference between the static method `sql` and the non-static method `query`.
+> While the first one always creates and destroys a new in-memory database, the second one
+> uses a previously established connection and should be the preferred option in most cases.
+
+In addition, the library also provides prepared statements for binding parameters to our query.
 
 #### Prepared Statements
 ```php
 $duckDB = DuckDB::create();
 
-$duckDB->query("CREATE TABLE test (i INTEGER, b BOOL, f FLOAT);");
+$duckDB->query('CREATE TABLE test (i INTEGER, b BOOL, f FLOAT);');
 $duckDB->query('INSERT INTO test VALUES (3, true, 1.1), (5, true, 1.2), (3, false, 1.1), (3, null, 1.2);');
 
 $boolPreparedStatement = $duckDB->preparedStatement('SELECT * FROM test WHERE b = $1');

@@ -62,6 +62,9 @@ class DuckDB
     }
 
     /**
+     *
+     * Run a query using the connection established when DuckDB object was created.
+     *
      * @throws DuckDBException
      */
     public function query(string $query): ResultSet
@@ -81,6 +84,14 @@ class DuckDB
     }
 
     /**
+     *
+     * Run a query in a new in-memory database.
+     * The database will be destroyed after retrieving the result.
+     *
+     * Created mainly for testing purposes. But in some cases,
+     * it could be also a good and shorter option
+     * for reading data from a file (e.g. csv, json or parquet).
+     *
      * @throws DuckDBException
      */
     public static function sql(string $query): ResultSet
