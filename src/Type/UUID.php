@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type;
 
-use Saturio\DuckDB\Type\Math\Integer as BigInteger;
+use Saturio\DuckDB\Type\Math\LongInteger as BigInteger;
 use Saturio\DuckDB\Type\Math\MathLibInterface;
 
 class UUID

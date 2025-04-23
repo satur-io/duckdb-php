@@ -11,8 +11,10 @@ use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
+use Saturio\DuckDB\Type\Blob;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
+use Saturio\DuckDB\Type\Math\LongInteger;
 use Saturio\DuckDB\Type\Math\MathLibInterface;
 use Saturio\DuckDB\Type\Time;
 use Saturio\DuckDB\Type\TimePrecision;
@@ -39,7 +41,7 @@ class TypeConverter
         if ($length <= 12) {
             $data = $inlined->inlined;
 
-            return FFI::string($data);
+            return FFI::string($data, $length);
         }
         $pointer = $value->pointer;
         $data = $pointer->ptr;
@@ -47,16 +49,11 @@ class TypeConverter
         return FFI::string($data, $length);
     }
 
-    public function getStringFromBlob(NativeCData $data): string
+    public function getBlobFromBlob(NativeCData $data): Blob
     {
         $string = $this->getVarChar($data);
 
-        $blobString = '';
-        for ($i = 0; $i < strlen($string); ++$i) {
-            $blobString .= ctype_print($string[$i]) ? $string[$i] : '\x'.str_pad(strtoupper(dechex(ord($string[$i]))), 2, '0', STR_PAD_LEFT);
-        }
-
-        return $blobString;
+        return new Blob($string);
     }
 
     public function getDateFromDuckDBDate(NativeCData $date): Date
@@ -198,14 +195,17 @@ class TypeConverter
     /**
      * @throws BigNumbersNotSupportedException
      */
-    public function getBigIntFromDuckDBBigInt(int $data, bool $unsigned): int|string
+    public function getBigIntFromDuckDBBigInt(int $data, bool $unsigned): int|string|LongInteger
     {
         $this->checkMath();
         if (!$unsigned || $data >= 0) {
             return $data;
         }
 
-        return $this->math->add((string) $data, self::PRECOMPUTED_2_POW_64);
+        return
+            LongInteger::fromString(
+                $this->math->add((string) $data, self::PRECOMPUTED_2_POW_64)
+            );
     }
 
     public function getSignedBitInt(string|int $data): string
@@ -216,13 +216,16 @@ class TypeConverter
     /**
      * @throws BigNumbersNotSupportedException
      */
-    public function getHugeIntFromDuckDBHugeInt(NativeCData $data, bool $unsigned): int|string
+    public function getHugeIntFromDuckDBHugeInt(NativeCData $data, bool $unsigned): int|string|LongInteger
     {
         $this->checkMath();
         $lower = $this->getBigIntFromDuckDBBigInt($data->lower, true);
         $upper = $this->getBigIntFromDuckDBBigInt($data->upper, $unsigned);
 
-        return $this->math->add($this->math->mul((string) $upper, self::PRECOMPUTED_2_POW_64), (string) $lower);
+        return LongInteger::fromString(
+            $this->math->add($this->math->mul((string) $upper,
+                self::PRECOMPUTED_2_POW_64), (string) $lower)
+        );
     }
 
     public function getHugeIntFromUUID(NativeCData $data, bool $unsigned): int|string
@@ -246,11 +249,43 @@ class TypeConverter
         return UUID::fromHugeint($hugeintString, $this->math);
     }
 
-    public function getBitDuckDBBit(?NativeCData $data): string
+    public function getStringFromDuckDBBit(?NativeCData $data): string
     {
-        $value = $this->ffi->createBit($data);
+        $length = $data->value->inlined->length;
+        $string = $this->getVarChar($data);
+        $padding = $string[0];
 
-        return $this->ffi->getVarchar($value);
+        $str = '';
+        for ($i = 1; $i < $length; ++$i) {
+            $str .= str_pad(decbin(ord($string[$i])), 8, '0', STR_PAD_LEFT);
+        }
+
+        return substr($str, ord($padding));
+    }
+
+    public function getStringFromDuckDBVarInt(?NativeCData $data): string
+    {
+        $string = $this->getVarChar($data);
+
+        return $this->toDecimalString(substr($string, 3), 0 !== ord($string[1]));
+    }
+
+    private function toDecimalString(string $string, bool $isNegative): string
+    {
+        $length = strlen($string);
+
+        $decimal = '0';
+        for ($i = 0; $i < $length; ++$i) {
+            $decimal = $this->math->add(
+                $decimal,
+                $this->math->mul(
+                    (string) ord($isNegative ? ~$string[$i] : $string[$i]),
+                    $this->math->pow('256', (string) ($length - $i - 1))
+                )
+            );
+        }
+
+        return ($isNegative ? '-' : '').$decimal;
     }
 
     public function getBlobDuckDBlob(?NativeCData $data): string

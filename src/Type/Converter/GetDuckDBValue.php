@@ -8,8 +8,8 @@ use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
-use Saturio\DuckDB\Type\Math\Integer;
-use Saturio\DuckDB\Type\Math\Integer as BigInteger;
+use Saturio\DuckDB\Type\Math\LongInteger;
+use Saturio\DuckDB\Type\Math\LongInteger as BigInteger;
 use Saturio\DuckDB\Type\Time;
 use Saturio\DuckDB\Type\Timestamp;
 use Saturio\DuckDB\Type\Type;
@@ -155,10 +155,10 @@ trait GetDuckDBValue
     private function createUBigInt(string|int|BigInteger $integer): BigInteger
     {
         if ($this->math->comp((string) $integer, (string) PHP_INT_MAX) <= 0) { // Less than 2^63 - 1
-            return Integer::fromString((string) $integer);
+            return LongInteger::fromString((string) $integer);
         }
 
-        return Integer::fromString($this->math->sub((string) $integer, self::PRECOMPUTED_2_POW_64));
+        return LongInteger::fromString($this->math->sub((string) $integer, self::PRECOMPUTED_2_POW_64));
     }
 
     public function getTimeStruct(Time $time): ?NativeCData
