@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB;
 
+use Saturio\DuckDB\DB\Configuration;
 use Saturio\DuckDB\DB\Connection;
 use Saturio\DuckDB\DB\DB;
 use Saturio\DuckDB\Exception\ConnectionException;
 use Saturio\DuckDB\Exception\DuckDBException;
+use Saturio\DuckDB\Exception\ErrorCreatingNewConfig;
+use Saturio\DuckDB\Exception\InvalidConfigurationOption;
 use Saturio\DuckDB\Exception\QueryException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\PreparedStatement\PreparedStatement;
@@ -40,10 +43,12 @@ class DuckDB
 
     /**
      * @throws ConnectionException
+     * @throws ErrorCreatingNewConfig
+     * @throws InvalidConfigurationOption
      */
-    private function db(?string $path = null): self
+    private function db(?string $path = null, ?Configuration $config = null): self
     {
-        $this->db = new DB(self::$ffi, $path);
+        $this->db = new DB(self::$ffi, $path, $config);
 
         return $this;
     }
@@ -56,9 +61,9 @@ class DuckDB
     /**
      * @throws ConnectionException
      */
-    public static function create(?string $path = null): self
+    public static function create(?string $path = null, ?Configuration $config = null): self
     {
-        return (new self())->db($path)->connect();
+        return (new self())->db($path, config: $config)->connect();
     }
 
     /**
