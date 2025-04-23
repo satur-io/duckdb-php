@@ -7,7 +7,6 @@ namespace Saturio\DuckDB\Result;
 use DateMalformedStringException;
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
-use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Converter\NumericConverter;
@@ -54,7 +53,7 @@ class Vector
             TypeC::DUCKDB_TYPE_TIMESTAMP_TZ => $this->cast(TypeC::DUCKDB_TYPE_TIMESTAMP),
             TypeC::DUCKDB_TYPE_UUID => $this->cast(TypeC::DUCKDB_TYPE_UHUGEINT),
             TypeC::DUCKDB_TYPE_ENUM => $this->cast(TypeC::{Type::from($this->ffi->enumInternalType($this->logicalType))->name}),
-            TypeC::DUCKDB_TYPE_BLOB => $this->cast(TypeC::DUCKDB_TYPE_VARCHAR),
+            TypeC::DUCKDB_TYPE_BLOB, TypeC::DUCKDB_TYPE_BIT, TypeC::DUCKDB_TYPE_VARINT => $this->cast(TypeC::DUCKDB_TYPE_VARCHAR),
             default => $this->cast($this->type),
         };
 
@@ -72,7 +71,7 @@ class Vector
     /**
      * @throws BigNumbersNotSupportedException
      * @throws DateMalformedStringException
-     * @throws InvalidTimeException|UnsupportedTypeException
+     * @throws InvalidTimeException
      */
     public function getDataGenerator(): iterable
     {
@@ -89,7 +88,6 @@ class Vector
 
     /**
      * @throws DateMalformedStringException
-     * @throws UnsupportedTypeException
      * @throws BigNumbersNotSupportedException
      * @throws InvalidTimeException
      */
@@ -140,7 +138,6 @@ class Vector
      * @throws InvalidTimeException
      * @throws DateMalformedStringException
      * @throws BigNumbersNotSupportedException
-     * @throws UnsupportedTypeException
      */
     public function getTypedData(int $rowIndex): mixed
     {
@@ -168,8 +165,9 @@ class Vector
             TypeC::DUCKDB_TYPE_UHUGEINT => $this->typeConverter->getHugeIntFromDuckDBHugeInt($data, unsigned: true),
             TypeC::DUCKDB_TYPE_UUID => $this->typeConverter->getUUIDFromDuckDBHugeInt($data),
             TypeC::DUCKDB_TYPE_ENUM => $this->typeConverter->getStringFromEnum($this->logicalType, $data),
-            TypeC::DUCKDB_TYPE_BIT => throw new UnsupportedTypeException('Type BIT/BITSTRING is not supported by duckdb-php yet'), // @todo - Check why does not work $this->typeConverter->getBitDuckDBBit($data),
-            TypeC::DUCKDB_TYPE_BLOB => $this->typeConverter->getStringFromBlob($data),
+            TypeC::DUCKDB_TYPE_BLOB => $this->typeConverter->getBlobFromBlob($data),
+            TypeC::DUCKDB_TYPE_BIT => $this->typeConverter->getStringFromDuckDBBit($data),
+            TypeC::DUCKDB_TYPE_VARINT => $this->typeConverter->getStringFromDuckDBVarInt($data),
             default => $data,
         };
     }

@@ -164,7 +164,7 @@ all possibilities.
 | DUCKDB_TYPE_HUGEINT      | HUGEINT      | string                        | [:ballot_box_with_check:](https://github.com/satur-io/duckdb-php/issues/1) |                             :white_check_mark:                             |
 | DUCKDB_TYPE_UHUGEINT     | UHUGEINT     | string                        | [:ballot_box_with_check:](https://github.com/satur-io/duckdb-php/issues/1) |                             :white_check_mark:                             |
 | DUCKDB_TYPE_VARCHAR      | VARCHAR      | string                        |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_BLOB         | BLOB         | string                        | [:ballot_box_with_check:](https://github.com/satur-io/duckdb-php/issues/2) |                                    :x:                                     |
+| DUCKDB_TYPE_BLOB         | BLOB         | Saturio\DuckDB\Type\Blob      |                             :white_check_mark:                             |                                    :x:                                     |
 | DUCKDB_TYPE_TIMESTAMP_S  | TIMESTAMP_S  | Saturio\DuckDB\Type\Timestamp |                             :white_check_mark:                             |                             :white_check_mark:                             |
 | DUCKDB_TYPE_TIMESTAMP_MS | TIMESTAMP_MS | Saturio\DuckDB\Type\Timestamp |                             :white_check_mark:                             |                             :white_check_mark:                             |
 | DUCKDB_TYPE_TIMESTAMP_NS | TIMESTAMP_NS | Saturio\DuckDB\Type\Timestamp |                             :white_check_mark:                             |                                    :x:                                     |
@@ -178,8 +178,8 @@ all possibilities.
 | DUCKDB_TYPE_ARRAY        | ARRAY        | array                         |                             :white_check_mark:                             |                            :small_blue_diamond:                            |
 | DUCKDB_TYPE_MAP          | MAP          | array                         |                             :white_check_mark:                             |                            :small_blue_diamond:                            |
 | DUCKDB_TYPE_UNION        | UNION        | mixed                         |                             :white_check_mark:                             |                            :small_blue_diamond:                            |
-| DUCKDB_TYPE_BIT          | BIT          | string                        |                                    :x:                                     |                            :small_blue_diamond:                            |
-| DUCKDB_TYPE_VARINT       | VARINT       | string                        |                                    :x:                                     |                                    :x:                                     |
+| DUCKDB_TYPE_BIT          | BIT          | string                        |                             :white_check_mark:                             |                            :small_blue_diamond:                            |
+| DUCKDB_TYPE_VARINT       | VARINT       | string                        |                             :white_check_mark:                             |                                    :x:                                     |
 
 :white_check_mark: Fully supported
 

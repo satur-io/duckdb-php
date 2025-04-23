@@ -72,6 +72,11 @@ class MathLib implements MathLibInterface
         return $this->math->comp($x, $y);
     }
 
+    public function toInt(string $x): int|false
+    {
+        return $this->math->toInt($x);
+    }
+
     public static function available(): bool
     {
         return true;

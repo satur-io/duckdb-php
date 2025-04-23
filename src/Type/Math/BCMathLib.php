@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type\Math;
 
-class BCMathLib implements MathLibInterface
+class BCMathLib extends AbstractMathLib
 {
     public static function available(): bool
     {

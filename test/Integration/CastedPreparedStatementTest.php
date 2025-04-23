@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
-use Saturio\DuckDB\Type\Math\Integer;
+use Saturio\DuckDB\Type\Math\LongInteger;
 use Saturio\DuckDB\Type\Time;
 use Saturio\DuckDB\Type\Timestamp;
 use Saturio\DuckDB\Type\Type;
@@ -51,7 +51,7 @@ class CastedPreparedStatementTest extends TestCase
     private function createTableAndInsert(string $tableName, string $type, ...$values): void
     {
         $formatValue = fn ($v) => match (true) {
-            is_a($v, Integer::class) => "($v)",
+            is_a($v, LongInteger::class) => "($v)",
             is_string($v), is_object($v) => "('$v')",
             is_null($v) => '(null)',
             default => "($v)",
@@ -109,11 +109,11 @@ class CastedPreparedStatementTest extends TestCase
 
     public static function numericsProvider(): array
     {
-        $hugeint = Integer::fromString('1701411834604692317316873037');
-        $otherHugeint = Integer::fromString('1701411834604692317316873038');
+        $hugeint = LongInteger::fromString('1701411834604692317316873037');
+        $otherHugeint = LongInteger::fromString('1701411834604692317316873038');
 
-        $uhugeint = Integer::fromString('170141183460469231731687303715884105728');
-        $otherUhugeint = Integer::fromString('170141183460469231731687303715884105');
+        $uhugeint = LongInteger::fromString('170141183460469231731687303715884105728');
+        $otherUhugeint = LongInteger::fromString('170141183460469231731687303715884105');
 
         return [
             'TINYINT' => [Type::DUCKDB_TYPE_TINYINT, 'TINYINT', 3, [[3], [3]], [3, 5, 6, 3, null]],

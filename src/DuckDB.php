@@ -62,7 +62,6 @@ class DuckDB
     }
 
     /**
-     *
      * Run a query using the connection established when DuckDB object was created.
      *
      * @throws DuckDBException
@@ -84,7 +83,6 @@ class DuckDB
     }
 
     /**
-     *
      * Run a query in a new in-memory database.
      * The database will be destroyed after retrieving the result.
      *
