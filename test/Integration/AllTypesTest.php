@@ -26,7 +26,7 @@ class AllTypesTest extends TestCase
             iterator_to_array($result->rows(columnNameAsKey: true)),
             flags: JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
         );
-        $this->assertEquals($this->getExpectedResult(), $jsonResult);
+        $this->assertJsonStringEqualsJsonString($this->getExpectedResult(), $jsonResult);
     }
 
     private function getExpectedResult(): string
