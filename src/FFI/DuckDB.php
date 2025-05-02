@@ -83,6 +83,15 @@ class DuckDB
         return self::$ffi->duckdb_open($path, $database);
     }
 
+    public function openExt(?string $path, NativeCData $database, NativeCData $configuration, ?string &$error): int
+    {
+        $errorCData = $this->cast('char  *', $this->new('char[1]'));
+        $status = self::$ffi->duckdb_open_ext($path, $database, $configuration, FFI::addr($errorCData));
+        $error = self::$ffi::string($errorCData);
+
+        return $status;
+    }
+
     public function close(NativeCData $database): ?int
     {
         return self::$ffi->duckdb_close($database);
@@ -479,5 +488,15 @@ class DuckDB
     public function getVarchar(NativeCData $duckdbValue): string
     {
         return self::$ffi->duckdb_get_varchar($duckdbValue);
+    }
+
+    public function createConfig(NativeCData $config): int
+    {
+        return self::$ffi->duckdb_create_config($config);
+    }
+
+    public function setConfig(?NativeCData $config, string $name, string $option): int
+    {
+        return self::$ffi->duckdb_set_config($config, $name, $option);
     }
 }

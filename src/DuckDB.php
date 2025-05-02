@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB;
 
+use Saturio\DuckDB\DB\Configuration;
 use Saturio\DuckDB\DB\Connection;
 use Saturio\DuckDB\DB\DB;
 use Saturio\DuckDB\Exception\ConnectionException;
 use Saturio\DuckDB\Exception\DuckDBException;
+use Saturio\DuckDB\Exception\ErrorCreatingNewConfig;
+use Saturio\DuckDB\Exception\InvalidConfigurationOption;
 use Saturio\DuckDB\Exception\QueryException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\PreparedStatement\PreparedStatement;
@@ -40,10 +43,12 @@ class DuckDB
 
     /**
      * @throws ConnectionException
+     * @throws ErrorCreatingNewConfig
+     * @throws InvalidConfigurationOption
      */
-    private function db(?string $path = null): self
+    private function db(?string $path = null, ?Configuration $config = null): self
     {
-        $this->db = new DB(self::$ffi, $path);
+        $this->db = new DB(self::$ffi, $path, $config);
 
         return $this;
     }
@@ -56,12 +61,14 @@ class DuckDB
     /**
      * @throws ConnectionException
      */
-    public static function create(?string $path = null): self
+    public static function create(?string $path = null, ?Configuration $config = null): self
     {
-        return (new self())->db($path)->connect();
+        return (new self())->db($path, config: $config)->connect();
     }
 
     /**
+     * Run a query using the connection established when DuckDB object was created.
+     *
      * @throws DuckDBException
      */
     public function query(string $query): ResultSet
@@ -81,6 +88,13 @@ class DuckDB
     }
 
     /**
+     * Run a query in a new in-memory database.
+     * The database will be destroyed after retrieving the result.
+     *
+     * Created mainly for testing purposes. But in some cases,
+     * it could be also a good and shorter option
+     * for reading data from a file (e.g. csv, json or parquet).
+     *
      * @throws DuckDBException
      */
     public static function sql(string $query): ResultSet

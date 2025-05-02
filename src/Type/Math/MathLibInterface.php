@@ -25,5 +25,7 @@ interface MathLibInterface
 
     public function comp(string $x, string $y): int;
 
+    public function toInt(string $x): int|false;
+
     public static function available(): bool;
 }

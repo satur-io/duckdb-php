@@ -8,7 +8,6 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
 use Saturio\DuckDB\Exception\QueryException;
-use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
 use Saturio\DuckDB\Type\Time;
@@ -427,11 +426,20 @@ class QueryTest extends TestCase
     #[Group('primitives')]
     public function testBitSelect(): void
     {
-        $this->expectException(UnsupportedTypeException::class);
-        $expectedValues = '101010';
+        $expectedValues = '10101010111010101';
 
-        $this->db->query("SET TimeZone = 'UTC';");
-        $result = $this->db->query("SELECT '101010'::BITSTRING AS b;");
+        $result = $this->db->query("SELECT '10101010111010101'::BITSTRING;");
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row[0]);
+    }
+
+    #[Group('primitives')]
+    public function testVarIntSelect(): void
+    {
+        $expectedValues = ['12312', '-123456789123456789', '123456789123456789', '123456789123456789123456789123456789123456789123456789'];
+
+        $result = $this->db->query("SELECT '12312'::VARINT, '-123456789123456789'::VARINT, '123456789123456789'::VARINT, '123456789123456789123456789123456789123456789123456789'::VARINT;");
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValues, $row);
@@ -442,11 +450,25 @@ class QueryTest extends TestCase
     {
         $expectedValues = ['123\xAA\xAB\xAC'];
 
-        $this->db->query("SET TimeZone = 'UTC';");
         $result = $this->db->query("SELECT '123\\xAA\\xAB\\xAC'::BLOB;");
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValues, $row);
+    }
+
+    public function testReadBlob(): void
+    {
+        $file = __DIR__.'/../../lib/linux-aarch64/libduckdb.so';
+        $contents = file_get_contents($file);
+        $expectedValues = [
+            0 => strlen($contents),
+            1 => $contents,
+        ];
+        $result = $this->db->query("SELECT size, content FROM read_blob('{$file}');");
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues[0], $row[0]);
+        $this->assertEquals($expectedValues[1], $row[1]->data());
     }
 
     #[Group('primitives')]

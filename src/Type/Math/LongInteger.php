@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type\Math;
 
+use JsonSerializable;
 use Stringable;
 
-class Integer implements Stringable
+class LongInteger implements Stringable, JsonSerializable
 {
     private function __construct(
         private readonly string $integerString,
@@ -21,5 +22,10 @@ class Integer implements Stringable
     public function __toString(): string
     {
         return $this->integerString;
+    }
+
+    public function jsonSerialize(): string
+    {
+        return $this->__toString();
     }
 }
