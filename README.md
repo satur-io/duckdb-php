@@ -20,7 +20,7 @@ composer require satur.io/duckdb
 ### Quick Start
 
 ```php
-DuckDB::sql("SELECT 'quack' as my_column")->print();
+DuckDB::sql("SELECT 'quack' as my_column")->print();    
 ```
 
 ```
@@ -144,26 +144,26 @@ all possibilities.
 - ext-zend-opcache - For better performance
 
 ### Type Support
-| DuckDB Type              | SQL Type     | PHP Type                      |                                    Read                                    |                                    Bind                                    |
-|--------------------------|--------------|-------------------------------|:--------------------------------------------------------------------------:|:--------------------------------------------------------------------------:|
-| DUCKDB_TYPE_BOOLEAN      | BOOLEAN      | bool                          |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_TINYINT      | TINYINT      | int                           |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_SMALLINT     | SMALLINT     | int                           |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_INTEGER      | INTEGER      | int                           |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_BIGINT       | BIGINT       | int                           |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_UTINYINT     | UTINYINT     | int                           |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_USMALLINT    | USMALLINT    | int                           |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_UINTEGER     | UINTEGER     | int                           |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_UBIGINT      | UBIGINT      | string                        | [:ballot_box_with_check:](https://github.com/satur-io/duckdb-php/issues/1) | [:ballot_box_with_check:](https://github.com/satur-io/duckdb-php/issues/1) |
-| DUCKDB_TYPE_FLOAT        | FLOAT        | float                         |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_DOUBLE       | DOUBLE       | float                         |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_TIMESTAMP    | TIMESTAMP    | Saturio\DuckDB\Type\Timestamp |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_DATE         | DATE         | Saturio\DuckDB\Type\Date      |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_TIME         | TIME         | Saturio\DuckDB\Type\Time      |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_INTERVAL     | INTERVAL     | Saturio\DuckDB\Type\Interval  |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_HUGEINT      | HUGEINT      | string                        | [:ballot_box_with_check:](https://github.com/satur-io/duckdb-php/issues/1) |                             :white_check_mark:                             |
-| DUCKDB_TYPE_UHUGEINT     | UHUGEINT     | string                        | [:ballot_box_with_check:](https://github.com/satur-io/duckdb-php/issues/1) |                             :white_check_mark:                             |
-| DUCKDB_TYPE_VARCHAR      | VARCHAR      | string                        |                             :white_check_mark:                             |                             :white_check_mark:                             |
+| DuckDB Type              | SQL Type     | PHP Type                             |        Read        |         Bind         |
+|--------------------------|--------------|--------------------------------------|:------------------:|:--------------------:|
+| DUCKDB_TYPE_BOOLEAN      | BOOLEAN      | bool                                 | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_TINYINT      | TINYINT      | int                                  | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_SMALLINT     | SMALLINT     | int                                  | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_INTEGER      | INTEGER      | int                                  | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_BIGINT       | BIGINT       | int                                  | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_UTINYINT     | UTINYINT     | int                                  | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_USMALLINT    | USMALLINT    | int                                  | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_UINTEGER     | UINTEGER     | int                                  | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_UBIGINT      | UBIGINT      | Saturio\DuckDB\Type\Math\LongInteger | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_FLOAT        | FLOAT        | float                                | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_DOUBLE       | DOUBLE       | float                                | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_TIMESTAMP    | TIMESTAMP    | Saturio\DuckDB\Type\Timestamp        | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_DATE         | DATE         | Saturio\DuckDB\Type\Date             | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_TIME         | TIME         | Saturio\DuckDB\Type\Time             | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_INTERVAL     | INTERVAL     | Saturio\DuckDB\Type\Interval         | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_HUGEINT      | HUGEINT      | Saturio\DuckDB\Type\Math\LongInteger | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_UHUGEINT     | UHUGEINT     | Saturio\DuckDB\Type\Math\LongInteger | :white_check_mark: |  :white_check_mark:  |
+| DUCKDB_TYPE_VARCHAR      | VARCHAR      | string                               | :white_check_mark: |  :white_check_mark:  |
 | DUCKDB_TYPE_BLOB         | BLOB         | Saturio\DuckDB\Type\Blob      |                             :white_check_mark:                             |                                    :x:                                     |
 | DUCKDB_TYPE_TIMESTAMP_S  | TIMESTAMP_S  | Saturio\DuckDB\Type\Timestamp |                             :white_check_mark:                             |                             :white_check_mark:                             |
 | DUCKDB_TYPE_TIMESTAMP_MS | TIMESTAMP_MS | Saturio\DuckDB\Type\Timestamp |                             :white_check_mark:                             |                             :white_check_mark:                             |

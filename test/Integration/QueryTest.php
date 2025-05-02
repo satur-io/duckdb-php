@@ -437,33 +437,12 @@ class QueryTest extends TestCase
     #[Group('primitives')]
     public function testVarIntSelect(): void
     {
-        $expectedValues = '12312';
+        $expectedValues = ['12312', '-123456789123456789', '123456789123456789', '123456789123456789123456789123456789123456789123456789'];
 
-        $result = $this->db->query("SELECT '12312'::VARINT;");
-
-        $row = $result->rows()->current();
-        $this->assertEquals($expectedValues, $row[0]);
-
-        $expectedValues = '-123456789123456789';
-
-        $result = $this->db->query("SELECT '-123456789123456789'::VARINT;");
+        $result = $this->db->query("SELECT '12312'::VARINT, '-123456789123456789'::VARINT, '123456789123456789'::VARINT, '123456789123456789123456789123456789123456789123456789'::VARINT;");
 
         $row = $result->rows()->current();
-        $this->assertEquals($expectedValues, $row[0]);
-
-        $expectedValues = '123456789123456789';
-
-        $result = $this->db->query("SELECT '123456789123456789'::VARINT;");
-
-        $row = $result->rows()->current();
-        $this->assertEquals($expectedValues, $row[0]);
-
-        $expectedValues = '123456789123456789123456789123456789123456789123456789';
-
-        $result = $this->db->query("SELECT '123456789123456789123456789123456789123456789123456789'::VARINT;");
-
-        $row = $result->rows()->current();
-        $this->assertEquals($expectedValues, $row[0]);
+        $this->assertEquals($expectedValues, $row);
     }
 
     #[Group('primitives')]
