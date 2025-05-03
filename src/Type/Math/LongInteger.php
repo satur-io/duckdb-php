@@ -28,4 +28,9 @@ class LongInteger implements Stringable, JsonSerializable
     {
         return $this->__toString();
     }
+
+    public function toInt(MathLibInterface $math): int|false
+    {
+        return $math->toInt($this->integerString);
+    }
 }
