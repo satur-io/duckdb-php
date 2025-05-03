@@ -39,8 +39,6 @@ class Timestamp implements JsonSerializable
         return $this->infinity < 0 ? '-infinity' : '+infinity';
     }
 
-    // @todo - Add unit tests for this
-
     /**
      * @throws InvalidTimeException
      */

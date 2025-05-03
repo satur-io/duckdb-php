@@ -77,7 +77,6 @@ class ResultSet
 
     /**
      * @throws DateMalformedStringException
-     * @throws UnsupportedTypeException
      * @throws BigNumbersNotSupportedException
      * @throws InvalidTimeException
      */

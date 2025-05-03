@@ -34,13 +34,13 @@ class DuckDBTest extends TestCase
         DuckDB::create($forbiddenFile);
     }
 
-    public function testInValidPath(): void
+    public function testInvalidPath(): void
     {
         $db = DuckDB::create('./test.db');
         $this->assertInstanceOf(DuckDB::class, $db);
     }
 
-    public function testInValidDatabase(): void
+    public function testInvalidDatabase(): void
     {
         $this->expectException(ConnectionException::class);
         DuckDB::create('/invalid/path/test.db');
