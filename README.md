@@ -79,6 +79,27 @@ $intPreparedStatement->bindParam(1, 3);
 $result = $intPreparedStatement->execute();
 $result->print();
 ```
+
+#### Appenders
+Appenders are the preferred method to load data in DuckDB. See [DuckDB docs](https://duckdb.org/docs/stable/clients/c/appender.html)
+for more information.
+
+```php
+$duckDB = DuckDB::create();
+$result = $duckDB->query('CREATE TABLE people (id INTEGER, name VARCHAR);');
+
+$appender = $duckDB->appender('people');
+
+for ($i = 0; $i < 100; ++$i) {
+    $appender->append(rand(1, 100000));
+    $appender->append('string-'.rand(1, 100));
+    $appender->endRow();
+}
+
+$appender->flush();
+```
+
+
 #### DuckDB powerful
 
 DuckDB provides some amazing features. For example, 
@@ -145,7 +166,7 @@ all possibilities.
 - ext-zend-opcache - For better performance
 
 ### Type Support
-| DuckDB Type              | SQL Type     | PHP Type                             |        Read         |         Bind         |
+| DuckDB Type              | SQL Type     | PHP Type                             |        Read         |     Bind/Append      |
 |--------------------------|--------------|--------------------------------------|:-------------------:|:--------------------:|
 | DUCKDB_TYPE_BOOLEAN      | BOOLEAN      | bool                                 | :white_check_mark:  |  :white_check_mark:  |
 | DUCKDB_TYPE_TINYINT      | TINYINT      | int                                  | :white_check_mark:  |  :white_check_mark:  |
@@ -165,10 +186,10 @@ all possibilities.
 | DUCKDB_TYPE_HUGEINT      | HUGEINT      | Saturio\DuckDB\Type\Math\LongInteger | :white_check_mark:  |  :white_check_mark:  |
 | DUCKDB_TYPE_UHUGEINT     | UHUGEINT     | Saturio\DuckDB\Type\Math\LongInteger | :white_check_mark:  |  :white_check_mark:  |
 | DUCKDB_TYPE_VARCHAR      | VARCHAR      | string                               | :white_check_mark:  |  :white_check_mark:  |
-| DUCKDB_TYPE_BLOB         | BLOB         | Saturio\DuckDB\Type\Blob             | :white_check_mark:  |         :x:          |
+| DUCKDB_TYPE_BLOB         | BLOB         | Saturio\DuckDB\Type\Blob             | :white_check_mark:  |  :white_check_mark:  |
 | DUCKDB_TYPE_TIMESTAMP_S  | TIMESTAMP_S  | Saturio\DuckDB\Type\Timestamp        | :white_check_mark:  |  :white_check_mark:  |
 | DUCKDB_TYPE_TIMESTAMP_MS | TIMESTAMP_MS | Saturio\DuckDB\Type\Timestamp        | :white_check_mark:  |  :white_check_mark:  |
-| DUCKDB_TYPE_TIMESTAMP_NS | TIMESTAMP_NS | Saturio\DuckDB\Type\Timestamp        | :white_check_mark:  |         :x:          |
+| DUCKDB_TYPE_TIMESTAMP_NS | TIMESTAMP_NS | Saturio\DuckDB\Type\Timestamp        | :white_check_mark:  |  :white_check_mark:  |
 | DUCKDB_TYPE_UUID         | UUID         | Saturio\DuckDB\Type\UUID             | :white_check_mark:  |  :white_check_mark:  |
 | DUCKDB_TYPE_TIME_TZ      | TIMETZ       | Saturio\DuckDB\Type\Time             | :white_check_mark:  |  :white_check_mark:  |
 | DUCKDB_TYPE_TIMESTAMP_TZ | TIMESTAMPTZ  | Saturio\DuckDB\Type\Timestamp        | :white_check_mark:  |  :white_check_mark:  |
@@ -180,11 +201,9 @@ all possibilities.
 | DUCKDB_TYPE_MAP          | MAP          | array                                | :white_check_mark:  | :small_blue_diamond: |
 | DUCKDB_TYPE_UNION        | UNION        | mixed                                | :white_check_mark:  | :small_blue_diamond: |
 | DUCKDB_TYPE_BIT          | BIT          | string                               | :white_check_mark:  | :small_blue_diamond: |
-| DUCKDB_TYPE_VARINT       | VARINT       | string                               | :white_check_mark:  |         :x:          |
+| DUCKDB_TYPE_VARINT       | VARINT       | string                               | :white_check_mark:  | :small_blue_diamond: |
 
 :white_check_mark: Fully supported
-
-:ballot_box_with_check: Partially supported / Needs improvements
 
 :x: Not supported
 

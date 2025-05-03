@@ -269,7 +269,7 @@ class DuckDB
         return self::$ffi->duckdb_create_bit($bit);
     }
 
-    public function createBlob(?NativeCData $blob, int $size): NativeCData
+    public function createBlob(array|NativeCData $blob, int $size): NativeCData
     {
         return self::$ffi->duckdb_create_blob($blob, $size);
     }
@@ -498,5 +498,45 @@ class DuckDB
     public function setConfig(?NativeCData $config, string $name, string $option): int
     {
         return self::$ffi->duckdb_set_config($config, $name, $option);
+    }
+
+    public function createAppender(
+        NativeCData $connection,
+        ?string $catalog,
+        ?string $schema,
+        string $table,
+        ?NativeCData $appender,
+    ): int {
+        return self::$ffi->duckdb_appender_create_ext($connection, $catalog, $schema, $table, $appender);
+    }
+
+    public function appenderError(NativeCData $appender): string
+    {
+        return self::$ffi->duckdb_appender_error($appender);
+    }
+
+    public function appendValue(NativeCData $appender, NativeCData $value)
+    {
+        return self::$ffi->duckdb_append_value($appender, $value);
+    }
+
+    public function endRow(NativeCData $appender): int
+    {
+        return self::$ffi->duckdb_appender_end_row($appender);
+    }
+
+    public function destroyAppender(NativeCData $appender): int
+    {
+        return self::$ffi->duckdb_appender_destroy($appender);
+    }
+
+    public function flush(NativeCData $appender): int
+    {
+        return self::$ffi->duckdb_appender_flush($appender);
+    }
+
+    public function createTimestampNs(NativeCData $nanos): NativeCData
+    {
+        return self::$ffi->duckdb_create_timestamp_ns($nanos);
     }
 }

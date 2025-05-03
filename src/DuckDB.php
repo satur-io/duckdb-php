@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB;
 
+use Saturio\DuckDB\Appender\Appender;
 use Saturio\DuckDB\DB\Configuration;
 use Saturio\DuckDB\DB\Connection;
 use Saturio\DuckDB\DB\DB;
 use Saturio\DuckDB\Exception\ConnectionException;
 use Saturio\DuckDB\Exception\DuckDBException;
+use Saturio\DuckDB\Exception\ErrorCreatingNewAppender;
 use Saturio\DuckDB\Exception\ErrorCreatingNewConfig;
 use Saturio\DuckDB\Exception\InvalidConfigurationOption;
 use Saturio\DuckDB\Exception\QueryException;
@@ -60,6 +62,8 @@ class DuckDB
 
     /**
      * @throws ConnectionException
+     * @throws ErrorCreatingNewConfig
+     * @throws InvalidConfigurationOption
      */
     public static function create(?string $path = null, ?Configuration $config = null): self
     {
@@ -105,6 +109,14 @@ class DuckDB
     public function preparedStatement(string $query): PreparedStatement
     {
         return PreparedStatement::create(self::$ffi, $this->connection->connection, $query);
+    }
+
+    /**
+     * @throws ErrorCreatingNewAppender
+     */
+    public function appender(string $table, ?string $schema = null, ?string $catalog = null): Appender
+    {
+        return Appender::create(self::$ffi, $this->connection->connection, $table, $schema, $catalog);
     }
 
     public function __destruct()
