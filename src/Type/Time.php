@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type;
 
+use JsonSerializable;
 use Saturio\DuckDB\Exception\InvalidTimeException;
 
-class Time
+class Time implements JsonSerializable
 {
     private int $nanoseconds;
 
@@ -67,5 +68,10 @@ class Time
     public function __toString(): string
     {
         return sprintf('%02d:%02d:%02d.%d', $this->hours, $this->minutes, $this->seconds, $this->nanoseconds);
+    }
+
+    public function jsonSerialize(): string
+    {
+        return $this->__toString();
     }
 }
