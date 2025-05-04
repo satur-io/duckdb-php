@@ -6,6 +6,7 @@ namespace Saturio\DuckDB\FFI;
 
 use FFI;
 use FFI\CType;
+use Saturio\DuckDB\DB\Configuration;
 use Saturio\DuckDB\Exception\MissedLibraryException;
 use Saturio\DuckDB\Exception\NotSupportedException;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
@@ -543,5 +544,25 @@ class DuckDB
     public function destroyValue(NativeCData $value): void
     {
         self::$ffi->duckdb_destroy_value($value);
+    }
+
+    public function createInstanceCache(): NativeCData
+    {
+        return self::$ffi->duckdb_create_instance_cache();
+    }
+
+    public function getOrCreateFromCache(
+        NativeCData $instanceCache,
+        ?string $path,
+        ?NativeCData $db,
+        ?Configuration $config,
+        ?string &$error,
+    ): int {
+        return self::$ffi->duckdb_get_or_create_from_cache($instanceCache, $path, $db, $config, $error);
+    }
+
+    public function destroyInstanceCache(NativeCData $instanceCache): void
+    {
+        self::$ffi->duckdb_destroy_instance_cache($instanceCache);
     }
 }

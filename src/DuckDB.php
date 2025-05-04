@@ -8,6 +8,7 @@ use Saturio\DuckDB\Appender\Appender;
 use Saturio\DuckDB\DB\Configuration;
 use Saturio\DuckDB\DB\Connection;
 use Saturio\DuckDB\DB\DB;
+use Saturio\DuckDB\DB\InstanceCache;
 use Saturio\DuckDB\Exception\ConnectionException;
 use Saturio\DuckDB\Exception\DuckDBException;
 use Saturio\DuckDB\Exception\ErrorCreatingNewAppender;
@@ -24,6 +25,7 @@ class DuckDB
     use CollectMetrics;
     private DB $db;
     private Connection $connection;
+    private ?InstanceCache $instanceCache = null;
 
     private static FFIDuckDB $ffi;
 
@@ -50,7 +52,7 @@ class DuckDB
      */
     private function db(?string $path = null, ?Configuration $config = null): self
     {
-        $this->db = new DB(self::$ffi, $path, $config);
+        $this->db = new DB(self::$ffi, $path, $config, $this->instanceCache);
 
         return $this;
     }
@@ -65,9 +67,15 @@ class DuckDB
      * @throws ErrorCreatingNewConfig
      * @throws InvalidConfigurationOption
      */
-    public static function create(?string $path = null, ?Configuration $config = null): self
-    {
-        return (new self())->db($path, config: $config)->connect();
+    public static function create(
+        ?string $path = null,
+        ?Configuration $config = null,
+        InstanceCache|true|null $instanceCache = null,
+    ): self {
+        $duckDB = new self();
+        $duckDB->instanceCache = true === $instanceCache ? new InstanceCache(self::$ffi) : $instanceCache;
+
+        return $duckDB->db($path, config: $config)->connect();
     }
 
     /**
@@ -117,6 +125,11 @@ class DuckDB
     public function appender(string $table, ?string $schema = null, ?string $catalog = null): Appender
     {
         return Appender::create(self::$ffi, $this->connection->connection, $table, $schema, $catalog);
+    }
+
+    public function getInstanceCache(): ?InstanceCache
+    {
+        return $this->instanceCache;
     }
 
     public function __destruct()
