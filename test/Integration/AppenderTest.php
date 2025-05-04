@@ -19,7 +19,7 @@ class AppenderTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->dbFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'file.db';
+        $this->dbFile = sys_get_temp_dir().DIRECTORY_SEPARATOR.'file.db';
         $this->db = DuckDB::create();
         $this->db->query('CREATE TABLE people (id INTEGER, name VARCHAR)');
         $this->db->query("ATTACH '{$this->dbFile}' AS file_db;");
