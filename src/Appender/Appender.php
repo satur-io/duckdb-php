@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Appender;
 
+use DateMalformedStringException;
 use Saturio\DuckDB\Exception\AppenderEndRowException;
 use Saturio\DuckDB\Exception\AppenderFlushException;
 use Saturio\DuckDB\Exception\AppendValueException;
@@ -56,14 +57,19 @@ class Appender
 
     /**
      * @throws UnsupportedTypeException
-     * @throws AppendValueException
+     * @throws AppendValueException|DateMalformedStringException
      */
     public function append(mixed $value, ?Type $type = null): void
     {
-        if ($this->ffi->appendValue(
+        $nativeValue = $this->converter->getDuckDBValue($value, $type);
+        $status = $this->ffi->appendValue(
             $this->appender,
-            $this->converter->getDuckDBValue($value, $type)
-        ) === $this->ffi->error()) {
+            $nativeValue,
+        );
+
+        $this->ffi->destroyValue($this->ffi->addr($nativeValue));
+
+        if ($status === $this->ffi->error()) {
             $error = $this->ffi->appenderError($this->appender);
             throw new AppendValueException("Couldn't append {$value}. Error: {$error}");
         }

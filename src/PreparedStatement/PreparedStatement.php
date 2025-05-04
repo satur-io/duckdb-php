@@ -50,11 +50,16 @@ class PreparedStatement
      */
     public function bindParam(int $parameter, mixed $value, ?Type $type = null): void
     {
-        if ($this->ffi->bindValue(
+        $value = $this->converter->getDuckDBValue($value, $type);
+        $status = $this->ffi->bindValue(
             $this->preparedStatement,
             $parameter,
-            $this->converter->getDuckDBValue($value, $type)
-        ) === $this->ffi->error()) {
+            $value,
+        );
+
+        $this->ffi->destroyValue($this->ffi->addr($value));
+
+        if ($status === $this->ffi->error()) {
             $error = $this->ffi->prepareError($this->preparedStatement);
             throw new BindValueException("Couldn't bind parameter {$parameter} to prepared statement {$this->query}. Error: {$error}");
         }

@@ -539,4 +539,9 @@ class DuckDB
     {
         return self::$ffi->duckdb_create_timestamp_ns($nanos);
     }
+
+    public function destroyValue(NativeCData $value): void
+    {
+        self::$ffi->duckdb_destroy_value($value);
+    }
 }
