@@ -25,7 +25,8 @@ trait GetDuckDBValue
      * @throws UnsupportedTypeException|DateMalformedStringException
      */
     public function getDuckDBValue(
-        string|bool|int|float|Date|Time|Timestamp|Interval|BigInteger|UUID|Blob $value, ?Type $type = null,
+        string|bool|int|float|Date|Time|Timestamp|Interval|BigInteger|UUID|Blob $value,
+        ?Type $type = null,
     ): NativeCData {
         $type = $type ?? $this->getInferredType($value);
 
@@ -55,6 +56,7 @@ trait GetDuckDBValue
             Type::DUCKDB_TYPE_UHUGEINT => $this->createFromUhugeInt($value),
             Type::DUCKDB_TYPE_UUID => $this->createFromUUID($value),
             Type::DUCKDB_TYPE_BLOB => $this->createFromBlob($value),
+            Type::DUCKDB_TYPE_DECIMAL => $this->createFromScalar($value, Type::DUCKDB_TYPE_DOUBLE),
             default => throw new UnsupportedTypeException("Unsupported type: {$type->name}"),
         };
     }

@@ -6,7 +6,6 @@ namespace Integration;
 
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
-use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\Type\Blob;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Time;
@@ -182,12 +181,11 @@ class PreparedStatementTest extends TestCase
 
     public function testDecimal(): void
     {
-        $this->expectException(UnsupportedTypeException::class);
         $this->db->query('CREATE TABLE test_decimal (i INTEGER, d DECIMAL);');
         $expectedValues = [3, 12.3];
 
         $this->db->query('INSERT INTO test_decimal VALUES (3, 12.3), (5, 12.4), (3, null);');
-        $preparedStatement = $this->db->preparedStatement('SELECT * FROM test_blob WHERE d = ?');
+        $preparedStatement = $this->db->preparedStatement('SELECT * FROM test_decimal WHERE d = ?');
         $preparedStatement->bindParam(1, 12.3, Type::DUCKDB_TYPE_DECIMAL);
         $result = $preparedStatement->execute();
 
