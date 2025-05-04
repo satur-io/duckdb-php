@@ -15,19 +15,22 @@ use Saturio\DuckDB\Exception\ErrorCreatingNewAppender;
 class AppenderTest extends TestCase
 {
     private DuckDB $db;
+    private string $dbFile;
 
     protected function setUp(): void
     {
+        $this->dbFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'file.db';
         $this->db = DuckDB::create();
         $this->db->query('CREATE TABLE people (id INTEGER, name VARCHAR)');
-        $this->db->query("ATTACH 'file.db' AS file_db;");
+        $this->db->query("ATTACH '{$this->dbFile}' AS file_db;");
         $this->db->query('CREATE SCHEMA file_db.other_schema;');
         $this->db->query('CREATE TABLE file_db.other_schema.other_people (id INTEGER, name VARCHAR)');
     }
 
     protected function tearDown(): void
     {
-        unlink('file.db');
+        unset($this->db);
+        unlink($this->dbFile);
     }
 
     public function testCreateAppender()
