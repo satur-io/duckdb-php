@@ -39,6 +39,10 @@ in-memory database and is destroyed after retrieving the result.
 
 This is not the most common use case, let's see how to get a persistent connection.
 
+#### Documentation
+
+Full documentation is available in [https://duckdb-php.readthedocs.io/](https://duckdb-php.readthedocs.io/).
+
 #### Connection
 
 ```php

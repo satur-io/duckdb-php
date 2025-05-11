@@ -12,7 +12,7 @@ nav:
       - 'prepared-statements.md'
       - 'appenders.md'
   - Guides:
-      - 'my-guide.md'
+      - 'opcache-preload.md'
 
 markdown_extensions:
   - admonition
