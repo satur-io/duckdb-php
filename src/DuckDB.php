@@ -100,8 +100,7 @@ class DuckDB
     }
 
     /**
-     * Run a query in a new in-memory database.
-     * The database will be destroyed after retrieving the result.
+     * Run a query in a new in-memory database. The database will be destroyed after retrieving the result.
      *
      * Created mainly for testing purposes. But in some cases,
      * it could be also a good and shorter option

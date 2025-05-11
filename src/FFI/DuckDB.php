@@ -516,7 +516,7 @@ class DuckDB
         return self::$ffi->duckdb_appender_error($appender);
     }
 
-    public function appendValue(NativeCData $appender, NativeCData $value)
+    public function appendValue(NativeCData $appender, NativeCData $value): int
     {
         return self::$ffi->duckdb_append_value($appender, $value);
     }

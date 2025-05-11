@@ -18,6 +18,7 @@ class Blob implements JsonSerializable
         return $this->rawData;
     }
 
+    /** @return array<int> */
     public function asIntArray(): array
     {
         $array = [];
