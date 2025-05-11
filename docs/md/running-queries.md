@@ -18,10 +18,10 @@ DuckDB::sql("SELECT 'quack' as my_column")->print();
 It's simple, but this is not the most common use case, since you probably wants
 to set a persistent connection and run more than one query over there.
 
-> [!WARNING]
-> Keep in mind that `sql()` creates the connection with a new in-memory database,
-> performs the query and immediately after that connection will be released and
-> database will be removed so **all data is ephemeral**.
+!!! warning
+    Keep in mind that `sql()` creates the connection with a new in-memory database,
+    performs the query and immediately after that connection will be released and
+    database will be removed so **all data is ephemeral**.
 
 Continue reading bellow to figure out how to work with connections in duckdb-php.
 
@@ -88,7 +88,8 @@ $duckdb = DuckDB::create(config: $config);
 
 From DuckDB C API docs:
 
-> The instance cache is necessary if a client/program (re)opens multiple databases to the same file within the same process
+!!! quote
+    The instance cache is necessary if a client/program (re)opens multiple databases to the same file within the same process
 
 It creates a new database instance when instanceCache is true or retrieves an existing database instance.
 

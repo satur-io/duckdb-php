@@ -1,4 +1,4 @@
-
+# DuckDB PHP client
 
 This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API for PHP.
 
