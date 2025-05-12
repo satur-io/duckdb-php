@@ -1,0 +1,9 @@
+name: PHPUnit (unstable - nightly C library manual)
+
+on: workflow_dispatch
+
+jobs:
+  phpunit:
+    uses: ./.github/workflows/php_test.yml
+    with:
+      lib-path: 'lib_nightly'
