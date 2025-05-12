@@ -21,7 +21,5 @@ markdown_extensions:
   - footnotes
   - toc:
       permalink: true
-
-plugins:
-  - codeinclude:
-      title_mode: legacy_pymdownx.superfences
+  - markdown_include.include:
+      base_path: docs/md
