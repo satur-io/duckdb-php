@@ -18,6 +18,10 @@ This library is more than just a wrapper for the C API; it introduces custom, PH
 composer require satur.io/duckdb
 ```
 
+### Documentation
+
+Full documentation is available in [https://duckdb-php.readthedocs.io/](https://duckdb-php.readthedocs.io/).
+
 ### Quick Start
 
 ```php
@@ -34,14 +38,10 @@ DuckDB::sql("SELECT 'quack' as my_column")->print();
 
 > It's that simple! :duck:
 
-The function we used here, `DuckDB::sql()`, performs a query in a new
-in-memory database and is destroyed after retrieving the result.
+The function we used here, `DuckDB::sql()`, performs the query in a new
+in-memory database which is destroyed after retrieving the result.
 
 This is not the most common use case, let's see how to get a persistent connection.
-
-#### Documentation
-
-Full documentation is available in [https://duckdb-php.readthedocs.io/](https://duckdb-php.readthedocs.io/).
 
 #### Connection
 
@@ -208,8 +208,6 @@ all possibilities.
 | DUCKDB_TYPE_VARINT       | VARINT       | string                               | :white_check_mark:  | :small_blue_diamond: |
 
 :white_check_mark: Fully supported
-
-:x: Not supported
 
 :small_blue_diamond: Not applicable
 

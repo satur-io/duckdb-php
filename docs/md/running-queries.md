@@ -1,4 +1,4 @@
-# Connections and read queries
+# Connections and queries
 
 The simplest way to performs a query is by `\Saturio\DuckDB\DuckDB::sql()` static function.
 It creates a new in-memory database connection and runs the query.
@@ -15,7 +15,7 @@ DuckDB::sql("SELECT 'quack' as my_column")->print();
 -------------------
 ```
 
-It's simple, but this is not the most common use case, since you probably wants
+It's easy to use, but this is not the most common use case, since you probably wants
 to set a persistent connection and run more than one query over there.
 
 !!! warning
@@ -33,10 +33,9 @@ for different connection creation.
 For all of them, we will use the `\Saturio\DuckDB\DuckDB::create()` function.
 
 
-
 ### Regular connection
 
-This is the simplest way to establish a new connection
+This is the simplest way to establish a new connection.
 
 ```php
 // In-memory
@@ -61,8 +60,8 @@ printf("%s columns retrieved: %s\n",
 ```
 
 We will talk later about `\Saturio\DuckDB\Result\ResultSet` and
-how to read resultset values. But let's see first some others ways
-to get a DB connection.
+how to read resultset values. But let's see some others ways
+to get a DB connection first.
 
 
 ### Connection with configuration
@@ -89,9 +88,9 @@ $duckdb = DuckDB::create(config: $config);
 From DuckDB C API docs:
 
 !!! quote
-    The instance cache is necessary if a client/program (re)opens multiple databases to the same file within the same process
+    _The instance cache is necessary if a client/program (re)opens multiple databases to the same file within the same process._
 
-It creates a new database instance when instanceCache is true or retrieves an existing database instance.
+It creates a new database instance when `instanceCache` is `true` or retrieves an existing database instance.
 
 ```php
 $duckdbFirstConnection = DuckDB::create(config: $config, instanceCache: true);

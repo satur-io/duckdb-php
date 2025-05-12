@@ -1,4 +1,4 @@
-site_name: sarurio/duckdb-php
+site_name: saturio/duckdb-php
 theme: readthedocs
 docs_dir: docs/md
 
@@ -9,8 +9,10 @@ nav:
   - Usage:
       - 'running-queries.md'
       - 'read-resultset-content.md'
+      - 'types.md'
       - 'prepared-statements.md'
       - 'appenders.md'
+      - 'examples.md'
   - Guides:
       - 'opcache-preload.md'
 
@@ -19,3 +21,6 @@ markdown_extensions:
   - footnotes
   - toc:
       permalink: true
+
+plugins:
+  - codeinclude
