@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type\Converter;
 
+use DateMalformedStringException;
+use DateTime;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
+use Saturio\DuckDB\Type\Blob;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
 use Saturio\DuckDB\Type\Math\LongInteger;
@@ -19,10 +22,11 @@ use Saturio\DuckDB\Type\UUID;
 trait GetDuckDBValue
 {
     /**
-     * @throws UnsupportedTypeException
+     * @throws UnsupportedTypeException|DateMalformedStringException
      */
     public function getDuckDBValue(
-        string|bool|int|float|Date|Time|Timestamp|Interval|BigInteger|UUID $value, ?Type $type = null,
+        string|bool|int|float|Date|Time|Timestamp|Interval|BigInteger|UUID|Blob $value,
+        ?Type $type = null,
     ): NativeCData {
         $type = $type ?? $this->getInferredType($value);
 
@@ -46,10 +50,13 @@ trait GetDuckDBValue
             Type::DUCKDB_TYPE_TIMESTAMP_S,
             Type::DUCKDB_TYPE_TIMESTAMP_MS,
             Type::DUCKDB_TYPE_TIMESTAMP_TZ => $this->createFromTimestamp($value),
+            Type::DUCKDB_TYPE_TIMESTAMP_NS => $this->createFromTimestampNs($value),
             Type::DUCKDB_TYPE_INTERVAL => $this->createFromInterval($value),
             Type::DUCKDB_TYPE_HUGEINT => $this->createFromHugeInt($value),
             Type::DUCKDB_TYPE_UHUGEINT => $this->createFromUhugeInt($value),
             Type::DUCKDB_TYPE_UUID => $this->createFromUUID($value),
+            Type::DUCKDB_TYPE_BLOB => $this->createFromBlob($value),
+            Type::DUCKDB_TYPE_DECIMAL => $this->createFromScalar($value, Type::DUCKDB_TYPE_DOUBLE),
             default => throw new UnsupportedTypeException("Unsupported type: {$type->name}"),
         };
     }
@@ -57,7 +64,7 @@ trait GetDuckDBValue
     /**
      * @throws UnsupportedTypeException
      */
-    private function getInferredType(string|bool|int|float|Date|Time|Timestamp|UUID $value): Type
+    private function getInferredType(string|bool|int|float|Date|Time|Timestamp|UUID|Blob $value): Type
     {
         if (is_bool($value)) {
             return Type::DUCKDB_TYPE_BOOLEAN;
@@ -75,6 +82,8 @@ trait GetDuckDBValue
             return Type::DUCKDB_TYPE_TIMESTAMP;
         } elseif (is_a($value, UUID::class)) {
             return Type::DUCKDB_TYPE_UUID;
+        } elseif (is_a($value, Blob::class)) {
+            return Type::DUCKDB_TYPE_BLOB;
         }
 
         $type = gettype($value);
@@ -111,6 +120,23 @@ trait GetDuckDBValue
         $timestampStruct->time = $this->getTimeStruct($timestamp->getTime());
 
         return $this->ffi->createTimestamp($this->ffi->toTimestamp($timestampStruct));
+    }
+
+    /**
+     * @throws DateMalformedStringException
+     */
+    public function createFromTimestampNs(Timestamp $value): NativeCData
+    {
+        $nanos = $this->ffi->new('duckdb_timestamp_ns');
+        $time = $value->toDateTime()->format('U.u');
+        $from = (new DateTime('1970-01-01'))->format('U.u');
+
+        $microseconds = abs((float) ($time - $from)) * 1000000;
+        $nanos->nanos = $microseconds;
+        $nanos->nanos = $nanos->nanos * 1000;
+        $nanos->nanos = $nanos->nanos + $value->getTime()->getReminderNanoSeconds();
+
+        return $this->ffi->createTimestampNs($nanos);
     }
 
     private function createFromInterval(Interval $interval): NativeCData
@@ -150,6 +176,18 @@ trait GetDuckDBValue
         $uhugeint = $this->getUHugeint($uhugeintString);
 
         return $this->ffi->createUUID($uhugeint);
+    }
+
+    public function createFromBlob(Blob $value): NativeCData
+    {
+        $data = $value->asIntArray();
+        $total = count($data);
+        $nativeArray = $this->ffi->new("uint8_t[{$total}]");
+        foreach ($data as $key => $value) {
+            $nativeArray[$key] = $value;
+        }
+
+        return $this->ffi->createBlob($nativeArray, count($data));
     }
 
     private function createUBigInt(string|int|BigInteger $integer): BigInteger

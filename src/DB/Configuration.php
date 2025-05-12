@@ -8,6 +8,7 @@ use ArrayIterator;
 use IteratorAggregate;
 use Traversable;
 
+/** @implements IteratorAggregate<string, string> */
 class Configuration implements IteratorAggregate
 {
     private array $config = [];

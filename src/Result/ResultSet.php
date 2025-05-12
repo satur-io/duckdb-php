@@ -77,7 +77,6 @@ class ResultSet
 
     /**
      * @throws DateMalformedStringException
-     * @throws UnsupportedTypeException
      * @throws BigNumbersNotSupportedException
      * @throws InvalidTimeException
      */
@@ -130,7 +129,7 @@ class ResultSet
         // Body - rows
         $rows = $this->rows();
         iterator_apply($rows, function ($rows) use ($mask) {
-            printf($mask, ...$rows->current());
+            printf($mask, ...array_map(fn ($v) => is_array($v) ? json_encode($v, JSON_UNESCAPED_UNICODE) : $v, $rows->current()));
 
             return true;
         }, [$rows]);

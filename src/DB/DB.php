@@ -23,18 +23,31 @@ class DB
         DuckDB $ffi,
         ?string $path = null,
         ?Configuration $config = null,
+        ?InstanceCache $instanceCache = null,
     ) {
         $this->db = $ffi->new('duckdb_database');
 
-        if (null === $config) {
-            $result = $ffi->open($path, $ffi->addr($this->db));
-        } else {
+        if (null !== $instanceCache) {
+            $result = $ffi->getOrCreateFromCache(
+                $instanceCache->getInstanceCache(),
+                $path,
+                $ffi->addr($this->db),
+                $config,
+                $error,
+            );
+        }
+
+        if (!isset($result) && null !== $config) {
             $result = $ffi->openExt(
                 $path,
                 $ffi->addr($this->db),
                 NativeCDataConfiguration::fromConfiguration($config, $ffi)->getConfig(),
                 $error,
             );
+        }
+
+        if (!isset($result)) {
+            $result = $ffi->open($path, $ffi->addr($this->db));
         }
 
         if ($result === $ffi->error()) {

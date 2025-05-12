@@ -12,3 +12,5 @@ tools
 .phpunit.result.cache
 out
 lib_nightly
+my-ui.db
+my-network-usage.db

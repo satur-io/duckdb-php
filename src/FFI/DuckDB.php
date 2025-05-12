@@ -6,6 +6,7 @@ namespace Saturio\DuckDB\FFI;
 
 use FFI;
 use FFI\CType;
+use Saturio\DuckDB\DB\Configuration;
 use Saturio\DuckDB\Exception\MissedLibraryException;
 use Saturio\DuckDB\Exception\NotSupportedException;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
@@ -269,7 +270,7 @@ class DuckDB
         return self::$ffi->duckdb_create_bit($bit);
     }
 
-    public function createBlob(?NativeCData $blob, int $size): NativeCData
+    public function createBlob(array|NativeCData $blob, int $size): NativeCData
     {
         return self::$ffi->duckdb_create_blob($blob, $size);
     }
@@ -498,5 +499,70 @@ class DuckDB
     public function setConfig(?NativeCData $config, string $name, string $option): int
     {
         return self::$ffi->duckdb_set_config($config, $name, $option);
+    }
+
+    public function createAppender(
+        NativeCData $connection,
+        ?string $catalog,
+        ?string $schema,
+        string $table,
+        ?NativeCData $appender,
+    ): int {
+        return self::$ffi->duckdb_appender_create_ext($connection, $catalog, $schema, $table, $appender);
+    }
+
+    public function appenderError(NativeCData $appender): string
+    {
+        return self::$ffi->duckdb_appender_error($appender);
+    }
+
+    public function appendValue(NativeCData $appender, NativeCData $value): int
+    {
+        return self::$ffi->duckdb_append_value($appender, $value);
+    }
+
+    public function endRow(NativeCData $appender): int
+    {
+        return self::$ffi->duckdb_appender_end_row($appender);
+    }
+
+    public function destroyAppender(NativeCData $appender): int
+    {
+        return self::$ffi->duckdb_appender_destroy($appender);
+    }
+
+    public function flush(NativeCData $appender): int
+    {
+        return self::$ffi->duckdb_appender_flush($appender);
+    }
+
+    public function createTimestampNs(NativeCData $nanos): NativeCData
+    {
+        return self::$ffi->duckdb_create_timestamp_ns($nanos);
+    }
+
+    public function destroyValue(NativeCData $value): void
+    {
+        self::$ffi->duckdb_destroy_value($value);
+    }
+
+    public function createInstanceCache(): NativeCData
+    {
+        return self::$ffi->duckdb_create_instance_cache();
+    }
+
+    public function getOrCreateFromCache(
+        NativeCData $instanceCache,
+        ?string $path,
+        ?NativeCData $db,
+        ?Configuration $config,
+        ?string &$error,
+    ): int {
+        return self::$ffi->duckdb_get_or_create_from_cache($instanceCache, $path, $db, $config, $error);
+    }
+
+    public function destroyInstanceCache(NativeCData $instanceCache): void
+    {
+        self::$ffi->duckdb_destroy_instance_cache($instanceCache);
     }
 }

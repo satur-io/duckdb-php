@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type;
 
+use DateMalformedStringException;
 use DateTime;
 use DateTimeInterface;
+use JsonSerializable;
 use Saturio\DuckDB\Exception\InvalidTimeException;
 
-class Timestamp
+class Timestamp implements JsonSerializable
 {
     public function __construct(
         private readonly ?Date $date = null,
@@ -36,8 +38,6 @@ class Timestamp
     {
         return $this->infinity < 0 ? '-infinity' : '+infinity';
     }
-
-    // @todo - Add unit tests for this
 
     /**
      * @throws InvalidTimeException
@@ -87,8 +87,16 @@ class Timestamp
         );
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function toDateTime(): DateTime
     {
         return new DateTime($this->__toString());
+    }
+
+    public function jsonSerialize(): string
+    {
+        return $this->__toString();
     }
 }

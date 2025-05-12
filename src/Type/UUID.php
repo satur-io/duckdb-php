@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type;
 
+use JsonSerializable;
 use Saturio\DuckDB\Type\Math\LongInteger as BigInteger;
 use Saturio\DuckDB\Type\Math\MathLibInterface;
 
-class UUID
+class UUID implements JsonSerializable
 {
     public function __construct(
         private readonly string $uuid,
@@ -73,5 +74,10 @@ class UUID
     public function __toString(): string
     {
         return $this->uuid;
+    }
+
+    public function jsonSerialize(): string
+    {
+        return $this->__toString();
     }
 }
