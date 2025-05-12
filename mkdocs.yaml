@@ -24,4 +24,4 @@ markdown_extensions:
 
 plugins:
   - codeinclude:
-      title_mode: pymdownx.tabbed
+      title_mode: legacy_pymdownx.superfences
