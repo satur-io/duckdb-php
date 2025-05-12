@@ -13,7 +13,7 @@ to actually retrieve only one from the result,
 but the example works to show how is data stored internally.
 
 ```php
-{!../../examples/04 - get-value-by-row-column.php!lines=1 17-63}
+{!../../examples/04 - get-value-by-row-column.php!lines=1 17-62}
 ```
 
 ### Remote parquet file
@@ -21,7 +21,7 @@ but the example works to show how is data stored internally.
 Read a remote parquet file and query some aggregates.
 
 ```php
-{!../../examples/06 - remote-parquet-file!}
+{!../../examples/06 - remote-parquet-file.php!}
 ```
 
 ### Summarize remote csv
@@ -37,7 +37,7 @@ Use of `SUMMARIZE TABLE` over a remote CSV file.
 Create table schema and insert data from a JSON.
 
 ```php
-{!../../examples/10 on-the-fly-schema.php!}
+{!../../examples/10 - on-the-fly-schema.php!}
 ```
 
 ### UI plugin
