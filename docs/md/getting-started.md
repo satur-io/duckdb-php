@@ -16,7 +16,7 @@ $ composer require satur.io/duckdb
 DuckDB::sql("SELECT 'quack' as my_column")->print();
 ```
 
-Go to next section to make your first query: [Connections and queries](running-queries)
+Go to next section to make your first query: [Connections and queries](running-queries.md)
 
 ## Requirements
 
