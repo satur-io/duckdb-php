@@ -23,4 +23,5 @@ markdown_extensions:
       permalink: true
 
 plugins:
-  - codeinclude
+  - codeinclude:
+      title_mode: pymdownx.tabbed
