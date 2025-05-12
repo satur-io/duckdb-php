@@ -4,4 +4,6 @@
 
 This is just a simple query example.
 
-{!"../../examples/01 - simple-query.php"!php}
+<!--codeinclude-->
+[Example 1](../../examples/01 - simple-query.php)
+<!--/codeinclude-->
