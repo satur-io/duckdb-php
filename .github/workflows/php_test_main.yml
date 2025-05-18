@@ -8,3 +8,4 @@ on:
 jobs:
   phpunit:
     uses: ./.github/workflows/php_test.yml
+    secrets: inherit
