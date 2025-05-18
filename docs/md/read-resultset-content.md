@@ -122,3 +122,6 @@ and `duckdb_vector` C types. You probably want to check
 [DuckDB documentation](https://duckdb.org/docs/stable/clients/c)
 to understand what these objects represent and how to use them.
 
+This [example](examples.md#get-value-by-row-and-column) 
+and `ResultSet::rows()` method implementation
+can be also useful to see how this internal methods works.

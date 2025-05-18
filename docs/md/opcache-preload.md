@@ -47,7 +47,7 @@ opcache.max_accelerated_files=4000
 opcache.revalidate_freq=60
 opcache.fast_shutdown=1
 opcache.jit_buffer_size=256M
-# JIT (Just-In-Time) compilation can significantly improve performance by compiling code into machine code at runtime.
-Refer to the [PHP documentation for OPcache](https://www.php.net/manual/en/book.opcache.php) for more detailed information.
 ```
-Take a look at [PHP docs for OPcache](https://www.php.net/manual/en/book.opcache.php) for more detailed information.
+
+JIT (Just-In-Time) compilation can significantly improve performance by compiling code into machine code at runtime.
+Refer to the [PHP documentation for OPcache](https://www.php.net/manual/en/book.opcache.php) for more detailed information.
