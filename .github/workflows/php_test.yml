@@ -44,7 +44,7 @@ jobs:
       with:
         php-version: ${{ matrix.php }}
         extensions: ffi, pcntl
-        coverage: none
+        coverage: xdebug
 
     - name: Cache Composer packages
       id: composer-cache
