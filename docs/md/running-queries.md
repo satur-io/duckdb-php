@@ -1,6 +1,6 @@
 # Connections and queries
 
-The simplest way to performs a query is by `\Saturio\DuckDB\DuckDB::sql()` static function.
+The simplest way to perform a query is by `\Saturio\DuckDB\DuckDB::sql()` static function.
 It creates a new in-memory database connection and runs the query.
 
 ```php
@@ -15,7 +15,7 @@ DuckDB::sql("SELECT 'quack' as my_column")->print();
 -------------------
 ```
 
-It's easy to use, but this is not the most common use case, since you probably wants
+It's easy to use, but this is not the most common use case, since you probably want
 to set a persistent connection and run more than one query over there.
 
 !!! warning
@@ -23,11 +23,11 @@ to set a persistent connection and run more than one query over there.
     performs the query and immediately after that connection will be released and
     database will be removed so **all data is ephemeral**.
 
-Continue reading bellow to figure out how to work with connections in duckdb-php.
+Continue reading below to figure out how to work with connections in duckdb-php.
 
 ## Connections
 
-This library is build on top of official DuckDB C API and wraps the main methods
+This library is built on top of official DuckDB C API and wraps the main methods
 for different connection creation.
 
 For all of them, we will use the `\Saturio\DuckDB\DuckDB::create()` function.
@@ -60,7 +60,7 @@ printf("%s columns retrieved: %s\n",
 ```
 
 We will talk later about `\Saturio\DuckDB\Result\ResultSet` and
-how to read resultset values. But let's see some others ways
+how to read resultset values. But let's see some other ways
 to get a DB connection first.
 
 
@@ -94,7 +94,7 @@ It creates a new database instance when `instanceCache` is `true` or retrieves a
 
 ```php
 $duckdbFirstConnection = DuckDB::create(config: $config, instanceCache: true);
-// Since instantCache is true, it creates a new instance
+// Since instanceCache is true, it creates a new instance
 // You can retrieve it to reuse using DuckDB::getInstanceCache()
 
 // ... here you can use $duckdbFirstConnection as usual
@@ -109,4 +109,4 @@ $duckdbSecondConnection = DuckDB::create(
 // ... here you can use both $duckdbFirstConnection and $duckdbSecondConnection
 ```
 
-In next section you will see how to deal with the result for reading queries.
+In the next section you will see how to deal with the result for reading queries.

@@ -42,8 +42,8 @@ Create table schema and insert data from a JSON.
 
 ### UI plugin
 
-Start a local web UI using the [UI plugin](https://duckdb.org/docs/stable/extensions/ui.html.
-When the PHP process finished the connection is closed so the UI is also stoped.
+Start a local web UI using the [DuckDB UI plugin](https://duckdb.org/docs/stable/extensions/ui.html).
+When the PHP process finish the connection is closed so the UI is also stopped.
 In this example we sleep for 120 seconds to illustrate the use.
 
 ```php
@@ -52,7 +52,7 @@ In this example we sleep for 120 seconds to illustrate the use.
 
 ### Monitorize local network usage
 
-Only works for MacOS. It stores network information each 2 seconds
+Only works for macOS due to its reliance on macOS-specific APIs for monitoring network usage. It stores network information every 2 seconds
 and also opens the local UI to query data.
 
 Can be stopped with `Cmd+C`.
@@ -114,7 +114,7 @@ SELECT
   max(last_update) as last_update,
   time_range,
   SUM(bytes_in) / 30 as bytes_per_second_download,
-  SUM(bytes_out) / 30 as bytes_per_second_upload,
+  SUM(bytes_out) / 30 as bytes_per_second_upload
   FROM
 (SELECT 
   time_bucket(INTERVAL '30 SECONDS', log_created_at, INTERVAL '-30 SECONDS') as time_range,
@@ -132,13 +132,18 @@ LIMIT 100
 ```sql
 SELECT
   SUM(bytes_in) / 10 as current_bytes_per_second_download,
-  SUM(bytes_out) / 10 as current_bytes_per_second_upload,
-  FROM
+  SUM(bytes_out) / 10 as current_bytes_per_second_upload
+FROM
 (SELECT 
   column01 as app,
   max(bytes_in) - min(bytes_in) as bytes_in,
   max(bytes_out) - min(bytes_out) as bytes_out
   FROM network_usage
-  WHERE log_created_at > (SELECT max(log_created_at) - INTERVAL '10 SECONDS' FROM network_usage)
+  WHERE log_created_at > (
+    SELECT 
+      max(log_created_at) - INTERVAL '10 SECONDS' 
+    FROM 
+      network_usage
+  )
 GROUP BY app)
 ```

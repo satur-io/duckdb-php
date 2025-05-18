@@ -68,7 +68,7 @@ $appender->flush();
 ```
 
 If flushing the data triggers a constraint violation or any other error, then all data is invalidated.
-It is not possible to append more values when a error is thrown.
+To handle such errors, you can wrap the `flush()` operation in a try-catch block. It is not possible to append more values when a error is thrown.
 
 And putting all together:
 

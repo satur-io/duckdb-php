@@ -9,8 +9,7 @@ From DuckDB docs:
     A single query can be prepared once and executed many times._
 
 !!! warning
-    Prepared statements shouldn't be used to insert large amounts of data.
-    Check [Appenders](appenders.md) instead in that case.
+    Prepared statements shouldn't be used to insert large amounts of data, as they can lead to performance issues and inefficiencies. For such cases, consider using [Appenders](appenders.md) instead.
 
 ## Create a prepared statement
 
@@ -59,7 +58,7 @@ $preparedStatement->bindParam(
 
 ### Explicit typing
 
-To bind a parameter using an specific type, include the
+To bind a parameter using a specific type, include the
 type to the `bindParam()` function parameters.
 
 ```php
@@ -73,4 +72,4 @@ $preparedStatement->bindParam(
 `bindParams()` expects a `\Saturio\DuckDB\Type\Type` enum value,
 but please notice not all types are valid for binding parameters.
 Specifically, nested types, `BIT` and `VARINT` are not allowed.
-This is a DuckDB limitation, not a duckdb-php one.
+This is a DuckDB limitation, not a duckdb-php one, as nested types, `BIT` and `VARINT` types are not compatible with parameter binding in DuckDB.

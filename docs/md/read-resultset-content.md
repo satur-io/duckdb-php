@@ -16,12 +16,15 @@ the `duckdb_value` functions are slower than fetching chunks and are deprecated,
 so they are not used in this library.
 
 The result of a query is stored in PHP layer in a `\Saturio\DuckDB\Result\ResultSet`
-object[^1].
+object. Note that for the moment, only `SELECT` queries return a useful `ResultSet`
+value. For other query types, such as `INSERT`, `DELETE`, `UPDATE`, or
+`DDL` ones (`CREATE`, `ALTER`, etc.), no specific info is provided, and
+you can consider that the query worked if no error was thrown at execution time.
 
 ## Column count and column names functions
 
-The `\Saturio\DuckDB\Result\ResultSet` class provides some auto-explanatory
-functions to get info about the columns retrieved:
+The `\Saturio\DuckDB\Result\ResultSet` class provides some self-explanatory
+functions to retrieve information about the columns, such as their names and count:
 `columnName(int $index)`, `columnCount()` and `columnNames()`.
 
 ```php
@@ -73,8 +76,10 @@ foreach ($result->rows(columnNameAsKey: true) as $row) {
 }
 ```
 !!! tip
-    `columnNameAsKey` option could make reading data process slower
-    and increase memory usage. For optimal performance
+    `columnNameAsKey` option could make reading data process slower,
+    especially when working with large datasets or executing high-frequency queries,
+    as it involves additional processing to map column names to keys. This can also
+    increase memory usage. For optimal performance, 
     [column count and column names functions](#column-count-and-column-names-functions)
     are preferred in most cases.
 
@@ -117,7 +122,3 @@ and `duckdb_vector` C types. You probably want to check
 [DuckDB documentation](https://duckdb.org/docs/stable/clients/c)
 to understand what these objects represent and how to use them.
 
-[^1]: For the moment, only `SELECT` queries return a useful `ResulSet`
-value. For other query types, such as `INSERT`, `DELETE`, `UPDATE` or
-`DDL` ones (`CREATE`, `ALTER`, etc) no specific info is provided and 
-you can consider that query worked if no error was thrown at execution time.

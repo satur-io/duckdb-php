@@ -1,6 +1,6 @@
 ## Types
 
-Since version 1.3.0 the library supports all DuckDB file types.
+Since version 1.2.0 the library supports all DuckDB file types.
 
 | DuckDB Type              | SQL Type     | PHP Type                             |
 |--------------------------|--------------|--------------------------------------|
@@ -38,4 +38,3 @@ Since version 1.3.0 the library supports all DuckDB file types.
 | DUCKDB_TYPE_UNION        | UNION        | mixed                                |
 | DUCKDB_TYPE_BIT          | BIT          | string                               |
 | DUCKDB_TYPE_VARINT       | VARINT       | string                               |
-
