@@ -64,6 +64,7 @@ jobs:
       run: vendor/bin/phpunit test --coverage-clover=coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}${{ inputs.lib-path }}.xml
 
   sonar_scan:
+    if: ${{ always() }}
     needs: [ build ]
     runs-on: ubuntu-latest
     steps:
