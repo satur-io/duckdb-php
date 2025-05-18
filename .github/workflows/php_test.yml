@@ -63,11 +63,26 @@ jobs:
         DUCKDB_PHP_LIB_DIRECTORY: ${{ inputs.lib-path }}
       run: vendor/bin/phpunit test --coverage-clover=coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}${{ inputs.lib-path }}.xml
 
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-coverage-report
+        path: coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}${{ inputs.lib-path }}.xml
+
   sonar_scan:
     if: ${{ always() }}
     needs: [ build ]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Download code-coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: code-coverage-report
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
         env:
