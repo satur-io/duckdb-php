@@ -66,7 +66,7 @@ jobs:
     - name: Archive code coverage results
       uses: actions/upload-artifact@v4
       with:
-        name: code-coverage-report
+        name: coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}${{ inputs.lib-path }}
         path: coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}${{ inputs.lib-path }}.xml
 
   sonar_scan:
@@ -81,7 +81,8 @@ jobs:
       - name: Download code-coverage
         uses: actions/download-artifact@v4
         with:
-          name: code-coverage-report
+          path: .
+          merge-multiple: true
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
