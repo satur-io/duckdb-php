@@ -96,12 +96,12 @@ class NumericConverterTest extends TestCase
     public function testLongIntegerToInt(): void
     {
         $longInteger = LongInteger::fromString('104567');
-        $this->assertEquals($longInteger->toInt(MathLib::create()), 104567);
+        $this->assertEquals(104567, $longInteger->toInt(MathLib::create()));
     }
 
     public function testLongIntegerToIntReturnsFalseWhenItIsNotConvertable(): void
     {
         $longInteger = LongInteger::fromString('104567104567104567104567104567104567104567104567104567104567104567104567');
-        $this->assertEquals($longInteger->toInt(MathLib::create()), false);
+        $this->assertEquals(false, $longInteger->toInt(MathLib::create()));
     }
 }
