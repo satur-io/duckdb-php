@@ -9,3 +9,5 @@ jobs:
   phpunit:
     uses: ./.github/workflows/php_test.yml
     secrets: inherit
+    with:
+      run-sonar: true
