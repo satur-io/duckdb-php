@@ -8,5 +8,4 @@ on:
 jobs:
   phpunit:
     uses: ./.github/workflows/php_test.yml
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    secrets: inherit
