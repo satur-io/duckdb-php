@@ -61,7 +61,7 @@ jobs:
     - name: Run test suite
       env:
         DUCKDB_PHP_LIB_DIRECTORY: ${{ inputs.lib-path }}
-      run: vendor/bin/phpunit test
+      run: vendor/bin/phpunit test --coverage-clover=coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}${{ inputs.lib-path }}.xml
 
   get_nightly_libraries:
     if: ${{ inputs.lib-path }}
