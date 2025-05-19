@@ -1,10 +1,13 @@
 name: benchmark-regression.yml
 
-on: workflow_dispatch
+on:
+  pull_request:
+    types: [labeled]
+    branches: [ "main" ]
 
 jobs:
   build:
-    if: ${{ always() }}
+    if: github.event.label.name == 'run-benchmar-regression'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
