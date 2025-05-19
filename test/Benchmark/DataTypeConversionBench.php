@@ -20,6 +20,7 @@ class DataTypeConversionBench
         $rows = $result->rows();
         iterator_apply($rows, function ($rows) {
             implode('|', array_map(fn ($v) => is_array($v) ? json_encode($v, JSON_UNESCAPED_UNICODE) : $v, $rows->current()));
+
             return true;
         }, [$rows]);
     }
@@ -35,6 +36,7 @@ class DataTypeConversionBench
         $rows = $result->rows();
         iterator_apply($rows, function ($rows) {
             implode('|', array_map(fn ($v) => is_array($v) ? json_encode($v, JSON_UNESCAPED_UNICODE) : $v, $rows->current()));
+
             return true;
         }, [$rows]);
     }

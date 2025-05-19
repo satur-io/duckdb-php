@@ -9,7 +9,6 @@ $files = [
     'dutch_railway_network.duckdb' => 'http://blobs.duckdb.org/data/dutch_railway_network.duckdb',
 ];
 
-
 foreach ($files as $file => $url) {
     if (file_exists($file)) {
         return;
@@ -20,11 +19,11 @@ foreach ($files as $file => $url) {
     $fp = fopen($file, 'w+');
 
     curl_setopt_array($ch, [
-        CURLOPT_FILE           => $fp,
+        CURLOPT_FILE => $fp,
         CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_FAILONERROR    => true,
+        CURLOPT_FAILONERROR => true,
         CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_SSL_VERIFYHOST => false
+        CURLOPT_SSL_VERIFYHOST => false,
     ]);
 
     $success = curl_exec($ch);

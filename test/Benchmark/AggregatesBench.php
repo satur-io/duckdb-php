@@ -9,7 +9,6 @@ use Saturio\DuckDB\DuckDB;
 
 class AggregatesBench
 {
-
     #[Bench\Warmup(2)]
     #[Bench\Revs(100)]
     #[Bench\Iterations(5)]
