@@ -5,11 +5,6 @@
   "runner.file_pattern": "*Bench.php",
   "runner.php_disable_ini": true,
   "runner.php_config": {
-    "extension": [
-      "ffi.so",
-      "curl.so",
-      "bcmath.so"
-    ],
     "zend_extension": "opcache.so",
     "opcache.enable": 1,
     "opcache.enable_cli": 1,
@@ -22,7 +17,6 @@
     "opcache.fast_shutdown": 1,
     "opcache.jit_buffer_size": "256M"
   },
-  "storage.xml_storage_path": "../.phpbench/storage",
   "runner.assert":
     "mode(variant.time.avg) - mode(baseline.time.avg) < 2 milliseconds or mode(variant.time.avg) < mode(baseline.time.avg) +/- 2%",
   "report.generators": {

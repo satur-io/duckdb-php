@@ -1,4 +1,4 @@
-name: benchmark-regression.yml
+name: Benchmark regression test
 
 on:
   pull_request:
@@ -19,11 +19,27 @@ jobs:
     name: P${{ matrix.php }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout main to generate baseline
+        uses: actions/checkout@v4
         with:
-          lfs: false
-          fetch-depth: 0
-          ref: ${{ github.head_ref || github.ref_name }}
+          ref: main
+
+      - name: Get last PHPBench tests and settings
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            test/Benchmark
+            phpbench.json
+          sparse-checkout-cone-mode: false
+          path:
+              current-phpbench-files
+
+      - name: Use last PHPBench tests and settings
+        run: |
+          rm -rf test/Benchmark
+          rm -f phpbench.json
+          cp -R current-phpbench-files/test/Benchmark test/Benchmark
+          cp current-phpbench-files/phpbench.json phpbench.json
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -47,5 +63,45 @@ jobs:
       - name: Dump autoload
         run: composer dump-autoload --optimize --apcu --no-cache
 
+      - run: mkdir -p .phpbench/samples
+      - name: Cache Benchmark files
+        uses: actions/cache@v3
+        with:
+          path: .phpbench/samples
+          key: benchmark-samples-${{ hashFiles('/test/Benchmark') }}
+          restore-keys: |
+            benchmark-samples-
+
+      - name: Run benchmark to generate baseline
+        run: |
+          echo '## Main branch baseline' >> $GITHUB_STEP_SUMMARY 
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```markdown' >> $GITHUB_STEP_SUMMARY
+          vendor/bin/phpbench run --tag=main --report=duckdb_benchmark_report --progress=none >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Checkout current PR
+        uses: actions/checkout@v4
+
+      - name: Install dependencies for current PR
+        run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+
+      - name: Dump autoload for current PR
+        run: composer dump-autoload --optimize --apcu --no-cache
+
+      - run: mkdir -p .phpbench/samples
+      - name: Cache Benchmark files
+        uses: actions/cache@v3
+        with:
+          path: .phpbench/samples
+          key: benchmark-samples-${{ hashFiles('/test/Benchmark') }}
+          restore-keys: |
+            benchmark-samples-
+
       - name: Run benchmark regression test
-        run: composer benchmark-regression
+        run: |
+          echo '## Regression results' >> $GITHUB_STEP_SUMMARY 
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```markdown' >> $GITHUB_STEP_SUMMARY
+          vendor/bin/phpbench run --ref=main --report=duckdb_benchmark_report --progress=none >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

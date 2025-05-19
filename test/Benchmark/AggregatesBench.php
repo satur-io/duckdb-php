@@ -29,7 +29,7 @@ class AggregatesBench
         $duckDB = DuckDB::create();
         $result = $duckDB->query(
             'SELECT "Reporting Year", avg("Gas Produced, MCF") as "AVG Gas Produced" 
-                FROM "oil-and-gas.parquet"
+                FROM ".phpbench/samples/oil-and-gas.parquet"
                 WHERE "Reporting Year" BETWEEN 1985 AND 1990
                 GROUP BY "Reporting Year";'
         );
@@ -43,7 +43,7 @@ class AggregatesBench
     #[Bench\Iterations(5)]
     public function benchMediumDatabase(): void
     {
-        $duckDB = DuckDB::create('dutch_railway_network.duckdb');
+        $duckDB = DuckDB::create('.phpbench/samples/dutch_railway_network.duckdb');
         $result = $duckDB->query(
             "SELECT
                         date_trunc('hour', station_service_time) AS window_start,

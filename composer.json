@@ -44,16 +44,14 @@
         "performance": "./test/Performance/compare_current_branch_performance.sh",
         "get-libraries": "./scripts/get_libraries.sh",
         "fix": "PHP_CS_FIXER_IGNORE_ENV=1 tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes",
-        "benchmark": "vendor/bin/phpbench run --report=duckdb_benchmark_report",
+        "benchmark": "vendor/bin/phpbench run --config=phpbench-local.json --report=duckdb_benchmark_report",
         "benchmark-regression": [
-            "php -r 'opcache_reset();'",
-            "echo \"${GITHUB_HEAD_REF:-$(git branch --show-current)}\" > ${RUNNER_TEMP:=/tmp}/phpbench_current_branch",
+            "export CURRENT_BRANCH=$(git branch --show-current)",
             "git switch main",
-            "git checkout $(cat ${RUNNER_TEMP:=/tmp}/phpbench_current_branch) test/Benchmark phpbench.json preload.php",
-            "vendor/bin/phpbench run --tag=main --report=duckdb_benchmark_report",
-            "git switch $(cat ${RUNNER_TEMP:=/tmp}/phpbench_current_branch)",
-            "php -r 'opcache_reset();'",
-            "vendor/bin/phpbench run --ref=main --report=duckdb_benchmark_report"
+            "git checkout ${CURRENT_BRANCH} test/Benchmark phpbench-local.json preload.php",
+            "vendor/bin/phpbench run --config=phpbench-local.json --tag=main --report=duckdb_benchmark_report",
+            "git switch ${CURRENT_BRANCH}",
+            "vendor/bin/phpbench run --config=phpbench-local.json --ref=main --report=duckdb_benchmark_report"
         ]
     },
     "bin": ["test/Performance/duckdb_api"],
