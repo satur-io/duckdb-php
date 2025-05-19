@@ -58,4 +58,9 @@ class StructVector implements NestedTypeVector
 
         return $array;
     }
+
+    public function __destruct()
+    {
+        $this->ffi->destroyLogicalType($this->ffi->addr($this->logicalType));
+    }
 }

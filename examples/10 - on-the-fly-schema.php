@@ -24,4 +24,5 @@ $duckDB = DuckDB::create('on-the-fly-schema.db');
 $duckDB->query("CREATE TABLE events AS FROM read_json('{$tmpJson}');");
 unlink($tmpJson);
 $duckDB->query("SELECT * FROM events;")->print();
+unset($duckDB);
 unlink('on-the-fly-schema.db');

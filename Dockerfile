@@ -1,10 +1,12 @@
 FROM php:8.4-cli
 
-RUN apt-get -y update \
+RUN apt -y update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install libffi-dev time bc curl unzip \
     && docker-php-ext-configure ffi --with-ffi \
     && docker-php-ext-install ffi \
-    && apt-get clean \
+    && docker-php-ext-install bcmath \
+    && apt install -y valgrind \
+    && apt clean \
     && rm -rf /tmp/* /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
