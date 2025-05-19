@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    if: github.event.label.name == 'run-benchmar-regression'
+    if: github.event.label.name == 'run-benchmark-regression'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
