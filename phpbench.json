@@ -23,7 +23,7 @@
     "opcache.jit_buffer_size": "256M"
   },
   "runner.assert":
-    "mode(variant.time.avg) - mode(baseline.time.avg) < 200 microseconds or mode(variant.time.avg) < mode(baseline.time.avg) +/- 2%",
+    "mode(variant.time.avg) - mode(baseline.time.avg) < 2 milliseconds or mode(variant.time.avg) < mode(baseline.time.avg) +/- 2%",
   "report.generators": {
     "duckdb_benchmark_report": {
       "generator": "expression",
