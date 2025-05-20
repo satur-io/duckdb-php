@@ -1,5 +1,8 @@
 site_name: saturio/duckdb-php
-theme: readthedocs
+
+theme:
+  name: readthedocs
+
 docs_dir: docs/md
 
 nav:
