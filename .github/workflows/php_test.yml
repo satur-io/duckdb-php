@@ -24,11 +24,14 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, ubuntu-24.04-arm, windows-11-arm]
         php: [8.5, 8.4, 8.3]
-        stability: [prefer-lowest, prefer-stable]
   
-    name: P${{ matrix.php }} - ${{ matrix.stability }} - ${{ matrix.os }}
+    name: php-${{ matrix.php }} - ${{ matrix.os }}
 
     steps:
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      
     - uses: actions/checkout@v4
       with:
         lfs: false
@@ -38,9 +41,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: lib_nightly
-        key: lib_nightly-${{ steps.get-date.outputs.date }}
-        restore-keys: |
-          lib_nightly
+        key: lib_nightly-${{ steps.date.outputs.date }}
         enableCrossOsArchive: true
 
     - name: Setup PHP
@@ -55,24 +56,24 @@ jobs:
       uses: actions/cache@v3
       with:
         path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        key: php-composer-${{ matrix.php }}-${{ matrix.os }}-${{ hashFiles('**/composer.json') }}
         restore-keys: |
-          ${{ runner.os }}-php-
+          php-composer-${{ matrix.php }}-${{ matrix.os }}-
 
     - name: Install dependencies
-      run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+      run: composer update --prefer-dist --no-interaction
 
     - name: Run test suite
       env:
         DUCKDB_PHP_LIB_DIRECTORY: ${{ inputs.lib-path }}
-      run: vendor/bin/phpunit test --coverage-clover=coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}.xml
+      run: vendor/bin/phpunit test --coverage-clover=coverage-${{ matrix.php }}-${{ matrix.os }}.xml
 
     - name: Archive code coverage results
       if: ${{ inputs.run-sonar }}
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}
-        path: coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}.xml
+        name: coverage-${{ matrix.php }}-${{ matrix.os }}
+        path: coverage-${{ matrix.php }}-${{ matrix.os }}.xml
 
   sonar_scan:
     if: ${{ always() && inputs.run-sonar }}

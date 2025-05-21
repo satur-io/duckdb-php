@@ -14,9 +14,8 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         php: [8.4]
-        stability: [prefer-stable]
 
-    name: P${{ matrix.php }} - ${{ matrix.stability }} - ${{ matrix.os }}
+    name: Benchmark php-${{ matrix.php }} - ${{ matrix.os }}
 
     steps:
       - name: Checkout main to generate baseline
@@ -53,12 +52,12 @@ jobs:
         uses: actions/cache@v3
         with:
           path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          key: php-composer-${{ matrix.php }}-${{ matrix.os }}-${{ hashFiles('**/composer.json') }}
           restore-keys: |
-            ${{ runner.os }}-php-benchmarks
+            php-composer-${{ matrix.php }}-${{ matrix.os }}-
 
       - name: Install dependencies
-        run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+        run: composer update --prefer-dist --no-interaction
 
       - name: Dump autoload
         run: composer dump-autoload --optimize --apcu --no-cache
@@ -68,9 +67,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .phpbench/samples
-          key: benchmark-samples-${{ hashFiles('/test/Benchmark') }}
-          restore-keys: |
-            benchmark-samples-
+          key: benchmark-samples-${{ hashFiles('/test/Benchmark/bootstrap.php') }}
 
       - name: Run benchmark to generate baseline
         run: |
@@ -84,7 +81,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dependencies for current PR
-        run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+        run: composer update --prefer-dist --no-interaction
 
       - name: Dump autoload for current PR
         run: composer dump-autoload --optimize --apcu --no-cache
@@ -94,9 +91,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .phpbench/samples
-          key: benchmark-samples-${{ hashFiles('/test/Benchmark') }}
-          restore-keys: |
-            benchmark-samples-
+          key: benchmark-samples-${{ hashFiles('/test/Benchmark/bootstrap.php') }}
 
       - name: Run benchmark regression test
         run: |
