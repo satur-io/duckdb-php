@@ -238,3 +238,10 @@ If you'd like to contribute, please follow these steps:
 > Please include tests for any new functionality or bug fixing.
 
 Thank you for helping improve this project!
+
+
+<p align="center">
+    <a href='https://ko-fi.com/saturio/tip' target='_blank'>
+        <img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi4.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' />
+    </a>
+</p>
