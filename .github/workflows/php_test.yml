@@ -112,7 +112,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: lib_nightly
-          key: lib_nightly-${{ steps.get-date.outputs.date }}
+          key: lib_nightly-${{ steps.date.outputs.date }}
           restore-keys: |
             lib_nightly
 
