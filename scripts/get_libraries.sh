@@ -1,8 +1,8 @@
 #!/bin/bash
 
-platforms=("linux-aarch64" "linux-amd64" "osx-universal" "windows-amd64" "windows-arm64")
+platforms=("linux-arm64" "linux-amd64" "osx-universal" "windows-amd64" "windows-arm64")
 platformLibFiles=("libduckdb.so" "libduckdb.so" "libduckdb.dylib" "duckdb.dll" "duckdb.dll")
-release="1.2.2"
+release="1.3.0"
 
 rm -rf ./lib
 
