@@ -39,13 +39,20 @@ class FindLibrary
 
         $libDirectory = getenv('DUCKDB_PHP_LIB_DIRECTORY') ? getenv('DUCKDB_PHP_LIB_DIRECTORY') : 'lib';
 
-        switch ($os) {
-            case 'Windows NT':
-                $machine = ('AMD64' === $machine) ? 'amd64' : $machine;
-                break;
-            case 'Linux':
-                $machine = ('x86_64' === $machine) ? 'amd64' : 'arm64';
-                break;
+        if ($os === 'Windows NT') {
+            $machine = match ($machine) {
+                'AMD64', 'x64' => 'amd64',
+                'ARM64' => 'arm64',
+                default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
+            };
+        }
+
+        if ($os === 'Linux') {
+            $machine = match ($machine) {
+                'x86_64' => 'amd64',
+                'aarch64' => 'arm64',
+                default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
+            };
         }
 
         $thisClassReflection = new ReflectionClass(self::class);
