@@ -10,7 +10,7 @@ if (!is_dir('.phpbench/samples')) {
 
 $files = [
     '.phpbench/samples/oil-and-gas.parquet' => 'https://github.com/plotly/datasets/raw/refs/heads/master/oil-and-gas.parquet',
-    '.phpbench/samples/dutch_railway_network.duckdb' => 'http://blobs.duckdb.org/data/dutch_railway_network.duckdb',
+    '.phpbench/samples/dutch_railway_network.duckdb' => 'https://blobs.duckdb.org/data/dutch_railway_network.duckdb',
 ];
 
 foreach ($files as $file => $url) {
