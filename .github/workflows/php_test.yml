@@ -117,4 +117,5 @@ jobs:
             lib_nightly
 
       - name: Get libraries
+        if: ${{ steps.libraries-cache.outputs.cache-hit != 'true' }}
         run: ./scripts/get_libraries_nightly.sh
