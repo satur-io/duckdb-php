@@ -65,14 +65,14 @@ jobs:
     - name: Run test suite
       env:
         DUCKDB_PHP_LIB_DIRECTORY: ${{ inputs.lib-path }}
-      run: vendor/bin/phpunit test --coverage-clover=coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}${{ inputs.lib-path }}.xml
+      run: vendor/bin/phpunit test --coverage-clover=coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}.xml
 
     - name: Archive code coverage results
       if: ${{ inputs.run-sonar }}
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}${{ inputs.lib-path }}
-        path: coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}${{ inputs.lib-path }}.xml
+        name: coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}
+        path: coverage-${{ matrix.php }}-${{ matrix.stability }}-${{ matrix.os }}.xml
 
   sonar_scan:
     if: ${{ always() && inputs.run-sonar }}

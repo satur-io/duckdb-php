@@ -39,8 +39,14 @@ class FindLibrary
 
         $libDirectory = getenv('DUCKDB_PHP_LIB_DIRECTORY') ? getenv('DUCKDB_PHP_LIB_DIRECTORY') : 'lib';
 
-        $machine = ('Linux' === $os && 'x86_64' === $machine) ? 'amd64' : 'arm64';
-        $machine = ('Windows NT' === $os && 'AMD64' === $machine) ? 'amd64' : $machine;
+        switch ($os) {
+            case 'Windows NT':
+                $machine = ('AMD64' === $machine) ? 'amd64' : $machine;
+                break;
+            case 'Linux':
+                $machine = ('x86_64' === $machine) ? 'amd64' : 'arm64';
+                break;
+        }
 
         $thisClassReflection = new ReflectionClass(self::class);
         $path = dirname($thisClassReflection->getFileName());
