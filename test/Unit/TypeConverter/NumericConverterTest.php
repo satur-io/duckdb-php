@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Converter\NumericConverter;
+use Saturio\DuckDB\Type\Math\LongInteger;
+use Saturio\DuckDB\Type\Math\MathLib;
 use Saturio\DuckDB\Type\TypeC;
 use Unit\Helper\PartiallyMockedFFITrait;
 
@@ -89,5 +91,17 @@ class NumericConverterTest extends TestCase
         );
 
         self::assertEquals($expectedFloat, $double);
+    }
+
+    public function testLongIntegerToInt(): void
+    {
+        $longInteger = LongInteger::fromString('104567');
+        $this->assertEquals(104567, $longInteger->toInt(MathLib::create()));
+    }
+
+    public function testLongIntegerToIntReturnsFalseWhenItIsNotConvertable(): void
+    {
+        $longInteger = LongInteger::fromString('104567104567104567104567104567104567104567104567104567104567104567104567');
+        $this->assertEquals(false, $longInteger->toInt(MathLib::create()));
     }
 }

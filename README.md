@@ -5,6 +5,10 @@
 [![Github Actions Badge](https://github.com/satur-io/duckdb-php/actions/workflows/php_test_main.yml/badge.svg?branch=main)](https://github.com/satur-io/duckdb-php/actions)
 [![Github Actions Badge](https://github.com/satur-io/duckdb-php/actions/workflows/php_test_nightly.yml/badge.svg?branch=main)](https://github.com/satur-io/duckdb-php/actions)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=satur-io_duckdb-php&metric=alert_status&token=4a4bd82eff843d2b4a93bf4552b6db78e598ecfa)](https://sonarcloud.io/summary/new_code?id=satur-io_duckdb-php)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=satur-io_duckdb-php&metric=coverage)](https://sonarcloud.io/summary/new_code?id=satur-io_duckdb-php)
+[![Packagist Version](https://img.shields.io/packagist/v/satur.io/duckdb?style=flat&logo=packagist&logoColor=white)](https://packagist.org/packages/satur.io/duckdb)
+![DuckDB C API Version](https://img.shields.io/badge/DuckDB_C_API-v1.3.0-%23FFF100?logo=duckdb)
+
 
 This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API for PHP.
 
@@ -16,6 +20,10 @@ This library is more than just a wrapper for the C API; it introduces custom, PH
 ```shell
 composer require satur.io/duckdb
 ```
+
+### Documentation
+
+Full documentation is available in [https://duckdb-php.readthedocs.io/](https://duckdb-php.readthedocs.io/).
 
 ### Quick Start
 
@@ -33,8 +41,8 @@ DuckDB::sql("SELECT 'quack' as my_column")->print();
 
 > It's that simple! :duck:
 
-The function we used here, `DuckDB::sql()`, performs a query in a new
-in-memory database and is destroyed after retrieving the result.
+The function we used here, `DuckDB::sql()`, performs the query in a new
+in-memory database which is destroyed after retrieving the result.
 
 This is not the most common use case, let's see how to get a persistent connection.
 
@@ -78,6 +86,27 @@ $intPreparedStatement->bindParam(1, 3);
 $result = $intPreparedStatement->execute();
 $result->print();
 ```
+
+#### Appenders
+Appenders are the preferred method to load data in DuckDB. See [DuckDB docs](https://duckdb.org/docs/stable/clients/c/appender.html)
+for more information.
+
+```php
+$duckDB = DuckDB::create();
+$result = $duckDB->query('CREATE TABLE people (id INTEGER, name VARCHAR);');
+
+$appender = $duckDB->appender('people');
+
+for ($i = 0; $i < 100; ++$i) {
+    $appender->append(rand(1, 100000));
+    $appender->append('string-'.rand(1, 100));
+    $appender->endRow();
+}
+
+$appender->flush();
+```
+
+
 #### DuckDB powerful
 
 DuckDB provides some amazing features. For example, 
@@ -144,48 +173,44 @@ all possibilities.
 - ext-zend-opcache - For better performance
 
 ### Type Support
-| DuckDB Type              | SQL Type     | PHP Type                             |        Read        |         Bind         |
-|--------------------------|--------------|--------------------------------------|:------------------:|:--------------------:|
-| DUCKDB_TYPE_BOOLEAN      | BOOLEAN      | bool                                 | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_TINYINT      | TINYINT      | int                                  | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_SMALLINT     | SMALLINT     | int                                  | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_INTEGER      | INTEGER      | int                                  | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_BIGINT       | BIGINT       | int                                  | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_UTINYINT     | UTINYINT     | int                                  | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_USMALLINT    | USMALLINT    | int                                  | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_UINTEGER     | UINTEGER     | int                                  | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_UBIGINT      | UBIGINT      | Saturio\DuckDB\Type\Math\LongInteger | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_FLOAT        | FLOAT        | float                                | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_DOUBLE       | DOUBLE       | float                                | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_TIMESTAMP    | TIMESTAMP    | Saturio\DuckDB\Type\Timestamp        | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_DATE         | DATE         | Saturio\DuckDB\Type\Date             | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_TIME         | TIME         | Saturio\DuckDB\Type\Time             | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_INTERVAL     | INTERVAL     | Saturio\DuckDB\Type\Interval         | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_HUGEINT      | HUGEINT      | Saturio\DuckDB\Type\Math\LongInteger | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_UHUGEINT     | UHUGEINT     | Saturio\DuckDB\Type\Math\LongInteger | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_VARCHAR      | VARCHAR      | string                               | :white_check_mark: |  :white_check_mark:  |
-| DUCKDB_TYPE_BLOB         | BLOB         | Saturio\DuckDB\Type\Blob      |                             :white_check_mark:                             |                                    :x:                                     |
-| DUCKDB_TYPE_TIMESTAMP_S  | TIMESTAMP_S  | Saturio\DuckDB\Type\Timestamp |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_TIMESTAMP_MS | TIMESTAMP_MS | Saturio\DuckDB\Type\Timestamp |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_TIMESTAMP_NS | TIMESTAMP_NS | Saturio\DuckDB\Type\Timestamp |                             :white_check_mark:                             |                                    :x:                                     |
-| DUCKDB_TYPE_UUID         | UUID         | Saturio\DuckDB\Type\UUID      |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_TIME_TZ      | TIMETZ       | Saturio\DuckDB\Type\Time      |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_TIMESTAMP_TZ | TIMESTAMPTZ  | Saturio\DuckDB\Type\Timestamp |                             :white_check_mark:                             |                             :white_check_mark:                             |
-| DUCKDB_TYPE_DECIMAL      | DECIMAL      | float                         |                             :white_check_mark:                             |                                    :x:                                     |
-| DUCKDB_TYPE_ENUM         | ENUM         | string                        |                             :white_check_mark:                             |                            :small_blue_diamond:                            |
-| DUCKDB_TYPE_LIST         | LIST         | array                         |                             :white_check_mark:                             |                            :small_blue_diamond:                            |
-| DUCKDB_TYPE_STRUCT       | STRUCT       | array                         |                             :white_check_mark:                             |                            :small_blue_diamond:                            |
-| DUCKDB_TYPE_ARRAY        | ARRAY        | array                         |                             :white_check_mark:                             |                            :small_blue_diamond:                            |
-| DUCKDB_TYPE_MAP          | MAP          | array                         |                             :white_check_mark:                             |                            :small_blue_diamond:                            |
-| DUCKDB_TYPE_UNION        | UNION        | mixed                         |                             :white_check_mark:                             |                            :small_blue_diamond:                            |
-| DUCKDB_TYPE_BIT          | BIT          | string                        |                             :white_check_mark:                             |                            :small_blue_diamond:                            |
-| DUCKDB_TYPE_VARINT       | VARINT       | string                        |                             :white_check_mark:                             |                                    :x:                                     |
+| DuckDB Type              | SQL Type     | PHP Type                             |        Read         |     Bind/Append      |
+|--------------------------|--------------|--------------------------------------|:-------------------:|:--------------------:|
+| DUCKDB_TYPE_BOOLEAN      | BOOLEAN      | bool                                 | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_TINYINT      | TINYINT      | int                                  | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_SMALLINT     | SMALLINT     | int                                  | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_INTEGER      | INTEGER      | int                                  | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_BIGINT       | BIGINT       | int                                  | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_UTINYINT     | UTINYINT     | int                                  | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_USMALLINT    | USMALLINT    | int                                  | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_UINTEGER     | UINTEGER     | int                                  | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_UBIGINT      | UBIGINT      | Saturio\DuckDB\Type\Math\LongInteger | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_FLOAT        | FLOAT        | float                                | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_DOUBLE       | DOUBLE       | float                                | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_TIMESTAMP    | TIMESTAMP    | Saturio\DuckDB\Type\Timestamp        | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_DATE         | DATE         | Saturio\DuckDB\Type\Date             | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_TIME         | TIME         | Saturio\DuckDB\Type\Time             | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_INTERVAL     | INTERVAL     | Saturio\DuckDB\Type\Interval         | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_HUGEINT      | HUGEINT      | Saturio\DuckDB\Type\Math\LongInteger | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_UHUGEINT     | UHUGEINT     | Saturio\DuckDB\Type\Math\LongInteger | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_VARCHAR      | VARCHAR      | string                               | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_BLOB         | BLOB         | Saturio\DuckDB\Type\Blob             | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_TIMESTAMP_S  | TIMESTAMP_S  | Saturio\DuckDB\Type\Timestamp        | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_TIMESTAMP_MS | TIMESTAMP_MS | Saturio\DuckDB\Type\Timestamp        | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_TIMESTAMP_NS | TIMESTAMP_NS | Saturio\DuckDB\Type\Timestamp        | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_UUID         | UUID         | Saturio\DuckDB\Type\UUID             | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_TIME_TZ      | TIMETZ       | Saturio\DuckDB\Type\Time             | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_TIMESTAMP_TZ | TIMESTAMPTZ  | Saturio\DuckDB\Type\Timestamp        | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_DECIMAL      | DECIMAL      | float                                | :white_check_mark:  |  :white_check_mark:  |
+| DUCKDB_TYPE_ENUM         | ENUM         | string                               | :white_check_mark:  | :small_blue_diamond: |
+| DUCKDB_TYPE_LIST         | LIST         | array                                | :white_check_mark:  | :small_blue_diamond: |
+| DUCKDB_TYPE_STRUCT       | STRUCT       | array                                | :white_check_mark:  | :small_blue_diamond: |
+| DUCKDB_TYPE_ARRAY        | ARRAY        | array                                | :white_check_mark:  | :small_blue_diamond: |
+| DUCKDB_TYPE_MAP          | MAP          | array                                | :white_check_mark:  | :small_blue_diamond: |
+| DUCKDB_TYPE_UNION        | UNION        | mixed                                | :white_check_mark:  | :small_blue_diamond: |
+| DUCKDB_TYPE_BIT          | BIT          | string                               | :white_check_mark:  | :small_blue_diamond: |
+| DUCKDB_TYPE_VARINT       | VARINT       | string                               | :white_check_mark:  | :small_blue_diamond: |
 
 :white_check_mark: Fully supported
-
-:ballot_box_with_check: Partially supported / Needs improvements
-
-:x: Not supported
 
 :small_blue_diamond: Not applicable
 
@@ -215,3 +240,10 @@ If you'd like to contribute, please follow these steps:
 > Please include tests for any new functionality or bug fixing.
 
 Thank you for helping improve this project!
+
+
+<p align="center">
+    <a href='https://ko-fi.com/saturio/tip' target='_blank'>
+        <img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi4.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' />
+    </a>
+</p>

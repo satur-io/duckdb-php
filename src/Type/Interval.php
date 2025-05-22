@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type;
 
-class Interval
+use JsonSerializable;
+
+class Interval implements JsonSerializable
 {
     public function __construct(
         private readonly int $months = 0,
@@ -31,5 +33,10 @@ class Interval
     public function __toString(): string
     {
         return sprintf('%s months %s days %s microseconds', $this->months, $this->days, $this->microseconds);
+    }
+
+    public function jsonSerialize(): string
+    {
+        return $this->__toString();
     }
 }

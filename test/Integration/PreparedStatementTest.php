@@ -6,9 +6,11 @@ namespace Integration;
 
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
+use Saturio\DuckDB\Type\Blob;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Time;
 use Saturio\DuckDB\Type\Timestamp;
+use Saturio\DuckDB\Type\Type;
 
 class PreparedStatementTest extends TestCase
 {
@@ -132,5 +134,62 @@ class PreparedStatementTest extends TestCase
         $arrayResult = iterator_to_array($result->rows());
 
         $this->assertEquals($expectedResult, $arrayResult);
+    }
+
+    public function testPreparedStatementTimestampNs(): void
+    {
+        $this->db->query('CREATE TABLE test_timestamp (i INTEGER, t TIMESTAMP_NS);');
+        $this->db->query("INSERT INTO test_timestamp VALUES (3, '2024-12-31 3:50:20.562010001'), (5, '2024-12-31 3:50:20.56201'), (3, null);");
+
+        $expectedResult = [[
+            3,
+            new Timestamp(
+                new Date(2024, 12, 31),
+                new Time(3, 50, 20, nanoseconds: 562010001),
+            ),
+        ]];
+
+        $preparedStatement = $this->db->preparedStatement('SELECT * FROM test_timestamp WHERE t = ?');
+        $preparedStatement->bindParam(
+            1,
+            new Timestamp(
+                new Date(2024, 12, 31),
+                new Time(3, 50, 20, nanoseconds: 562010001),
+            ),
+            Type::DUCKDB_TYPE_TIMESTAMP_NS,
+        );
+        $result = $preparedStatement->execute();
+
+        $arrayResult = iterator_to_array($result->rows());
+
+        $this->assertEquals($expectedResult, $arrayResult);
+    }
+
+    public function testPreparedStatementBlob(): void
+    {
+        $this->db->query('CREATE TABLE test_blob (i INTEGER, b BLOB);');
+        $expectedValues = [3, '123\xAA\xAB\xAC'];
+
+        $this->db->query("INSERT INTO test_blob VALUES (3, '123\\xAA\\xAB\\xAC'), (5, '123\\xAA\\xAB\\xAC\\xAD'), (3, null);");
+        $preparedStatement = $this->db->preparedStatement('SELECT * FROM test_blob WHERE b = ?');
+        $preparedStatement->bindParam(1, Blob::fromHexEncodedString('123\\xAA\\xAB\\xAC'));
+        $result = $preparedStatement->execute();
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row);
+    }
+
+    public function testDecimal(): void
+    {
+        $this->db->query('CREATE TABLE test_decimal (i INTEGER, d DECIMAL);');
+        $expectedValues = [3, 12.3];
+
+        $this->db->query('INSERT INTO test_decimal VALUES (3, 12.3), (5, 12.4), (3, null);');
+        $preparedStatement = $this->db->preparedStatement('SELECT * FROM test_decimal WHERE d = ?');
+        $preparedStatement->bindParam(1, 12.3, Type::DUCKDB_TYPE_DECIMAL);
+        $result = $preparedStatement->execute();
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row);
     }
 }

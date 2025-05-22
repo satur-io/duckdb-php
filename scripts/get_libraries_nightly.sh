@@ -1,7 +1,7 @@
 #!/bin/bash
 
-platforms=("osx" "linux-amd64" "linux-aarch64" "windows" "windows")
-platformLibZip=("osx-universal" "linux-amd64" "linux-aarch64" "windows-amd64" "windows-arm64")
+platforms=("osx" "linux-amd64" "linux-arm64" "windows" "windows")
+platformLibZip=("osx-universal" "linux-amd64" "linux-arm64" "windows-amd64" "windows-arm64")
 platformLibFiles=("libduckdb.dylib" "libduckdb.so" "libduckdb.so" "duckdb.dll" "duckdb.dll")
 
 rm -rf ./lib_nightly

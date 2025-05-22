@@ -1,0 +1,40 @@
+{
+  "$schema":"./vendor/phpbench/phpbench/phpbench.schema.json",
+  "runner.bootstrap": "test/Benchmark/bootstrap.php",
+  "runner.path": "test/Benchmark",
+  "runner.file_pattern": "*Bench.php",
+  "runner.php_disable_ini": true,
+  "runner.php_config": {
+    "zend_extension": "opcache.so",
+    "opcache.enable": 1,
+    "opcache.enable_cli": 1,
+    "ffi.enable": "preload",
+    "opcache.preload": "preload.php",
+    "opcache.memory_consumption": 128,
+    "opcache.interned_strings_buffer": 8,
+    "opcache.max_accelerated_files": 4000,
+    "opcache.revalidate_freq": 600,
+    "opcache.fast_shutdown": 1,
+    "opcache.jit_buffer_size": "256M"
+  },
+  "runner.assert":
+    "mode(variant.time.avg) - mode(baseline.time.avg) < 2 milliseconds or mode(variant.time.avg) < mode(baseline.time.avg) +/- 5%",
+  "report.generators": {
+    "duckdb_benchmark_report": {
+      "generator": "expression",
+      "title": "Benchmark with real memory",
+      "description": "Benchmark adding also real memory usage",
+
+      "cols": {
+        "benchmark": null,
+        "subject": null,
+        "mode":  null,
+        "set":  null,
+        "mem_final": "mode(result_mem_final) as bytes",
+        "mem_real": "mode(result_mem_real) as bytes",
+        "mem_peak": "mode(result_mem_peak) as bytes",
+        "rstdev": null
+      }
+    }
+  }
+}

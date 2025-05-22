@@ -1,10 +1,22 @@
 # Getting started
 
-You can install the package using composer
+## Install
+
+You can install the DuckDB PHP package using Composer by running the following command:
 
 ```bash
 $ composer require satur.io/duckdb
 ```
+
+## Query
+
+`Saturio\DuckDB\DuckDB` is the main entrypoint to start using the library.
+
+```php
+DuckDB::sql("SELECT 'quack' as my_column")->print();
+```
+
+Learn how to establish connections and execute queries in the next section: [Connections and queries](running-queries.md)
 
 ## Requirements
 
@@ -13,6 +25,4 @@ $ composer require satur.io/duckdb
 - PHP >= 8.3
 - `ext-ffi`
 
-Only `ext-ffi` extension is mandatory and you could start coding with just that. Nevertheless, `ext-bcmath` is strongly recommended, since it's needed to manage big integers. You will get an exception for those types that involves integers greater than `PHP_INT_MAX` and the extension is missing.
-
-`Saturio\DuckDB\DuckDB` is the main entrypoint to start using the library. Go to next section to make your first query: [Running queries](running-queries)
+While only the `ext-ffi` extension is mandatory to start coding, the `ext-bcmath` extension is highly recommended for managing integers larger than `PHP_INT_MAX`. Without it, any operation involving such integers will result in exceptions.

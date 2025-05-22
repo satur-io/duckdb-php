@@ -6,6 +6,10 @@ on:
       lib-path:
         required: false
         type: string
+      run-sonar:
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -18,13 +22,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, ubuntu-24.04-arm, windows-11-arm]
         php: [8.5, 8.4, 8.3]
-        stability: [prefer-lowest, prefer-stable]
   
-    name: P${{ matrix.php }} - ${{ matrix.stability }} - ${{ matrix.os }}
+    name: php-${{ matrix.php }} - ${{ matrix.os }}
 
     steps:
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      
     - uses: actions/checkout@v4
       with:
         lfs: false
@@ -34,9 +41,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: lib_nightly
-        key: lib_nightly-${{ steps.get-date.outputs.date }}
-        restore-keys: |
-          lib_nightly
+        key: lib_nightly-${{ steps.date.outputs.date }}
         enableCrossOsArchive: true
 
     - name: Setup PHP
@@ -44,30 +49,61 @@ jobs:
       with:
         php-version: ${{ matrix.php }}
         extensions: ffi, pcntl
-        coverage: none
+        coverage: xdebug
 
     - name: Cache Composer packages
       id: composer-cache
       uses: actions/cache@v3
       with:
         path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        key: php-composer-${{ matrix.php }}-${{ matrix.os }}-${{ hashFiles('**/composer.json') }}
         restore-keys: |
-          ${{ runner.os }}-php-
+          php-composer-${{ matrix.php }}-${{ matrix.os }}-
 
     - name: Install dependencies
-      run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+      run: composer update --prefer-dist --no-interaction
 
     - name: Run test suite
       env:
         DUCKDB_PHP_LIB_DIRECTORY: ${{ inputs.lib-path }}
-      run: vendor/bin/phpunit test
+      run: vendor/bin/phpunit test --coverage-clover=coverage-${{ matrix.php }}-${{ matrix.os }}.xml
+
+    - name: Archive code coverage results
+      if: ${{ inputs.run-sonar }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-${{ matrix.php }}-${{ matrix.os }}
+        path: coverage-${{ matrix.php }}-${{ matrix.os }}.xml
+
+  sonar_scan:
+    if: ${{ always() && inputs.run-sonar }}
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Download code-coverage
+        uses: actions/download-artifact@v4
+        with:
+          path: .
+          merge-multiple: true
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   get_nightly_libraries:
     if: ${{ inputs.lib-path }}
     runs-on: ubuntu-latest
 
     steps:
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
       - uses: actions/checkout@v4
         with:
           lfs: false
@@ -77,9 +113,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: lib_nightly
-          key: lib_nightly-${{ steps.get-date.outputs.date }}
+          key: lib_nightly-${{ steps.date.outputs.date }}
           restore-keys: |
             lib_nightly
 
       - name: Get libraries
+        if: ${{ steps.libraries-cache.outputs.cache-hit != 'true' }}
         run: ./scripts/get_libraries_nightly.sh

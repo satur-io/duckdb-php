@@ -1,5 +1,8 @@
-site_name: sarurio/duckdb-php
-theme: readthedocs
+site_name: saturio/duckdb-php
+
+theme:
+  name: readthedocs
+
 docs_dir: docs/md
 
 nav:
@@ -9,13 +12,17 @@ nav:
   - Usage:
       - 'running-queries.md'
       - 'read-resultset-content.md'
+      - 'types.md'
       - 'prepared-statements.md'
       - 'appenders.md'
+      - 'examples.md'
   - Guides:
-      - 'my-guide.md'
+      - 'opcache-preload.md'
 
 markdown_extensions:
   - admonition
   - footnotes
   - toc:
       permalink: true
+  - markdown_include.include:
+      base_path: docs/md

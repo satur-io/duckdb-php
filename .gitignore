@@ -12,3 +12,8 @@ tools
 .phpunit.result.cache
 out
 lib_nightly
+my-ui.db
+my-network-usage.db
+dutch_railway_network.duckdb
+oil-and-gas.parquet
+.phpbench

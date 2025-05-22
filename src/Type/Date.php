@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type;
 
-class Date
+use JsonSerializable;
+
+class Date implements JsonSerializable
 {
     public function __construct(
         private readonly int $year, private readonly int $month, private readonly int $day)
@@ -29,5 +31,10 @@ class Date
     public function __toString(): string
     {
         return sprintf('%04d-%02d-%02d', $this->year, $this->month, $this->day);
+    }
+
+    public function jsonSerialize(): string
+    {
+        return $this->__toString();
     }
 }
