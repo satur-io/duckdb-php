@@ -63,6 +63,11 @@ jobs:
     - name: Install dependencies
       run: composer update --prefer-dist --no-interaction
 
+    - name: Info
+      run: |
+        php info.php
+        php info.php >> $GITHUB_STEP_SUMMARY
+
     - name: Run test suite
       env:
         DUCKDB_PHP_LIB_DIRECTORY: ${{ inputs.lib-path }}
@@ -114,8 +119,6 @@ jobs:
         with:
           path: lib_nightly
           key: lib_nightly-${{ steps.date.outputs.date }}
-          restore-keys: |
-            lib_nightly
 
       - name: Get libraries
         if: ${{ steps.libraries-cache.outputs.cache-hit != 'true' }}
