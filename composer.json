@@ -45,14 +45,7 @@
         "get-libraries": "./scripts/get_libraries.sh",
         "fix": "PHP_CS_FIXER_IGNORE_ENV=1 tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes",
         "benchmark": "vendor/bin/phpbench run --config=phpbench-local.json --report=duckdb_benchmark_report",
-        "benchmark-regression": [
-            "export CURRENT_BRANCH=$(git branch --show-current)",
-            "git switch main",
-            "git checkout ${CURRENT_BRANCH} test/Benchmark phpbench-local.json preload.php",
-            "vendor/bin/phpbench run --config=phpbench-local.json --tag=main --report=duckdb_benchmark_report",
-            "git switch ${CURRENT_BRANCH}",
-            "vendor/bin/phpbench run --config=phpbench-local.json --ref=main --report=duckdb_benchmark_report"
-        ]
+        "benchmark-regression": "./scripts/run_local_benchmark_regression.sh"
     },
     "bin": ["test/Performance/duckdb_api"],
     "config": {

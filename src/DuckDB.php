@@ -17,6 +17,7 @@ use Saturio\DuckDB\Exception\InvalidConfigurationOption;
 use Saturio\DuckDB\Exception\QueryException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\PreparedStatement\PreparedStatement;
+use Saturio\DuckDB\Result\Metric\NativeMetric;
 use Saturio\DuckDB\Result\Metric\TimeMetric;
 use Saturio\DuckDB\Result\ResultSet;
 
@@ -96,6 +97,7 @@ class DuckDB
             throw new QueryException($error);
         }
 
+        $metric->setQueryLatency($this->getLatency());
         return new ResultSet(self::$ffi, $queryResult, $metric);
     }
 
@@ -129,6 +131,11 @@ class DuckDB
     public function getInstanceCache(): ?InstanceCache
     {
         return $this->instanceCache;
+    }
+
+    public function getLatency(): float
+    {
+        return NativeMetric::getLatency(self::$ffi, $this->connection);
     }
 
     public function __destruct()

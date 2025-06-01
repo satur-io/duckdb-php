@@ -6,6 +6,7 @@ class TimeMetric
 {
     private int $phpNanoseconds = 0;
     private int $nativeNanoseconds = 0;
+    private float $queryLatency = 0;
 
     private int $startedTime;
     private bool $currentContextIsPhp = true;
@@ -16,6 +17,43 @@ class TimeMetric
         $metric = new TimeMetric();
         $metric->start();
         return $metric;
+    }
+
+    public function getPhpMilliseconds(): float
+    {
+        return $this->phpNanoseconds / 1000000;
+    }
+
+    public function getNativeMilliseconds(): float
+    {
+        return $this->nativeNanoseconds / 1000000;
+    }
+
+    public function getTotalMilliseconds(): float
+    {
+        return ($this->phpNanoseconds + $this->nativeNanoseconds) / 1000000;
+    }
+
+    public function getPhpPercentage(): int
+    {
+        return intval(((($this->phpNanoseconds / 1000000) / $this->getTotalMilliseconds()) * 100));
+    }
+
+    public function getNativePercentage(): int
+    {
+        return 100 - $this->getPhpPercentage();
+    }
+
+    public function getQueryLatency(): float
+    {
+        return $this->queryLatency;
+    }
+
+    public function setQueryLatency(float $queryLatency): self
+    {
+        $this->queryLatency = $queryLatency;
+
+        return $this;
     }
 
     public function start(): void

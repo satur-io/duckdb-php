@@ -135,6 +135,21 @@ class ResultSet
             return true;
         }, [$rows]);
         echo $hyphenLine.PHP_EOL.PHP_EOL;
+
+        $this->printMetrics();
+    }
+
+    public function printMetrics(): void
+    {
+        printf(
+            "\033[2mTotal: %.3fms - PHP: %.3fms (%d%%), Native: %.3fms (%d%%)\nQuery latency: %.3fms (only if DuckDB native profiling is enabled. Enable using 'PRAGMA enable_profiling = 'no_output';')\n",
+            $this->metric->getTotalMilliseconds(),
+            $this->metric->getPhpMilliseconds(),
+            $this->metric->getPhpPercentage(),
+            $this->metric->getNativeMilliseconds(),
+            $this->metric->getNativePercentage(),
+            $this->metric->getQueryLatency() * 1000,
+        );
     }
 
     public function __destruct()
