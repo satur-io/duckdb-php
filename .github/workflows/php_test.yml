@@ -36,13 +36,12 @@ jobs:
       with:
         lfs: false
 
-    - name: Libraries Cache
-      id: libraries-cache
-      uses: actions/cache@v3
+    - name: Download nightly artifacts
+      if: ${{ inputs.lib-path }}
+      uses: actions/download-artifact@v4
       with:
-        path: lib_nightly
-        key: lib_nightly-${{ steps.date.outputs.date }}
-        enableCrossOsArchive: true
+        name: lib_nightly-${{ steps.date.outputs.date }}
+        path: ${{ inputs.lib-path }}
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -113,13 +112,14 @@ jobs:
         with:
           lfs: false
 
-      - name: Libraries Cache
-        id: libraries-cache
-        uses: actions/cache@v3
-        with:
-          path: lib_nightly
-          key: lib_nightly-${{ steps.date.outputs.date }}
-
       - name: Get libraries
         if: ${{ steps.libraries-cache.outputs.cache-hit != 'true' }}
         run: ./scripts/get_libraries_nightly.sh
+
+      - name: Archive nightly libraries
+        uses: actions/upload-artifact@v4
+        with:
+          name: lib_nightly-${{ steps.date.outputs.date }}
+          path: ${{ inputs.lib-path }}
+          retention-days: 2
+          overwrite: true
