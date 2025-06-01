@@ -11,6 +11,7 @@ use Saturio\DuckDB\Exception\InvalidTimeException;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
+use Saturio\DuckDB\Result\Metric\TimeMetric;
 
 class ResultSet
 {
@@ -19,6 +20,7 @@ class ResultSet
     public function __construct(
         public readonly FFIDuckDB $ffi,
         public readonly NativeCData $result,
+        public TimeMetric $metric = new TimeMetric(),
     ) {
     }
 
@@ -70,6 +72,8 @@ class ResultSet
 
             $chunk->destroy();
         }
+
+        $this->metric->end();
     }
 
     /**

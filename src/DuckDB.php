@@ -17,7 +17,7 @@ use Saturio\DuckDB\Exception\InvalidConfigurationOption;
 use Saturio\DuckDB\Exception\QueryException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\PreparedStatement\PreparedStatement;
-use Saturio\DuckDB\Result\CollectMetrics;
+use Saturio\DuckDB\Result\Metric\TimeMetric;
 use Saturio\DuckDB\Result\ResultSet;
 
 class DuckDB
@@ -83,9 +83,12 @@ class DuckDB
      */
     public function query(string $query): ResultSet
     {
-        $queryResult = self::$ffi->new('duckdb_result');
+        $metric = TimeMetric::create();
 
+        $metric->switch();
+        $queryResult = self::$ffi->new('duckdb_result');
         $result = self::$ffi->query($this->connection->connection, $query, self::$ffi->addr($queryResult));
+        $metric->switch();
 
         if ($result === self::$ffi->error()) {
             $error = self::$ffi->resultError(self::$ffi->addr($queryResult));
@@ -93,7 +96,7 @@ class DuckDB
             throw new QueryException($error);
         }
 
-        return new ResultSet(self::$ffi, $queryResult);
+        return new ResultSet(self::$ffi, $queryResult, $metric);
     }
 
     /**
