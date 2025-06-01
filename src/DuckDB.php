@@ -22,7 +22,6 @@ use Saturio\DuckDB\Result\ResultSet;
 
 class DuckDB
 {
-    use CollectMetrics;
     private DB $db;
     private Connection $connection;
     private ?InstanceCache $instanceCache = null;
@@ -31,7 +30,6 @@ class DuckDB
 
     private function __construct()
     {
-        $this->initCollectMetrics();
         self::init();
     }
 
@@ -85,7 +83,6 @@ class DuckDB
      */
     public function query(string $query): ResultSet
     {
-        $this->collectMetrics && collect_time($_, 'query');
         $queryResult = self::$ffi->new('duckdb_result');
 
         $result = self::$ffi->query($this->connection->connection, $query, self::$ffi->addr($queryResult));
