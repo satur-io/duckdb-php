@@ -11,22 +11,21 @@ use Saturio\DuckDB\Exception\InvalidTimeException;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
+use Saturio\DuckDB\Result\Metric\TimeMetric;
 
 class ResultSet
 {
     use ValidityTrait;
-    use CollectMetrics;
 
     public function __construct(
         public readonly FFIDuckDB $ffi,
         public readonly NativeCData $result,
+        public TimeMetric $metric = new TimeMetric(),
     ) {
-        $this->initCollectMetrics();
     }
 
     public function fetchChunk(): ?DataChunk
     {
-        $this->collectMetrics && collect_time($_, 'fetchChunk');
         $newChunk = $this->ffi->fetchChunk($this->result);
 
         return $newChunk ? new DataChunk(
@@ -73,6 +72,8 @@ class ResultSet
 
             $chunk->destroy();
         }
+
+        $this->metric->end();
     }
 
     /**
@@ -134,6 +135,21 @@ class ResultSet
             return true;
         }, [$rows]);
         echo $hyphenLine.PHP_EOL.PHP_EOL;
+
+        $this->printMetrics();
+    }
+
+    public function printMetrics(): void
+    {
+        printf(
+            "\033[2mTotal: %.3fms - PHP: %.3fms (%d%%), Native: %.3fms (%d%%)\nQuery latency: %.3fms (only if DuckDB native profiling is enabled. Enable using 'PRAGMA enable_profiling = 'no_output';')\n",
+            $this->metric->getTotalMilliseconds(),
+            $this->metric->getPhpMilliseconds(),
+            $this->metric->getPhpPercentage(),
+            $this->metric->getNativeMilliseconds(),
+            $this->metric->getNativePercentage(),
+            $this->metric->getQueryLatency() * 1000,
+        );
     }
 
     public function __destruct()

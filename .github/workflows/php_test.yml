@@ -30,7 +30,7 @@ jobs:
     steps:
     - name: Get current date
       id: date
-      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      run: echo "{date}={$(date +'%Y-%m-%d')}" >> $GITHUB_OUTPUT
       
     - uses: actions/checkout@v4
       with:
@@ -66,6 +66,7 @@ jobs:
       run: |
         php info.php
         php info.php >> $GITHUB_STEP_SUMMARY
+      shell: bash
 
     - name: Run test suite
       env:
@@ -106,7 +107,7 @@ jobs:
     steps:
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: echo "{date}={$(date +'%Y-%m-%d')}" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v4
         with:

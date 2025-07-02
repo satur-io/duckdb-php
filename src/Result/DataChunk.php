@@ -9,14 +9,11 @@ use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 
 class DataChunk
 {
-    use CollectMetrics;
-
     public function __construct(
         private readonly FFIDuckDB $ffi,
         private readonly NativeCData $dataChunk,
         private readonly bool $reusable = true,
     ) {
-        $this->initCollectMetrics();
     }
 
     public function rowCount(): int
@@ -31,8 +28,6 @@ class DataChunk
 
     public function getVector(int $columnIndex, ?int $rows = null): Vector
     {
-        $this->collectMetrics && collect_time($_, 'getVector');
-
         return new Vector(
             $this->ffi,
             $this->ffi->dataChunkGetVector($this->dataChunk, $columnIndex),

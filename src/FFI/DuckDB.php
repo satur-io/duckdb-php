@@ -565,4 +565,24 @@ class DuckDB
     {
         self::$ffi->duckdb_destroy_instance_cache($instanceCache);
     }
+
+    public function profilingInfo(?NativeCData $connection): ?NativeCData
+    {
+        return self::$ffi->duckdb_get_profiling_info($connection);
+    }
+
+    public function profilingInfoGetValue(NativeCData $profilingInfo, string $string): mixed
+    {
+        return self::$ffi->duckdb_profiling_info_get_value($profilingInfo, $string);
+    }
+
+    public function getDouble(NativeCData $duckdbValue): float
+    {
+        return self::$ffi->duckdb_get_double($duckdbValue);
+    }
+
+    public function createNull(): NativeCData
+    {
+        return self::$ffi->duckdb_create_null_value();
+    }
 }

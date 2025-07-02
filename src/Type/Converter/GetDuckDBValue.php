@@ -25,12 +25,13 @@ trait GetDuckDBValue
      * @throws UnsupportedTypeException|DateMalformedStringException
      */
     public function getDuckDBValue(
-        string|bool|int|float|Date|Time|Timestamp|Interval|BigInteger|UUID|Blob $value,
+        string|bool|int|float|Date|Time|Timestamp|Interval|BigInteger|UUID|Blob|null $value,
         ?Type $type = null,
     ): NativeCData {
         $type = $type ?? $this->getInferredType($value);
 
         return match ($type) {
+            Type::DUCKDB_TYPE_SQLNULL => $this->createNull(),
             Type::DUCKDB_TYPE_VARCHAR,
             Type::DUCKDB_TYPE_BOOLEAN,
             Type::DUCKDB_TYPE_TINYINT,
@@ -64,7 +65,7 @@ trait GetDuckDBValue
     /**
      * @throws UnsupportedTypeException
      */
-    private function getInferredType(string|bool|int|float|Date|Time|Timestamp|UUID|Blob $value): Type
+    private function getInferredType(string|bool|int|float|Date|Time|Timestamp|UUID|Blob|null $value): Type
     {
         if (is_bool($value)) {
             return Type::DUCKDB_TYPE_BOOLEAN;
@@ -84,6 +85,8 @@ trait GetDuckDBValue
             return Type::DUCKDB_TYPE_UUID;
         } elseif (is_a($value, Blob::class)) {
             return Type::DUCKDB_TYPE_BLOB;
+        } elseif (is_null($value)) {
+            return Type::DUCKDB_TYPE_SQLNULL;
         }
 
         $type = gettype($value);
@@ -96,6 +99,11 @@ trait GetDuckDBValue
         $ffiFunction = 'create'.ucfirst(TypeC::{$type->name}->value);
 
         return $this->ffi->{$ffiFunction}($value);
+    }
+
+    private function createNull(): NativeCData
+    {
+        return $this->ffi->createNull();
     }
 
     private function createFromDate(Date $date): NativeCData
