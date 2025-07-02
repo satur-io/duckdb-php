@@ -66,6 +66,7 @@ jobs:
       run: |
         php info.php
         php info.php >> $GITHUB_STEP_SUMMARY
+      shell: bash
 
     - name: Run test suite
       env:
