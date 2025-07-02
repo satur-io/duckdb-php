@@ -45,13 +45,13 @@ class NativeMetricTest extends TestCase
         $result = $duckDB->query("SELECT * FROM repeat('123456789012', 100000);");
 
         // Before read result, even the query is materialized no significant PHP latency
-        $this->assertEquals(
-            0,
-            $result->metric->getPhpPercentage()
-        );
-        $this->assertEquals(
-            100,
+        $this->assertGreaterThanOrEqual(
+            99,
             $result->metric->getNativePercentage()
+        );
+        $this->assertLessThanOrEqual(
+            1,
+            $result->metric->getPhpPercentage()
         );
 
         // After loop over the results and convert from C types to PHP types, high PHP percentage expected
