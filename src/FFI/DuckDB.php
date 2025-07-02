@@ -576,11 +576,6 @@ class DuckDB
         return self::$ffi->duckdb_profiling_info_get_value($profilingInfo, $string);
     }
 
-    public function getInt8(NativeCData $duckdbValue): int
-    {
-        return self::$ffi->duckdb_get_int8($duckdbValue);
-    }
-
     public function getDouble(NativeCData $duckdbValue): float
     {
         return self::$ffi->duckdb_get_double($duckdbValue);
