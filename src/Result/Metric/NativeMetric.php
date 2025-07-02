@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saturio\DuckDB\Result\Metric;
 
 use Saturio\DuckDB\DB\Connection;
@@ -10,15 +12,15 @@ class NativeMetric
     public static function getLatency(
         FFIDuckDB $ffi,
         Connection $conn,
-    ): float
-    {
+    ): float {
         $profilingInfo = $ffi->profilingInfo($conn->connection);
 
-        if ($profilingInfo === null) {
+        if (null === $profilingInfo) {
             return 0;
         }
 
         $latencyValue = $ffi->profilingInfoGetValue($profilingInfo, 'LATENCY');
+
         return $ffi->getDouble($latencyValue);
     }
 }

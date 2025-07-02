@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saturio\DuckDB\Result\Metric;
 
 class TimeMetric
@@ -11,11 +13,11 @@ class TimeMetric
     private int $startedTime;
     private bool $currentContextIsPhp = true;
 
-
     public static function create(): TimeMetric
     {
         $metric = new TimeMetric();
         $metric->start();
+
         return $metric;
     }
 
@@ -36,7 +38,7 @@ class TimeMetric
 
     public function getPhpPercentage(): int
     {
-        return intval(((($this->phpNanoseconds / 1000000) / $this->getTotalMilliseconds()) * 100));
+        return intval((($this->phpNanoseconds / 1000000) / $this->getTotalMilliseconds()) * 100);
     }
 
     public function getNativePercentage(): int

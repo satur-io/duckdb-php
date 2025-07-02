@@ -98,6 +98,7 @@ class DuckDB
         }
 
         $metric->setQueryLatency($this->getLatency());
+
         return new ResultSet(self::$ffi, $queryResult, $metric);
     }
 
