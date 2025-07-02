@@ -24,5 +24,44 @@ class NativeMetricTest extends TestCase
             $latency * 1000,
             5
         );
+
+        $this->assertEquals(
+            $latency,
+            $result->metric->getQueryLatency()
+        );
+
+        $this->assertEquals(
+            $result->metric->getPhpMilliseconds() + $result->metric->getNativeMilliseconds(),
+            $result->metric->getTotalMilliseconds()
+        );
+    }
+
+    public function testMetricHighPhpLoad()
+    {
+        $duckDB = DuckDB::create();
+
+        $duckDB->query("PRAGMA enable_profiling = 'no_output';");
+        $result = $duckDB->query("SELECT * FROM repeat('123456789012', 100000);");
+
+        // Before read result, even the query is materialized no significant PHP latency
+        $this->assertEquals(
+            0,
+            $result->metric->getPhpPercentage()
+        );
+        $this->assertEquals(
+            100,
+            $result->metric->getNativePercentage()
+        );
+
+        // After loop over the results and convert from C types to PHP types, high PHP percentage expected
+        iterator_to_array($result->rows());
+        $this->assertEquals(
+            99,
+            $result->metric->getPhpPercentage()
+        );
+        $this->assertEquals(
+            1,
+            $result->metric->getNativePercentage()
+        );
     }
 }
