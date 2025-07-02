@@ -99,4 +99,28 @@ class AppenderTest extends TestCase
         $total = $this->db->query('SELECT count(id) FROM people');
         $this->assertEquals([100], $total->rows()->current());
     }
+
+    public function testAppendNull()
+    {
+        $appender = $this->db->appender('people');
+
+        for ($i = 0; $i < 10; ++$i) {
+            $appender->append(rand(1, 100000));
+            $appender->append('this-is-a-varchar-value'.rand(1, 100));
+            $appender->endRow();
+        }
+
+        for ($i = 0; $i < 10; ++$i) {
+            $appender->append(rand(1, 100000));
+            $appender->append(null);
+            $appender->endRow();
+        }
+
+        $appender->flush();
+        $total = $this->db->query('SELECT count(id) FROM people');
+        $this->assertEquals([20], $total->rows()->current());
+
+        $nullValues = $this->db->query('SELECT count(id) FROM people WHERE name is null');
+        $this->assertEquals([10], $nullValues->rows()->current());
+    }
 }

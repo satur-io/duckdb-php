@@ -585,4 +585,9 @@ class DuckDB
     {
         return self::$ffi->duckdb_get_double($duckdbValue);
     }
+
+    public function createNull(): NativeCData
+    {
+        return self::$ffi->duckdb_create_null_value();
+    }
 }
