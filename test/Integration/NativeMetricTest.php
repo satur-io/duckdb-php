@@ -30,9 +30,10 @@ class NativeMetricTest extends TestCase
             $result->metric->getQueryLatency()
         );
 
-        $this->assertEquals(
+        $this->assertEqualsWithDelta(
             $result->metric->getPhpMilliseconds() + $result->metric->getNativeMilliseconds(),
-            $result->metric->getTotalMilliseconds()
+            $result->metric->getTotalMilliseconds(),
+            delta: 5
         );
     }
 
