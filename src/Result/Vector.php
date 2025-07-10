@@ -18,7 +18,6 @@ use Saturio\DuckDB\Type\TypeC;
 class Vector
 {
     use ValidityTrait;
-    use CollectMetrics;
     private TypeC $type;
     private NativeCData $typedData;
     private NativeCData $logicalType;
@@ -64,8 +63,6 @@ class Vector
         } else {
             $this->typeConverter = new TypeConverter($this->ffi, MathLib::create());
         }
-
-        $this->initCollectMetrics();
     }
 
     /**
@@ -141,7 +138,6 @@ class Vector
      */
     public function getTypedData(int $rowIndex): mixed
     {
-        $this->collectMetrics && collect_time($_, "vector-{$this->type->name}");
         if (!$this->rowIsValid($this->validity, $rowIndex)) {
             return null;
         }

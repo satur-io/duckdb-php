@@ -17,12 +17,12 @@ use Saturio\DuckDB\Exception\InvalidConfigurationOption;
 use Saturio\DuckDB\Exception\QueryException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\PreparedStatement\PreparedStatement;
-use Saturio\DuckDB\Result\CollectMetrics;
+use Saturio\DuckDB\Result\Metric\NativeMetric;
+use Saturio\DuckDB\Result\Metric\TimeMetric;
 use Saturio\DuckDB\Result\ResultSet;
 
 class DuckDB
 {
-    use CollectMetrics;
     private DB $db;
     private Connection $connection;
     private ?InstanceCache $instanceCache = null;
@@ -31,7 +31,6 @@ class DuckDB
 
     private function __construct()
     {
-        $this->initCollectMetrics();
         self::init();
     }
 
@@ -85,10 +84,12 @@ class DuckDB
      */
     public function query(string $query): ResultSet
     {
-        $this->collectMetrics && collect_time($_, 'query');
-        $queryResult = self::$ffi->new('duckdb_result');
+        $metric = TimeMetric::create();
 
+        $metric->switch();
+        $queryResult = self::$ffi->new('duckdb_result');
         $result = self::$ffi->query($this->connection->connection, $query, self::$ffi->addr($queryResult));
+        $metric->switch();
 
         if ($result === self::$ffi->error()) {
             $error = self::$ffi->resultError(self::$ffi->addr($queryResult));
@@ -96,7 +97,9 @@ class DuckDB
             throw new QueryException($error);
         }
 
-        return new ResultSet(self::$ffi, $queryResult);
+        $metric->setQueryLatency($this->getLatency());
+
+        return new ResultSet(self::$ffi, $queryResult, $metric);
     }
 
     /**
@@ -129,6 +132,11 @@ class DuckDB
     public function getInstanceCache(): ?InstanceCache
     {
         return $this->instanceCache;
+    }
+
+    public function getLatency(): float
+    {
+        return NativeMetric::getLatency(self::$ffi, $this->connection);
     }
 
     public function __destruct()

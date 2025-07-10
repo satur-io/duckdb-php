@@ -39,7 +39,7 @@ class FindLibrary
 
         $libDirectory = getenv('DUCKDB_PHP_LIB_DIRECTORY') ? getenv('DUCKDB_PHP_LIB_DIRECTORY') : 'lib';
 
-        if ($os === 'Windows NT') {
+        if ('Windows NT' === $os) {
             $machine = match ($machine) {
                 'AMD64', 'x64' => 'amd64',
                 'ARM64' => 'arm64',
@@ -47,7 +47,7 @@ class FindLibrary
             };
         }
 
-        if ($os === 'Linux') {
+        if ('Linux' === $os) {
             $machine = match ($machine) {
                 'x86_64' => 'amd64',
                 'aarch64' => 'arm64',
