@@ -30,7 +30,7 @@ jobs:
     steps:
     - name: Get current date
       id: date
-      run: echo "{date}={$(date +'%Y-%m-%d')}" >> $GITHUB_OUTPUT
+      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
       
     - uses: actions/checkout@v4
       with:
@@ -63,6 +63,8 @@ jobs:
       run: composer update --prefer-dist --no-interaction
 
     - name: Info
+      env:
+        DUCKDB_PHP_LIB_DIRECTORY: ${{ inputs.lib-path }}
       run: |
         php info.php
         php info.php >> $GITHUB_STEP_SUMMARY
@@ -107,7 +109,7 @@ jobs:
     steps:
       - name: Get current date
         id: date
-        run: echo "{date}={$(date +'%Y-%m-%d')}" >> $GITHUB_OUTPUT
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v4
         with:
