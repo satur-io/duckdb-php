@@ -3,6 +3,8 @@ name: PHPUnit (unstable - nightly C library)
 on:
   schedule:
     - cron: "4 4 * * *"
+  workflow_dispatch:
+
 
 jobs:
   phpunit:
