@@ -28,10 +28,6 @@ jobs:
     name: php-${{ matrix.php }} - ${{ matrix.os }}
 
     steps:
-    - name: Get current date
-      id: date
-      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-      
     - uses: actions/checkout@v4
       with:
         lfs: false
@@ -40,7 +36,7 @@ jobs:
       if: ${{ inputs.lib-path }}
       uses: actions/download-artifact@v4
       with:
-        name: lib_nightly-${{ steps.date.outputs.date }}
+        name: lib_nightly-${{needs.get_nightly_libraries.outputs.date}}
         path: ${{ inputs.lib-path }}
 
     - name: Setup PHP
@@ -105,6 +101,9 @@ jobs:
   get_nightly_libraries:
     if: ${{ inputs.lib-path }}
     runs-on: ubuntu-latest
+
+    outputs:
+      date: ${{ steps.date.outputs.date }}
 
     steps:
       - name: Get current date
