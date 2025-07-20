@@ -13,8 +13,8 @@ class FindLibrary implements FindLibraryInterface
      */
     public static function headerPath(): string
     {
-        if (defined('DUCKDB_PHP_HEADER_PATH')) {
-            return constant('DUCKDB_PHP_HEADER_PATH');
+        if ($headerPath = self::getConfigValue('DUCKDB_PHP_HEADER_PATH')) {
+            return $headerPath;
         }
 
         return implode('/', [self::path(), 'duckdb-ffi.h']);
@@ -25,8 +25,8 @@ class FindLibrary implements FindLibraryInterface
      */
     public static function libPath(): string
     {
-        if (defined('DUCKDB_PHP_LIB_PATH')) {
-            return constant('DUCKDB_PHP_LIB_PATH');
+        if ($libPath = self::getConfigValue('DUCKDB_PHP_LIB_PATH')) {
+            return $libPath;
         }
 
         $os = php_uname('s');
@@ -47,8 +47,7 @@ class FindLibrary implements FindLibraryInterface
         $os = php_uname('s');
         $machine = php_uname('m');
 
-        $libDirectory = getenv('DUCKDB_PHP_PATH')
-            ?: (defined('DUCKDB_PHP_PATH') ? constant('DUCKDB_PHP_PATH') : '');
+        $libDirectory = self::getConfigValue('DUCKDB_PHP_PATH', '');
 
         if ('Windows NT' === $os) {
             $machine = match ($machine) {
@@ -72,5 +71,10 @@ class FindLibrary implements FindLibraryInterface
             'Darwin' => implode(DIRECTORY_SEPARATOR, [$libDirectory, 'osx-universal']),
             default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
         };
+    }
+
+    private static function getConfigValue(string $key, ?string $default = null): ?string
+    {
+        return getenv($key) ?: (defined($key) ? constant($key) : $default);
     }
 }
