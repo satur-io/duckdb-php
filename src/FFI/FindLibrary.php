@@ -4,21 +4,31 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\FFI;
 
-use ReflectionClass;
 use Saturio\DuckDB\Exception\NotSupportedException;
 
-class FindLibrary
+class FindLibrary implements FindLibraryInterface
 {
     /**
      * @throws NotSupportedException
      */
     public static function headerPath(): string
     {
+        if (defined('DUCKDB_PHP_HEADER_PATH')) {
+            return constant('DUCKDB_PHP_HEADER_PATH');
+        }
+
         return implode('/', [self::path(), 'duckdb-ffi.h']);
     }
 
+    /**
+     * @throws NotSupportedException
+     */
     public static function libPath(): string
     {
+        if (defined('DUCKDB_PHP_LIB_PATH')) {
+            return constant('DUCKDB_PHP_LIB_PATH');
+        }
+
         $os = php_uname('s');
 
         return match ($os) {
@@ -37,7 +47,8 @@ class FindLibrary
         $os = php_uname('s');
         $machine = php_uname('m');
 
-        $libDirectory = getenv('DUCKDB_PHP_LIB_DIRECTORY') ? getenv('DUCKDB_PHP_LIB_DIRECTORY') : 'lib';
+        $libDirectory = getenv('DUCKDB_PHP_PATH')
+            ?: (defined('DUCKDB_PHP_PATH') ? constant('DUCKDB_PHP_PATH') : '');
 
         if ('Windows NT' === $os) {
             $machine = match ($machine) {
@@ -55,13 +66,10 @@ class FindLibrary
             };
         }
 
-        $thisClassReflection = new ReflectionClass(self::class);
-        $path = dirname($thisClassReflection->getFileName());
-
         return match ($os) {
-            'Windows NT' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, "windows-{$machine}"]),
-            'Linux' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, "linux-{$machine}"]),
-            'Darwin' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, 'osx-universal']),
+            'Windows NT' => implode(DIRECTORY_SEPARATOR, [$libDirectory, "windows-{$machine}"]),
+            'Linux' => implode(DIRECTORY_SEPARATOR, [$libDirectory, "linux-{$machine}"]),
+            'Darwin' => implode(DIRECTORY_SEPARATOR, [$libDirectory, 'osx-universal']),
             default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
         };
     }

@@ -8,6 +8,11 @@ You can install the DuckDB PHP package using Composer by running the following c
 $ composer require satur.io/duckdb
 ```
 
+!!! tip
+Requiring `satur.io/duckdb` is enough to start using the library.
+Nevertheless, the default behaviour takes up more disk space than necessary, check [Production-optimized installation](production-instalation.md) 
+at any point before deploying to production to get an optimized installation.
+
 ## Query
 
 `Saturio\DuckDB\DuckDB` is the main entrypoint to start using the library.

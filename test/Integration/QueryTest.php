@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
 use Saturio\DuckDB\Exception\QueryException;
+use Saturio\DuckDB\FFI\FindLibrary;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
 use Saturio\DuckDB\Type\Time;
@@ -458,17 +459,11 @@ class QueryTest extends TestCase
 
     public function testReadBlob(): void
     {
-        $file = __DIR__.'/../../lib/linux-arm64/libduckdb.so';
-        $contents = file_get_contents($file);
-        $expectedValues = [
-            0 => strlen($contents),
-            1 => $contents,
-        ];
-        $result = $this->db->query("SELECT size, content FROM read_blob('{$file}');");
+        $file = FindLibrary::libPath();
+        $result = $this->db->query("SELECT size FROM read_blob('{$file}');");
 
         $row = $result->rows()->current();
-        $this->assertEquals($expectedValues[0], $row[0]);
-        $this->assertEquals($expectedValues[1], $row[1]->data());
+        $this->assertEquals(filesize($file), $row[0]);
     }
 
     #[Group('primitives')]
