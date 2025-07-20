@@ -28,6 +28,7 @@
     ],
     "require": {
       "ext-ffi": "*",
+      "php": ">=8.3",
       "satur.io/duckdb-clib": "0.0.6",
       "satur.io/duckdb-clib-all": "0.0.6"
     },
