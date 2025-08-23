@@ -75,8 +75,8 @@ enum Type: int
     case DUCKDB_TYPE_TIMESTAMP_TZ = 31;
     // ANY type
     case DUCKDB_TYPE_ANY = 34;
-    // duckdb_varint
-    case DUCKDB_TYPE_VARINT = 35;
+    // duckdb_bignum
+    case DUCKDB_TYPE_BIGNUM = 35;
     // SQLNULL type
     case DUCKDB_TYPE_SQLNULL = 36;
 }
