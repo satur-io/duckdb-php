@@ -21,10 +21,10 @@ class AppenderTest extends TestCase
     {
         $this->dbFile = sys_get_temp_dir().DIRECTORY_SEPARATOR.'file.db';
         $this->db = DuckDB::create();
-        $this->db->query('CREATE TABLE people (id INTEGER, name VARCHAR)');
+        $this->db->query('CREATE TABLE people (id INTEGER NOT NULL DEFAULT 1, name VARCHAR)');
         $this->db->query("ATTACH '{$this->dbFile}' AS file_db;");
         $this->db->query('CREATE SCHEMA file_db.other_schema;');
-        $this->db->query('CREATE TABLE file_db.other_schema.other_people (id INTEGER, name VARCHAR)');
+        $this->db->query('CREATE TABLE file_db.other_schema.other_people (id INTEGER NOT NULL DEFAULT 1, name VARCHAR)');
     }
 
     protected function tearDown(): void
@@ -122,5 +122,25 @@ class AppenderTest extends TestCase
 
         $nullValues = $this->db->query('SELECT count(id) FROM people WHERE name is null');
         $this->assertEquals([10], $nullValues->rows()->current());
+    }
+
+    public function testAppendNotNullError()
+    {
+        $this->expectException(AppenderEndRowException::class);
+        $appender = $this->db->appender('people');
+        $appender->append(null);
+        $appender->endRow();
+        $appender->flush();
+    }
+
+    public function testAppendDefault()
+    {
+        $appender = $this->db->appender('people');
+        $appender->appendDefault();
+        $appender->append('this-is-a-varchar-value');
+        $appender->endRow();
+        $appender->flush();
+        $total = $this->db->query('SELECT id FROM people');
+        $this->assertEquals([1], $total->rows()->current());
     }
 }

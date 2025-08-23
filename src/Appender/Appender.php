@@ -75,6 +75,18 @@ class Appender
         }
     }
 
+    public function appendDefault(): void
+    {
+        $status = $this->ffi->appendDefault(
+            $this->appender
+        );
+
+        if ($status === $this->ffi->error()) {
+            $error = $this->ffi->appenderError($this->appender);
+            throw new AppendValueException("Couldn't append default. Error: {$error}");
+        }
+    }
+
     /**
      * @throws AppenderEndRowException
      */

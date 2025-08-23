@@ -521,6 +521,11 @@ class DuckDB
         return self::$ffi->duckdb_append_value($appender, $value);
     }
 
+    public function appendDefault(NativeCData $appender): int
+    {
+        return self::$ffi->duckdb_append_default($appender);
+    }
+
     public function endRow(NativeCData $appender): int
     {
         return self::$ffi->duckdb_appender_end_row($appender);
