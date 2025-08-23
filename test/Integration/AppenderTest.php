@@ -140,7 +140,7 @@ class AppenderTest extends TestCase
         $appender->append('this-is-a-varchar-value');
         $appender->endRow();
         $appender->flush();
-        $total = $this->db->query('SELECT count(id) FROM people');
+        $total = $this->db->query('SELECT id FROM people');
         $this->assertEquals([1], $total->rows()->current());
     }
 }
