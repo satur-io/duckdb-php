@@ -590,4 +590,9 @@ class DuckDB
     {
         return self::$ffi->duckdb_create_null_value();
     }
+
+    public function bindParameterIndex(NativeCData $preparedStatement, ?NativeCData &$parameterIndex, string $name): int
+    {
+        return self::$ffi->duckdb_bind_parameter_index($preparedStatement, $this->addr($parameterIndex), $name);
+    }
 }

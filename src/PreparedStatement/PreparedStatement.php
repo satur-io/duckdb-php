@@ -48,12 +48,14 @@ class PreparedStatement
      * @throws BindValueException|UnsupportedTypeException
      * @throws DateMalformedStringException
      */
-    public function bindParam(int $parameter, mixed $value, ?Type $type = null): void
+    public function bindParam(int|string $parameter, mixed $value, ?Type $type = null): void
     {
+        $index = $this->getParameterIndex($parameter);
+
         $value = $this->converter->getDuckDBValue($value, $type);
         $status = $this->ffi->bindValue(
             $this->preparedStatement,
-            $parameter,
+            $index,
             $value,
         );
 
@@ -61,8 +63,25 @@ class PreparedStatement
 
         if ($status === $this->ffi->error()) {
             $error = $this->ffi->prepareError($this->preparedStatement);
-            throw new BindValueException("Couldn't bind parameter {$parameter} to prepared statement {$this->query}. Error: {$error}");
+            throw new BindValueException("Couldn't bind parameter '{$parameter}' to prepared statement {$this->query}. Error: {$error}");
         }
+    }
+
+    /**
+     * @throws BindValueException
+     */
+    private function getParameterIndex(int|string $parameter): int
+    {
+        if (is_int($parameter)) {
+            return $parameter;
+        }
+
+        $index = $this->ffi->new('idx_t');
+        if ($this->ffi->bindParameterIndex($this->preparedStatement, $index, $parameter) === $this->ffi->success()) {
+            return $index->cdata;
+        }
+
+        throw new BindValueException("Couldn't bind parameter '{$parameter}' to prepared statement.");
     }
 
     public function execute(): ResultSet
