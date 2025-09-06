@@ -40,7 +40,7 @@ class TimeMetric
     {
         return
             0.0 === $this->getTotalMilliseconds() ? 0 :
-            intval((($this->phpNanoseconds / 1000000) / $this->getTotalMilliseconds()) * 100);
+            intval(round((($this->phpNanoseconds / 1000000) / $this->getTotalMilliseconds()) * 100));
     }
 
     public function getNativePercentage(): int
