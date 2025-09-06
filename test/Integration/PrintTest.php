@@ -26,4 +26,18 @@ class PrintTest extends TestCase
             $printResult,
         );
     }
+
+    public function testPrintEmptyMetrics(): void
+    {
+        ob_start();
+        $db = DuckDB::create();
+        $db->preparedStatement("SELECT 'quack' as my_column")->execute()->print();
+        $printResult = ob_get_contents();
+        ob_end_clean();
+
+        self::assertStringContainsString(
+            'No metrics available',
+            $printResult,
+        );
+    }
 }
