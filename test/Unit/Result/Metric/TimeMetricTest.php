@@ -22,9 +22,9 @@ class TimeMetricTest extends TestCase
     public function testFiftyFiftyPercentage(): void
     {
         $timeMetric = TimeMetric::create();
-        usleep(100);
+        usleep(1000);
         $timeMetric->switch();
-        usleep(100);
+        usleep(1000);
         $timeMetric->end();
 
         self::assertEquals(50, $timeMetric->getPhpPercentage());
@@ -34,7 +34,7 @@ class TimeMetricTest extends TestCase
     public function testAllPHPPercentage(): void
     {
         $timeMetric = TimeMetric::create();
-        usleep(100);
+        usleep(1000);
         $timeMetric->end();
 
         self::assertEquals(100, $timeMetric->getPhpPercentage());
@@ -45,7 +45,7 @@ class TimeMetricTest extends TestCase
     {
         $timeMetric = TimeMetric::create();
         $timeMetric->switch();
-        usleep(100);
+        usleep(1000);
         $timeMetric->end();
 
         self::assertEquals(0, $timeMetric->getPhpPercentage());
