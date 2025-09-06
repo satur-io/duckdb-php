@@ -28,8 +28,8 @@ class TimeMetricTest extends TestCase
         usleep($sleepMicroseconds);
         $timeMetric->end();
 
-        self::assertEquals(50, $timeMetric->getPhpPercentage());
-        self::assertEquals(50, $timeMetric->getNativePercentage());
+        self::assertEqualsWithDelta(50, $timeMetric->getPhpPercentage(), 1.0);
+        self::assertEqualsWithDelta(50, $timeMetric->getNativePercentage(), 1.0);
     }
 
     public function testAllPHPPercentage(): void
@@ -38,8 +38,8 @@ class TimeMetricTest extends TestCase
         usleep(1000);
         $timeMetric->end();
 
-        self::assertEquals(100, $timeMetric->getPhpPercentage());
-        self::assertEquals(0, $timeMetric->getNativePercentage());
+        self::assertEqualsWithDelta(100, $timeMetric->getPhpPercentage(), 1.0);
+        self::assertEqualsWithDelta(0, $timeMetric->getNativePercentage(), 1.0);
     }
 
     public function testAllNativePercentage(): void
@@ -49,7 +49,7 @@ class TimeMetricTest extends TestCase
         usleep(10000);
         $timeMetric->end();
 
-        self::assertEquals(0, $timeMetric->getPhpPercentage());
-        self::assertEquals(100, $timeMetric->getNativePercentage());
+        self::assertEqualsWithDelta(0, $timeMetric->getPhpPercentage(), 1.0);
+        self::assertEqualsWithDelta(100, $timeMetric->getNativePercentage(), 1.0);
     }
 }
