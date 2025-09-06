@@ -141,6 +141,12 @@ class ResultSet
 
     public function printMetrics(): void
     {
+        if (0.0 === $this->metric->getTotalMilliseconds()) {
+            echo "No metrics available.\n";
+
+            return;
+        }
+
         printf(
             "\033[2mTotal: %.3fms - PHP: %.3fms (%d%%), Native: %.3fms (%d%%)\nQuery latency: %.3fms (only if DuckDB native profiling is enabled. Enable using 'PRAGMA enable_profiling = 'no_output';')\n",
             $this->metric->getTotalMilliseconds(),
