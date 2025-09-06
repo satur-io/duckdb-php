@@ -21,7 +21,7 @@ class TimeMetricTest extends TestCase
 
     public function testFiftyFiftyPercentage(): void
     {
-        $sleepMicroseconds = 'Windows NT' === php_uname('s') ? 100000 : 1000;
+        $sleepMicroseconds = 'Windows NT' === php_uname('s') ? 500000 : 1000;
         $timeMetric = TimeMetric::create();
         usleep($sleepMicroseconds);
         $timeMetric->switch();
@@ -46,7 +46,7 @@ class TimeMetricTest extends TestCase
     {
         $timeMetric = TimeMetric::create();
         $timeMetric->switch();
-        usleep(1000);
+        usleep(10000);
         $timeMetric->end();
 
         self::assertEquals(0, $timeMetric->getPhpPercentage());
