@@ -6,6 +6,7 @@ namespace Integration;
 
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
+use Saturio\DuckDB\Exception\BindValueException;
 use Saturio\DuckDB\Type\Blob;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Time;
@@ -22,6 +23,25 @@ class PreparedStatementTest extends TestCase
 
         $this->db->query('CREATE TABLE test_data (i INTEGER, b BOOL, f FLOAT);');
         $this->db->query('INSERT INTO test_data VALUES (3, true, 1.1), (5, true, 1.2), (3, false, 1.1), (3, null, 1.2);');
+    }
+
+    public function testPreparedStatementNamedParameter(): void
+    {
+        $expectedResult = [[3, true, 1.1], [5, true, 1.2]];
+        $preparedStatement = $this->db->preparedStatement('SELECT * FROM test_data WHERE b = $bool_value');
+        $preparedStatement->bindParam('bool_value', true);
+        $result = $preparedStatement->execute();
+
+        $arrayResult = iterator_to_array($result->rows());
+
+        $this->assertEqualsWithDelta($expectedResult, $arrayResult, delta: 0.0000001);
+    }
+
+    public function testPreparedStatementNamedParameterInvalid(): void
+    {
+        $this->expectException(BindValueException::class);
+        $preparedStatement = $this->db->preparedStatement('SELECT * FROM test_data WHERE b = $bool_value');
+        $preparedStatement->bindParam('invalid', true);
     }
 
     public function testPreparedStatementBool(): void
