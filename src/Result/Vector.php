@@ -52,7 +52,7 @@ class Vector
             TypeC::DUCKDB_TYPE_TIMESTAMP_TZ => $this->cast(TypeC::DUCKDB_TYPE_TIMESTAMP),
             TypeC::DUCKDB_TYPE_UUID => $this->cast(TypeC::DUCKDB_TYPE_UHUGEINT),
             TypeC::DUCKDB_TYPE_ENUM => $this->cast(TypeC::{Type::from($this->ffi->enumInternalType($this->logicalType))->name}),
-            TypeC::DUCKDB_TYPE_BLOB, TypeC::DUCKDB_TYPE_BIT, TypeC::DUCKDB_TYPE_VARINT => $this->cast(TypeC::DUCKDB_TYPE_VARCHAR),
+            TypeC::DUCKDB_TYPE_BLOB, TypeC::DUCKDB_TYPE_BIT, TypeC::DUCKDB_TYPE_BIGNUM => $this->cast(TypeC::DUCKDB_TYPE_VARCHAR),
             default => $this->cast($this->type),
         };
 
@@ -163,7 +163,7 @@ class Vector
             TypeC::DUCKDB_TYPE_ENUM => $this->typeConverter->getStringFromEnum($this->logicalType, $data),
             TypeC::DUCKDB_TYPE_BLOB => $this->typeConverter->getBlobFromBlob($data),
             TypeC::DUCKDB_TYPE_BIT => $this->typeConverter->getStringFromDuckDBBit($data),
-            TypeC::DUCKDB_TYPE_VARINT => $this->typeConverter->getStringFromDuckDBVarInt($data),
+            TypeC::DUCKDB_TYPE_BIGNUM => $this->typeConverter->getStringFromDuckDBBigNum($data),
             default => $data,
         };
     }

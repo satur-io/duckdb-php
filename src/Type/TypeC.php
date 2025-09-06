@@ -75,8 +75,8 @@ enum TypeC: string
     case DUCKDB_TYPE_TIMESTAMP_TZ = 'duckdb_timestamp_tz';
     // ANY type
     case DUCKDB_TYPE_ANY = 'any';
-    // duckdb_varint
-    case DUCKDB_TYPE_VARINT = 'duckdb_varint';
+    // duckdb_bignum
+    case DUCKDB_TYPE_BIGNUM = 'duckdb_bignum';
     // SQLNULL type
     case DUCKDB_TYPE_SQLNULL = 'sqlnull';
 }

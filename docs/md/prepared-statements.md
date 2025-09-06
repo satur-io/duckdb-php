@@ -71,5 +71,5 @@ $preparedStatement->bindParam(
 
 `bindParams()` expects a `\Saturio\DuckDB\Type\Type` enum value,
 but please notice not all types are valid for binding parameters.
-Specifically, nested types, `BIT` and `VARINT` are not allowed.
-This is a DuckDB limitation, not a duckdb-php one, as nested types, `BIT` and `VARINT` types are not compatible with parameter binding in DuckDB.
+Specifically, nested types, `BIT` and `BIGNUM` are not allowed.
+This is a DuckDB limitation, not a duckdb-php one, as nested types, `BIT` and `BIGNUM` types are not compatible with parameter binding in DuckDB.

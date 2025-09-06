@@ -263,7 +263,7 @@ class TypeConverter
         return substr($str, ord($padding));
     }
 
-    public function getStringFromDuckDBVarInt(?NativeCData $data): string
+    public function getStringFromDuckDBBigNum(?NativeCData $data): string
     {
         $string = $this->getVarChar($data);
 
