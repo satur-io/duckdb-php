@@ -27,7 +27,8 @@
         }
     ],
     "require": {
-      "ext-ffi": "*"
+      "ext-ffi": "*",
+      "php": ">=8.3"
     },
     "suggest": {
         "ext-zend-opcache": "For a better perfomance using a preload function",
