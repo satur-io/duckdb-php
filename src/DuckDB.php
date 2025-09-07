@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Saturio\DuckDB;
 
@@ -100,6 +98,30 @@ class DuckDB
         $metric->setQueryLatency($this->getLatency());
 
         return new ResultSet(self::$ffi, $queryResult, $metric);
+    }
+
+    /**
+     * Get the list of (fully qualified) table names of the query.
+     * @param string $query The query for which to get the table names.
+     * @return list<string>
+     */
+    public function getTableNames(string $query): array
+    {
+        $tableNames = self::$ffi->getTableNames($this->connection->connection, $query, true);
+        $noOfTables = self::$ffi->getListSize($tableNames);
+        $tables = [];
+
+        foreach (\range(0, $noOfTables - 1) as $index) {
+            $child = self::$ffi->getListChild($tableNames, $index);
+            $table = self::$ffi->getVarchar($child);
+            $tables[] = $table;
+        }
+
+        // @todo: Must be destroyed with duckdb_destroy_value?.
+        // does free also work?
+        self::$ffi->free($tableNames);
+
+        return $tables;
     }
 
     /**
