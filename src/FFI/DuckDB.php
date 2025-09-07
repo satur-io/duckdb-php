@@ -103,6 +103,11 @@ class DuckDB
         return self::$ffi->duckdb_connect($database, $connection);
     }
 
+    public function getTableNames(NativeCData $connection, string $query, bool $qualified): NativeCData
+    {
+        return self::$ffi->duckdb_get_table_names($connection, $query, $qualified);
+    }
+
     public function disconnect(NativeCData $database): ?int
     {
         return self::$ffi->duckdb_disconnect($database);
@@ -410,6 +415,16 @@ class DuckDB
         return self::$ffi->duckdb_list_vector_get_child($list);
     }
 
+    public function getListChild(NativeCData $list, int $index): NativeCData
+    {
+        return self::$ffi->duckdb_get_list_child($list, $index);
+    }
+
+    public function getListSize(NativeCData $list): int
+    {
+        return self::$ffi->duckdb_get_list_size($list);
+    }
+
     public function structTypeChildCount(NativeCData $logicalType): int
     {
         return self::$ffi->duckdb_struct_type_child_count($logicalType);
@@ -488,7 +503,7 @@ class DuckDB
 
     public function getVarchar(NativeCData $duckdbValue): string
     {
-        return self::$ffi->duckdb_get_varchar($duckdbValue);
+        return self::string(self::$ffi->duckdb_get_varchar($duckdbValue));
     }
 
     public function createConfig(NativeCData $config): int
