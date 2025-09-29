@@ -29,8 +29,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        lfs: false
 
     - name: Download nightly artifacts
       if: ${{ inputs.lib-path }}
