@@ -19,6 +19,7 @@ class GetTableNamesTest extends TestCase
     {
         $query = 'SELECT * FROM my_table JOIN f ON f.id = my_table.id';
         $tableNames = $this->db->getTableNames($query);
+        \sort($tableNames);
         $this->assertSame(['f', 'my_table'], $tableNames);
     }
 }
