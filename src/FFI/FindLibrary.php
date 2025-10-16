@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\FFI;
 
+use ReflectionClass;
 use Saturio\DuckDB\Exception\NotSupportedException;
 
 class FindLibrary
@@ -39,7 +40,11 @@ class FindLibrary
         $os = php_uname('s');
         $machine = php_uname('m');
 
-        $libDirectory = self::getConfigValue('DUCKDB_PHP_PATH', 'lib');
+
+        $thisClassReflection = new ReflectionClass(self::class);
+        $defaultPath = implode(DIRECTORY_SEPARATOR, [dirname($thisClassReflection->getFileName()), '..', '..', 'lib']);
+
+        $libDirectory = self::getConfigValue('DUCKDB_PHP_PATH', $defaultPath);
 
         if ('Windows NT' === $os) {
             $machine = match ($machine) {
