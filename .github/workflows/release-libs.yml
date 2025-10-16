@@ -1,4 +1,4 @@
-name: Generate Release Assets (DuckDB C libs)
+name: Generate Release Assets
 
 on:
   release:
@@ -19,8 +19,6 @@ jobs:
 
       - name: Compress and Upload Assets 🚀
         run: |
-          RELEASE_ID=${{ github.event.release.id }}
-          
           for FOLDER in ${{ steps.folders.outputs.folders }}; do
             ASSET_NAME="${FOLDER}.zip"
             FILE_PATH="./lib/${FOLDER}"
@@ -28,18 +26,21 @@ jobs:
           
             echo "Processing folder: ${FOLDER}"
           
+            # 1. Comprime la carpeta
             zip -r -j -9 "${ZIP_PATH}" "${FILE_PATH}"
           
             if [ -f "${ZIP_PATH}" ]; then
               echo "Successfully created ${ASSET_NAME}"
-              echo "Uploading ${ASSET_NAME}..."
-              gh asset upload "${ZIP_PATH}" --repo "${{ github.repository }}" --release-id "${RELEASE_ID}" --clobber
-          
-              echo "Upload of ${ASSET_NAME} complete."
             else
-              echo "Error: Failed to create ${ASSET_NAME}"
-              exit 1
+              echo "Error: Failed to create ${ASSET_NAME}"; exit 1
             fi
           done
+
+      - name: Upload all compressed Assets ⬆️
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            *.zip # Sube todos los archivos .zip creados en el paso anterior
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
