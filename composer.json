@@ -27,12 +27,13 @@
         }
     ],
     "require": {
-      "ext-ffi": "*",
-      "php": ">=8.3"
+        "ext-ffi": "*",
+        "php": ">=8.3"
     },
     "suggest": {
         "ext-zend-opcache": "For a better perfomance using a preload function",
-        "ext-bcmath": "Required for numbers > PHP_INT_MAX"
+        "ext-bcmath": "Required for numbers > PHP_INT_MAX",
+        "ext-zip": "Required for C library downloader"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.5",
@@ -48,7 +49,7 @@
         "benchmark": "vendor/bin/phpbench run --config=phpbench-local.json --report=duckdb_benchmark_report",
         "benchmark-regression": "./scripts/run_local_benchmark_regression.sh"
     },
-    "bin": ["test/Performance/duckdb_api"],
+    "bin": ["install-c-lib", "test/Performance/duckdb_api"],
     "config": {
         "process-timeout": 0
     }

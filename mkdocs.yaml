@@ -9,6 +9,7 @@ nav:
   - Intro:
       - 'index.md'
       - 'getting-started.md'
+      - 'installation.md'
   - Usage:
       - 'running-queries.md'
       - 'read-resultset-content.md'

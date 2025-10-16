@@ -7,7 +7,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=satur-io_duckdb-php&metric=alert_status&token=4a4bd82eff843d2b4a93bf4552b6db78e598ecfa)](https://sonarcloud.io/summary/new_code?id=satur-io_duckdb-php)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=satur-io_duckdb-php&metric=coverage)](https://sonarcloud.io/summary/new_code?id=satur-io_duckdb-php)
 [![Packagist Version](https://img.shields.io/packagist/v/satur.io/duckdb?style=flat&logo=packagist&logoColor=white)](https://packagist.org/packages/satur.io/duckdb)
-![DuckDB C API Version](https://img.shields.io/badge/DuckDB_C_API-v1.3.2-%23FFF100?logo=duckdb)
+![DuckDB C API Version](https://img.shields.io/badge/DuckDB_C_API-v1.4.1-%23FFF100?logo=duckdb)
 
 
 This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API for PHP.
@@ -17,9 +17,23 @@ This library is more than just a wrapper for the C API; it introduces custom, PH
 
 ### Install
 
+#### Plugin (recommended for newcomers)
 ```shell
-composer require satur.io/duckdb
+composer require satur.io/duckdb-plugin
 ```
+> [!INFO]
+> You will need to trust `satur.io/duckdb-plugin` to execute code to use this installation method,
+> check [installation](https://duckdb-php.readthedocs.io/en/latest/installation) for more details.
+
+This is the simplest way to have all the required resources at once. After running this command,
+that`s all! You can go to [Quick start](#quick-start).
+
+If for any reason you don't want to use the plugin, or you prefer a customizable installation,
+please use any of the advanced installation options.
+
+#### Advanced installation
+
+Check [Advanced installation section](https://duckdb-php.readthedocs.io/en/latest/installation/#advanced-installation) in the docs.
 
 ### Documentation
 
