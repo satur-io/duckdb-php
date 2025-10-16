@@ -21,3 +21,4 @@ preload.php             export-ignore
 README.md               export-ignore
 ROADMAP.md              export-ignore
 sonar-project.properties    export-ignore
+lib                     export-ignore

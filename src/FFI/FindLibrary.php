@@ -17,6 +17,9 @@ class FindLibrary
         return implode('/', [self::path(), 'duckdb-ffi.h']);
     }
 
+    /**
+     * @throws NotSupportedException
+     */
     public static function libPath(): string
     {
         $os = php_uname('s');
@@ -37,7 +40,11 @@ class FindLibrary
         $os = php_uname('s');
         $machine = php_uname('m');
 
-        $libDirectory = getenv('DUCKDB_PHP_LIB_DIRECTORY') ? getenv('DUCKDB_PHP_LIB_DIRECTORY') : 'lib';
+
+        $thisClassReflection = new ReflectionClass(self::class);
+        $defaultPath = implode(DIRECTORY_SEPARATOR, [dirname($thisClassReflection->getFileName()), '..', '..', 'lib']);
+
+        $libDirectory = self::getConfigValue('DUCKDB_PHP_PATH', $defaultPath);
 
         if ('Windows NT' === $os) {
             $machine = match ($machine) {
@@ -55,14 +62,16 @@ class FindLibrary
             };
         }
 
-        $thisClassReflection = new ReflectionClass(self::class);
-        $path = dirname($thisClassReflection->getFileName());
-
         return match ($os) {
-            'Windows NT' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, "windows-{$machine}"]),
-            'Linux' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, "linux-{$machine}"]),
-            'Darwin' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, 'osx-universal']),
+            'Windows NT' => implode(DIRECTORY_SEPARATOR, [$libDirectory, "windows-{$machine}"]),
+            'Linux' => implode(DIRECTORY_SEPARATOR, [$libDirectory, "linux-{$machine}"]),
+            'Darwin' => implode(DIRECTORY_SEPARATOR, [$libDirectory, 'osx-universal']),
             default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
         };
+    }
+
+    private static function getConfigValue(string $key, ?string $default = null): ?string
+    {
+        return getenv($key) ?: (defined($key) ? constant($key) : $default);
     }
 }
