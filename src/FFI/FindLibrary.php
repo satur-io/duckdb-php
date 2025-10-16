@@ -39,7 +39,7 @@ class FindLibrary
         $os = php_uname('s');
         $machine = php_uname('m');
 
-        $libDirectory = self::getConfigValue('DUCKDB_PHP_PATH', '');
+        $libDirectory = self::getConfigValue('DUCKDB_PHP_PATH', 'lib');
 
         if ('Windows NT' === $os) {
             $machine = match ($machine) {
