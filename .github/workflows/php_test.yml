@@ -30,6 +30,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        lfs: false
+
+    - name: Cache libs (LFS)
+      id: cache-libs
+      uses: actions/cache@v4
+      with:
+        path: lib
+        key: ${{ hashFiles('scripts/get_libraries.sh') }}-c-libs
+        enableCrossOsArchive: true
+
+    - name: Download libs (LFS)
+      if: steps.cache-libs.outputs.cache-hit != 'true'
+      uses: actions/checkout@v4
+      with:
         lfs: true
 
     - name: Download nightly artifacts
@@ -115,7 +129,6 @@ jobs:
           lfs: false
 
       - name: Get libraries
-        if: ${{ steps.libraries-cache.outputs.cache-hit != 'true' }}
         run: ./scripts/get_libraries_nightly.sh
 
       - name: Archive nightly libraries
