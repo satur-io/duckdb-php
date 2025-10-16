@@ -43,7 +43,7 @@ class Downloader
 
         $zip = new \ZipArchive;
         if ($zip->open($zipFile) === TRUE) {
-            $zip->extractTo($path);
+            $zip->extractTo($path . DIRECTORY_SEPARATOR . $platform);
             $zip->close();
         } else {
             die("Unzip failed.\n");
