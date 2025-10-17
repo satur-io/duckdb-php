@@ -45,7 +45,7 @@ class DuckDB
             }
         }
 
-        if ($this->libraryVersion() !== 'v' . DUCKDB_PHP_LIB_VERSION) {
+        if ($this->libraryVersion() !== 'v'.DUCKDB_PHP_LIB_VERSION) {
             throw new WrongLibraryVersionException(sprintf('Loaded DuckDB library version %s, but %s expected', $this->libraryVersion(), DUCKDB_PHP_LIB_VERSION));
         }
     }

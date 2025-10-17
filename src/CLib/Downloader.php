@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saturio\DuckDB\CLib;
 
 use Saturio\DuckDB\Exception\NotSupportedException;
+use ZipArchive;
 
 class Downloader
 {
@@ -24,12 +27,12 @@ class Downloader
             ))
         );
 
-        $zip = new \ZipArchive;
-        if ($zip->open($zipFile) === TRUE) {
-            $zip->extractTo($path . DIRECTORY_SEPARATOR . $platform);
+        $zip = new ZipArchive();
+        if (true === $zip->open($zipFile)) {
+            $zip->extractTo($path.DIRECTORY_SEPARATOR.$platform);
             $zip->close();
         } else {
-            die("Unzip failed.\n");
+            exit("Unzip failed.\n");
         }
         echo "Removing {$zipFile}...\n";
         unlink($zipFile);

@@ -24,6 +24,7 @@ class FindLibrary
     public static function libPath(): string
     {
         $file = PlatformInfo::getPlatformInfo()['file'];
+
         return implode(DIRECTORY_SEPARATOR, [self::path(), $file]);
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saturio\DuckDB\CLib;
 
 use Saturio\DuckDB\Exception\NotSupportedException;
@@ -9,7 +11,8 @@ class PlatformInfo
     /**
      * @throws NotSupportedException
      */
-    public static function getPlatformInfo(): array {
+    public static function getPlatformInfo(): array
+    {
         $os = php_uname('s');
         $machine = php_uname('m');
 
