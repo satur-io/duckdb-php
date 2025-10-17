@@ -21,7 +21,7 @@ This library is more than just a wrapper for the C API; it introduces custom, PH
 ```shell
 composer require satur.io/duckdb-plugin
 ```
-> [!INFO]
+> [!NOTE]
 > You will need to trust `satur.io/duckdb-plugin` to execute code to use this installation method,
 > check [installation](https://duckdb-php.readthedocs.io/en/latest/installation) for more details.
 
