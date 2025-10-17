@@ -37,7 +37,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: lib
-        key: ${{ hashFiles('scripts/get_libraries.sh') }}-c-libs
+        key: ${{ hashFiles('config.php') }}-c-libs
         enableCrossOsArchive: true
 
     - name: Download libs (LFS)
