@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Saturio\DuckDB\FFI;
 
 use ReflectionClass;
+use Saturio\DuckDB\CLib\PlatformInfo;
 use Saturio\DuckDB\Exception\NotSupportedException;
 
 class FindLibrary
@@ -22,14 +23,8 @@ class FindLibrary
      */
     public static function libPath(): string
     {
-        $os = php_uname('s');
-
-        return match ($os) {
-            'Windows NT' => implode(DIRECTORY_SEPARATOR, [self::path(), 'duckdb.dll']),
-            'Linux' => implode(DIRECTORY_SEPARATOR, [self::path(), 'libduckdb.so']),
-            'Darwin' => implode(DIRECTORY_SEPARATOR, [self::path(), 'libduckdb.dylib']),
-            default => throw new NotSupportedException("Unsupported OS: {$os}"),
-        };
+        $file = PlatformInfo::getPlatformInfo()['file'];
+        return implode(DIRECTORY_SEPARATOR, [self::path(), $file]);
     }
 
     /**
@@ -37,37 +32,14 @@ class FindLibrary
      */
     private static function path(): string
     {
-        $os = php_uname('s');
-        $machine = php_uname('m');
-
-
         $thisClassReflection = new ReflectionClass(self::class);
         $defaultPath = implode(DIRECTORY_SEPARATOR, [dirname($thisClassReflection->getFileName()), '..', '..', 'lib']);
 
         $libDirectory = self::getConfigValue('DUCKDB_PHP_PATH', $defaultPath);
 
-        if ('Windows NT' === $os) {
-            $machine = match ($machine) {
-                'AMD64', 'x64' => 'amd64',
-                'ARM64' => 'arm64',
-                default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
-            };
-        }
+        $platform = PlatformInfo::getPlatformInfo()['platform'];
 
-        if ('Linux' === $os) {
-            $machine = match ($machine) {
-                'x86_64' => 'amd64',
-                'aarch64' => 'arm64',
-                default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
-            };
-        }
-
-        return match ($os) {
-            'Windows NT' => implode(DIRECTORY_SEPARATOR, [$libDirectory, "windows-{$machine}"]),
-            'Linux' => implode(DIRECTORY_SEPARATOR, [$libDirectory, "linux-{$machine}"]),
-            'Darwin' => implode(DIRECTORY_SEPARATOR, [$libDirectory, 'osx-universal']),
-            default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
-        };
+        return implode(DIRECTORY_SEPARATOR, [$libDirectory, $platform]);
     }
 
     private static function getConfigValue(string $key, ?string $default = null): ?string
