@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Saturio\DuckDB;
 
@@ -18,6 +20,8 @@ use Saturio\DuckDB\PreparedStatement\PreparedStatement;
 use Saturio\DuckDB\Result\Metric\NativeMetric;
 use Saturio\DuckDB\Result\Metric\TimeMetric;
 use Saturio\DuckDB\Result\ResultSet;
+
+use function range;
 
 class DuckDB
 {
@@ -102,7 +106,9 @@ class DuckDB
 
     /**
      * Get the list of (fully qualified) table names of the query.
-     * @param string $query The query for which to get the table names.
+     *
+     * @param string $query the query for which to get the table names
+     *
      * @return list<string>
      */
     public function getTableNames(string $query): array
@@ -111,7 +117,7 @@ class DuckDB
         $noOfTables = self::$ffi->getListSize($tableNames);
         $tables = [];
 
-        foreach (\range(0, $noOfTables - 1) as $index) {
+        foreach (range(0, $noOfTables - 1) as $index) {
             $child = self::$ffi->getListChild($tableNames, $index);
             $table = self::$ffi->getVarchar($child);
             $tables[] = $table;

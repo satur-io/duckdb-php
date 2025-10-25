@@ -30,6 +30,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        lfs: false
+
+    - name: Cache libs (LFS)
+      id: cache-libs
+      uses: actions/cache@v4
+      with:
+        path: lib
+        key: ${{ hashFiles('config.php') }}-c-libs
+        enableCrossOsArchive: true
+
+    - name: Download libs (LFS)
+      if: steps.cache-libs.outputs.cache-hit != 'true'
+      uses: actions/checkout@v4
+      with:
         lfs: true
 
     - name: Download nightly artifacts
@@ -94,7 +108,7 @@ jobs:
           merge-multiple: true
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5.3.1
+        uses: SonarSource/sonarqube-scan-action@v6.0.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -115,7 +129,6 @@ jobs:
           lfs: false
 
       - name: Get libraries
-        if: ${{ steps.libraries-cache.outputs.cache-hit != 'true' }}
         run: ./scripts/get_libraries_nightly.sh
 
       - name: Archive nightly libraries

@@ -2,7 +2,7 @@
 
 platforms=("linux-arm64" "linux-amd64" "osx-universal" "windows-amd64" "windows-arm64")
 platformLibFiles=("libduckdb.so" "libduckdb.so" "libduckdb.dylib" "duckdb.dll" "duckdb.dll")
-release="1.4.1"
+release=$(php -r "include 'config.php'; echo constant('DUCKDB_PHP_LIB_VERSION');")
 
 rm -rf ./lib
 

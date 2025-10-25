@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Saturio\DuckDB\FFI;
 
 use ReflectionClass;
+use Saturio\DuckDB\CLib\PlatformInfo;
 use Saturio\DuckDB\Exception\NotSupportedException;
 
 class FindLibrary
@@ -17,16 +18,14 @@ class FindLibrary
         return implode('/', [self::path(), 'duckdb-ffi.h']);
     }
 
+    /**
+     * @throws NotSupportedException
+     */
     public static function libPath(): string
     {
-        $os = php_uname('s');
+        $file = PlatformInfo::getPlatformInfo()['file'];
 
-        return match ($os) {
-            'Windows NT' => implode(DIRECTORY_SEPARATOR, [self::path(), 'duckdb.dll']),
-            'Linux' => implode(DIRECTORY_SEPARATOR, [self::path(), 'libduckdb.so']),
-            'Darwin' => implode(DIRECTORY_SEPARATOR, [self::path(), 'libduckdb.dylib']),
-            default => throw new NotSupportedException("Unsupported OS: {$os}"),
-        };
+        return implode(DIRECTORY_SEPARATOR, [self::path(), $file]);
     }
 
     /**
@@ -34,35 +33,18 @@ class FindLibrary
      */
     private static function path(): string
     {
-        $os = php_uname('s');
-        $machine = php_uname('m');
-
-        $libDirectory = getenv('DUCKDB_PHP_LIB_DIRECTORY') ? getenv('DUCKDB_PHP_LIB_DIRECTORY') : 'lib';
-
-        if ('Windows NT' === $os) {
-            $machine = match ($machine) {
-                'AMD64', 'x64' => 'amd64',
-                'ARM64' => 'arm64',
-                default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
-            };
-        }
-
-        if ('Linux' === $os) {
-            $machine = match ($machine) {
-                'x86_64' => 'amd64',
-                'aarch64' => 'arm64',
-                default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
-            };
-        }
-
         $thisClassReflection = new ReflectionClass(self::class);
-        $path = dirname($thisClassReflection->getFileName());
+        $defaultPath = implode(DIRECTORY_SEPARATOR, [dirname($thisClassReflection->getFileName()), '..', '..', 'lib']);
 
-        return match ($os) {
-            'Windows NT' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, "windows-{$machine}"]),
-            'Linux' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, "linux-{$machine}"]),
-            'Darwin' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, 'osx-universal']),
-            default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
-        };
+        $libDirectory = self::getConfigValue('DUCKDB_PHP_PATH', $defaultPath);
+
+        $platform = PlatformInfo::getPlatformInfo()['platform'];
+
+        return implode(DIRECTORY_SEPARATOR, [$libDirectory, $platform]);
+    }
+
+    private static function getConfigValue(string $key, ?string $default = null): ?string
+    {
+        return getenv($key) ?: (defined($key) ? constant($key) : $default);
     }
 }
