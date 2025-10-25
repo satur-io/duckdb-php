@@ -1,16 +1,16 @@
 # Installation
 
-## Plugin (recommended for newcomers)
+## Composer plugin (recommended for newcomers)
 ```shell
-composer require satur.io/duckdb-plugin
+composer require satur.io/duckdb-all
 ```
 
-This will install the `satur.io/duckdb-plugin` package,
+This will install the `satur.io/duckdb-all` package,
 and it's the simplest way to have all the required resources at once.
 
-The plugin installs `satur.io/duckdb` and download the necessary DuckDB C library for your OS.
+The plugin installs the package `satur.io/duckdb` and downloads the necessary DuckDB C library for your OS.
 
-You will need to trust `satur.io/duckdb-plugin` to execute code for this installation method.
+You will need to trust `satur.io/duckdb-all` to execute code for this installation method.
 
 You can check the plugin source code [in its repo](https://github.com/satur-io/duckdb-plugin).
 

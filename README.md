@@ -15,29 +15,17 @@ This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API fo
 Focused on performance, it uses the official [C API](https://duckdb.org/docs/api/c/overview.html) internally through [FFI](https://www.php.net/manual/en/book.ffi.php), achieving good benchmarks.
 This library is more than just a wrapper for the C API; it introduces custom, PHP-friendly methods to simplify working with DuckDB. It is compatible with Linux, Windows, and macOS, requiring PHP version 8.3 or higher.
 
+Full documentation is available in [https://duckdb-php.readthedocs.io/](https://duckdb-php.readthedocs.io/).
+
 ### Install
 
-#### Plugin (recommended for newcomers)
+#### Automatic install (recommended for newcomers)
 ```shell
-composer require satur.io/duckdb-plugin
+composer require satur.io/duckdb-all
 ```
 > [!NOTE]
-> You will need to trust `satur.io/duckdb-plugin` to execute code to use this installation method,
+> You will need to trust `satur.io/duckdb-all` to execute code to use this installation method,
 > check [installation](https://duckdb-php.readthedocs.io/en/latest/installation) for more details.
-
-This is the simplest way to have all the required resources at once. After running this command,
-that`s all! You can go to [Quick start](#quick-start).
-
-If for any reason you don't want to use the plugin, or you prefer a customizable installation,
-please use any of the advanced installation options.
-
-#### Advanced installation
-
-Check [Advanced installation section](https://duckdb-php.readthedocs.io/en/latest/installation/#advanced-installation) in the docs.
-
-### Documentation
-
-Full documentation is available in [https://duckdb-php.readthedocs.io/](https://duckdb-php.readthedocs.io/).
 
 ### Quick Start
 
