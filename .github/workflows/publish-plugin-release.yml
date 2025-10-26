@@ -10,6 +10,10 @@ jobs:
     steps:
       - name: Create release in plugin repo duckdb-auto
         run: |
-          gh release create $GITHUB_REF_NAME --generate-notes -R satur-io/duckdb-auto
+          RELEASE_ARGS=""
+          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+            RELEASE_ARGS="--prerelease"
+          fi
+          gh release create $GITHUB_REF_NAME --generate-notes $RELEASE_ARGS -R satur-io/duckdb-auto
         env:
           GH_TOKEN: ${{ secrets.PAT }}
