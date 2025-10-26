@@ -48,7 +48,7 @@
         "benchmark": "vendor/bin/phpbench run --config=phpbench-local.json --report=duckdb_benchmark_report",
         "benchmark-regression": "./scripts/run_local_benchmark_regression.sh"
     },
-    "bin": ["install-c-lib", "test/Performance/duckdb_api"],
+    "bin": ["install-c-lib"],
     "config": {
         "process-timeout": 0
     }
