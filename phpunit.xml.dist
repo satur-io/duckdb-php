@@ -30,6 +30,9 @@
         <include>
             <directory>./src</directory>
         </include>
+        <exclude>
+            <directory>./src/CLib</directory>
+        </exclude>
     </source>
     <php>
         <env name="DUCKDB_PHP_LIB_TEST" value="true" force="true" />
