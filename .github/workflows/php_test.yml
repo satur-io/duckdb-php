@@ -67,7 +67,7 @@ jobs:
 
     - name: Download libs
       if: ${{ !inputs.lib-path && steps.cache-libs.outputs.cache-hit != 'true' }}
-      run: ./install-c-lib
+      run: php -r "require './vendor/autoload.php'; Saturio\DuckDB\CLib\Installer::install();"
 
     - name: Info
       env:

@@ -2,8 +2,6 @@
 <?php
 require_once  $_composer_autoload_path ?? __DIR__ . '/vendor/autoload.php';
 
-use Composer\InstalledVersions;
-use Saturio\DuckDB\CLib\Downloader;
 use Saturio\DuckDB\CLib\Installer;
 use Saturio\DuckDB\FFI\FindLibrary;
 
