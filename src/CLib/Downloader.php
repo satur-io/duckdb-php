@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Saturio\DuckDB\CLib;
 
 use PharData;
+use Saturio\DuckDB\Exception\CLibInstallationException;
 use Saturio\DuckDB\Exception\NotSupportedException;
 
 class Downloader
@@ -13,6 +14,7 @@ class Downloader
 
     /**
      * @throws NotSupportedException
+     * @throws CLibInstallationException
      */
     public static function download(string $path, string $version): void
     {
@@ -26,6 +28,10 @@ class Downloader
                 $platformInfo['platform'],
             ))
         );
+
+        if (DUCKDB_PHP_LIB_CHECKSUMS[$platformInfo['platform']] !== hash('sha256', file_get_contents($zipFile))) {
+            throw new CLibInstallationException('Bad checksum');
+        }
 
         $phar = new PharData($zipFile);
 
