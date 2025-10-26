@@ -1,0 +1,15 @@
+name: Publish Plugin release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create release in plugin repo duckdb-auto
+        run: |
+          gh release create $GITHUB_REF_NAME --generate-notes -R satur-io/duckdb-auto
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
