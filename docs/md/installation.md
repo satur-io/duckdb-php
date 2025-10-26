@@ -9,12 +9,10 @@ This will install the `satur.io/duckdb-auto` package,
 and it's the simplest way to have all the required resources at once.
 
 The plugin installs the package `satur.io/duckdb` and downloads the necessary DuckDB C library for your OS.
-
 You will need to allow `satur.io/duckdb-auto` to execute code for this installation method.
+heck the plugin source code [in its own repository](https://github.com/satur-io/duckdb-auto).
 
-You can check the plugin source code [in its repo](https://github.com/satur-io/duckdb-auto).
-
-If for any reason you don't want to use the plugin, or you prefer a customizable installation,
+If you don't want to use the plugin, or you prefer a customizable installation,
 please use any of the advanced installation options.
 
 ## Advanced installation options
@@ -25,14 +23,13 @@ and the official C library files provided by DuckDB (both the header file and th
 Unfortunately, C libraries are OS and platform dependent and the header file needs some changes
 to be used in PHP via FFI.
 
-From v2.0 on `satur.io/duckdb` includes the fixed headers for all platforms
+From v2.0 on, `satur.io/duckdb` includes the fixed headers for all platforms
 and also a script to download the library binary from the official DuckDB release.
 
 Key files:
-- `scripts/get_header.sh` - the script used to get the headers
-and adapt the files to be used with FFI.
-- `\Saturio\DuckDB\CLib\Installer::install` - the installer method.
-- `install-c-lib` - a simple script useful to install the library in a custom path.
+- `scripts/get_header.sh` the script used to get the headers and adapt the files to be used with FFI.
+- `\Saturio\DuckDB\CLib\Installer::install` the installer method.
+- `install-c-lib` a simple script useful to install the library in a custom path.
 
 ### Adding scripts to composer.json to download the library
 
@@ -46,7 +43,7 @@ composer require satur.io/duckdb
 ```
 
 Add scripts to your `composer.json`
-```json lines
+```json
     "scripts": {
         "post-install-cmd": "\\Saturio\\DuckDB\\CLib\\Installer::install",
         "post-update-cmd": "\\Saturio\\DuckDB\\CLib\\Installer::install"
