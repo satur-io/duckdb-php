@@ -17,3 +17,4 @@ my-network-usage.db
 dutch_railway_network.duckdb
 oil-and-gas.parquet
 .phpbench
+lib
