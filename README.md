@@ -23,7 +23,7 @@ Full documentation is available in [https://duckdb-php.readthedocs.io/](https://
 composer require satur.io/duckdb-auto
 ```
 > [!NOTE]
-> You will need to trust `satur.io/duckdb-auto` to execute code to use this installation method,
+> You will need to allow `satur.io/duckdb-auto` to execute code to use this installation method,
 > check [installation](https://duckdb-php.readthedocs.io/en/latest/installation) for more details.
 
 ### Quick Start
