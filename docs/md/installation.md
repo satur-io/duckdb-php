@@ -10,7 +10,7 @@ and it's the simplest way to have all the required resources at once.
 
 The plugin installs the package `satur.io/duckdb` and downloads the necessary DuckDB C library for your OS.
 You will need to allow `satur.io/duckdb-auto` to execute code for this installation method.
-heck the plugin source code [in its own repository](https://github.com/satur-io/duckdb-auto).
+Check the plugin source code [in its own repository](https://github.com/satur-io/duckdb-auto).
 
 If you don't want to use the plugin, or you prefer a customizable installation,
 please use any of the advanced installation options.
@@ -27,6 +27,7 @@ From v2.0 on, `satur.io/duckdb` includes the fixed headers for all platforms
 and also a script to download the library binary from the official DuckDB release.
 
 Key files:
+
 - `scripts/get_header.sh` the script used to get the headers and adapt the files to be used with FFI.
 - `\Saturio\DuckDB\CLib\Installer::install` the installer method.
 - `install-c-lib` a simple script useful to install the library in a custom path.
@@ -127,7 +128,7 @@ Copy the fixed header:
 cp vendor/satur.io/header/osx-universal/duckdb-ffi.h ~/my-custom-dir/duckdb-ffi.h
 ```
 !!! warning
-    If you want to use `FFI::load` and `FFI::scope` (recommended fot a better performance),
+    If you want to use `FFI::load` and `FFI::scope` (recommended for a better performance),
     you also need to modify the `duckdb-ffi.h` file and include on top `FFI_SCOPE` and `FFI_LIB`.
     Check `\Saturio\DuckDB\CLib\Installer::copyHeader`.
 
