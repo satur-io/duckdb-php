@@ -92,6 +92,10 @@ environment variable to the path where you downloaded the library.
 If you want to integrate this method in your CI/CD workflow,
 you could use a custom script instead of using the interactive `install-c-lib` command:
 
+!!! tip
+    `DUCKDB_PHP_PATH` can be defined both as an environment variable or as a php constant.
+    If you define both the environment variable value will be used.
+
 ```shell
 php -r "require './vendor/autoload.php'; Saturio\DuckDB\CLib\Installer::install(<your-custom-path>);"
 echo 'export DUCKDB_PHP_PATH="<your-custom-path>"' >> ~/.bashrc
@@ -126,9 +130,9 @@ Copy the fixed header:
 cp vendor/satur.io/header/osx-universal/duckdb-ffi.h ~/my-custom-dir/duckdb-ffi.h
 ```
 !!! warning
-If you want to use `FFI::load` and `FFI::scope` (recommended fot a better performance),
-you also need to modify the `duckdb-ffi.h` file and include on top `FFI_SCOPE` and `FFI_LIB`.
-Check `\Saturio\DuckDB\CLib\Installer::copyHeader`.
+    If you want to use `FFI::load` and `FFI::scope` (recommended fot a better performance),
+    you also need to modify the `duckdb-ffi.h` file and include on top `FFI_SCOPE` and `FFI_LIB`.
+    Check `\Saturio\DuckDB\CLib\Installer::copyHeader`.
 
 As in the previous case, you need to set the `DUCKDB_PHP_PATH`
 environment variable to the path.
