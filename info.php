@@ -11,7 +11,8 @@ $machine = php_uname('m');
 
 printf("Os: %s, Machine: %s\n\n\n", $os, $machine);
 try {
-    printf("Header: %s\nLib path: %s\n", FindLibrary::headerPath(), FindLibrary::libPath());
+    [$headerPath, $libraryPath] = FindLibrary::headerAndLibrary();
+    printf("Header: %s\nLib path: %s\n", $headerPath, $libraryPath);
 } catch (NotSupportedException $e) {
     echo $e->getMessage();
 }
