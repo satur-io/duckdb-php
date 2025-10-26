@@ -6,7 +6,7 @@ You can install the DuckDB PHP package and all the required resources
 using Composer by requiring the plugin installer:
 
 ```bash
-$ composer require satur.io/duckdb-all
+$ composer require satur.io/duckdb-auto
 ```
 
 This is the recommended option for newcomers and should be enough to 
