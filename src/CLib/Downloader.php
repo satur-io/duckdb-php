@@ -4,36 +4,41 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\CLib;
 
+use PharData;
 use Saturio\DuckDB\Exception\NotSupportedException;
-use ZipArchive;
 
 class Downloader
 {
-    private const string LIB_URL = 'https://github.com/satur-io/duckdb-php/releases/download/%s/%s.zip';
+    private const string LIB_URL = 'https://github.com/duckdb/duckdb/releases/download/v%s/libduckdb-%s.zip';
 
     /**
      * @throws NotSupportedException
      */
     public static function download(string $path, string $version): void
     {
-        $platform = PlatformInfo::getPlatformInfo()['platform'];
+        $platformInfo = PlatformInfo::getPlatformInfo();
         $zipFile = 'lib.zip';
 
         file_put_contents($zipFile,
             file_get_contents(sprintf(
                 self::LIB_URL,
                 $version,
-                $platform,
+                $platformInfo['platform'],
             ))
         );
 
-        $zip = new ZipArchive();
-        if (true === $zip->open($zipFile)) {
-            $zip->extractTo($path.DIRECTORY_SEPARATOR.$platform);
-            $zip->close();
-        } else {
-            exit("Unzip failed.\n");
+        $phar = new PharData($zipFile);
+
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
         }
+
+        if ($phar->extractTo($path, [$platformInfo['file']], true)) {
+            echo 'C lib downloaded' . PHP_EOL;
+        } else {
+            echo sprintf('ERROR: Couldn\'t extract %s from ZIP file.', $platformInfo['file']);
+        }
+
         echo "Removing {$zipFile}...\n";
         unlink($zipFile);
 

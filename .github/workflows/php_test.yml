@@ -32,19 +32,16 @@ jobs:
       with:
         lfs: false
 
-    - name: Cache libs (LFS)
+    - name: Cache libs
       id: cache-libs
       uses: actions/cache@v4
       with:
         path: lib
-        key: ${{ hashFiles('config.php') }}-c-libs
-        enableCrossOsArchive: true
+        key: ${{ hashFiles('config.php') }}-${{ matrix.os }}-c-libs
 
-    - name: Download libs (LFS)
-      if: steps.cache-libs.outputs.cache-hit != 'true'
-      uses: actions/checkout@v4
-      with:
-        lfs: true
+    - name: Download libs
+      if: ${{ !inputs.lib-path && steps.cache-libs.outputs.cache-hit != 'true' }}
+      run: ./install-c-lib
 
     - name: Download nightly artifacts
       if: ${{ inputs.lib-path }}

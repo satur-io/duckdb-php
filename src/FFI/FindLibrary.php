@@ -6,14 +6,46 @@ namespace Saturio\DuckDB\FFI;
 
 use ReflectionClass;
 use Saturio\DuckDB\CLib\PlatformInfo;
+use Saturio\DuckDB\Exception\MissedLibraryException;
 use Saturio\DuckDB\Exception\NotSupportedException;
 
 class FindLibrary
 {
+    private const string KEY = 'DUCKDB_PHP_PATH';
+
+
     /**
      * @throws NotSupportedException
+     * @throws MissedLibraryException
      */
-    public static function headerPath(): string
+    public static function headerAndLibrary(): array
+    {
+        $headerPath = FindLibrary::headerPath();
+
+        if (!file_exists($headerPath)) {
+            throw new MissedLibraryException("Could not load library header file '$headerPath'. Check documentation for installation options:  https://duckdb-php.readthedocs.io.");
+        }
+
+        $libPath = FindLibrary::libPath();
+
+        if (!file_exists($libPath)) {
+            throw new MissedLibraryException("Could not load library '$libPath'. Check documentation for installation options:  https://duckdb-php.readthedocs.io.");
+        }
+
+        return [$headerPath, $libPath];
+    }
+
+    public static function defaultPath(): string
+    {
+        $rootInstallationPath = realpath(
+            implode(DIRECTORY_SEPARATOR,
+                [dirname((new ReflectionClass(self::class))->getFileName()), '..', '..']
+            )
+        );
+        return implode(DIRECTORY_SEPARATOR, [$rootInstallationPath, 'lib']);
+    }
+
+    private static function headerPath(): string
     {
         return implode('/', [self::path(), 'duckdb-ffi.h']);
     }
@@ -21,30 +53,22 @@ class FindLibrary
     /**
      * @throws NotSupportedException
      */
-    public static function libPath(): string
+    private static function libPath(): string
     {
         $file = PlatformInfo::getPlatformInfo()['file'];
 
         return implode(DIRECTORY_SEPARATOR, [self::path(), $file]);
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     private static function path(): string
     {
-        $thisClassReflection = new ReflectionClass(self::class);
-        $defaultPath = implode(DIRECTORY_SEPARATOR, [dirname($thisClassReflection->getFileName()), '..', '..', 'lib']);
-
-        $libDirectory = self::getConfigValue('DUCKDB_PHP_PATH', $defaultPath);
-
-        $platform = PlatformInfo::getPlatformInfo()['platform'];
-
-        return implode(DIRECTORY_SEPARATOR, [$libDirectory, $platform]);
+        return
+            self::getConfiguredDuckdbPath()
+            ?? self::defaultPath();
     }
 
-    private static function getConfigValue(string $key, ?string $default = null): ?string
+    private static function getConfiguredDuckdbPath(): ?string
     {
-        return getenv($key) ?: (defined($key) ? constant($key) : $default);
+        return getenv(self::KEY) ?: (defined(self::KEY) ? constant(self::KEY) : null);
     }
 }

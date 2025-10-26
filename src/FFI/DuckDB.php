@@ -27,16 +27,7 @@ class DuckDB
             try {
                 self::$ffi = FFI::scope('DUCKDB');
             } catch (FFI\Exception) {
-                $headerPath = FindLibrary::headerPath();
-                $libPath = FindLibrary::libPath();
-
-                if (!file_exists($headerPath)) {
-                    throw new MissedLibraryException("Could not load library header file '$headerPath'.");
-                }
-
-                if (!file_exists($libPath)) {
-                    throw new MissedLibraryException("Could not load library '$libPath'.");
-                }
+                [$headerPath, $libPath] = FindLibrary::headerAndLibrary();
 
                 self::$ffi = FFI::cdef(
                     file_get_contents($headerPath),

@@ -4,20 +4,19 @@ require_once  $_composer_autoload_path ?? __DIR__ . '/vendor/autoload.php';
 
 use Composer\InstalledVersions;
 use Saturio\DuckDB\CLib\Downloader;
+use Saturio\DuckDB\CLib\Installer;
+use Saturio\DuckDB\FFI\FindLibrary;
 
-$version = InstalledVersions::getPrettyVersion('satur.io/duckdb');
-$path = 'lib';
+echo "\033[32mInstallation path\033[0m (\033[36m" . FindLibrary::defaultPath() . "\033[0m): ";
 
-echo "\033[32mInstallation path\033[0m (\033[36m" . $path . "\033[0m): ";
+$path = trim(fgets(STDIN));
+$path = empty($path) ? null : $path;
 
-$user_input = trim(fgets(STDIN));
+echo "\n\033[36mDownloading and installing DuckDB C library\033[0m\n";
+Installer::install($path);
+echo "\033[32mC library downloaded and installed\033[0m\n";
 
-if (!empty($user_input)) {
-    $path = $user_input;
+if ($path !== null) {
+    $fullPath = realpath($path);
+    echo "\n\033[31mNow please set the environment variable DUCKDB_PHP_PATH={$fullPath}\033[0m\n\n";
 }
-
-echo "\n\033[36mDownloading DuckDB C library in {$path}\033[0m\n";
-Downloader::download($path, $version);
-$fullPath = realpath($path);
-echo "\033[32mC library downloaded\033[0m\n";
-echo "\n\033[31mNow please set the environment variable DUCKDB_PHP_PATH={$fullPath}\033[0m\n\n";
