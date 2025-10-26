@@ -8,7 +8,6 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
 use Saturio\DuckDB\Exception\QueryException;
-use Saturio\DuckDB\FFI\FindLibrary;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Interval;
 use Saturio\DuckDB\Type\Time;

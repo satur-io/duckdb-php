@@ -13,7 +13,6 @@ class FindLibrary
 {
     private const string KEY = 'DUCKDB_PHP_PATH';
 
-
     /**
      * @throws NotSupportedException
      * @throws MissedLibraryException
@@ -42,6 +41,7 @@ class FindLibrary
                 [dirname((new ReflectionClass(self::class))->getFileName()), '..', '..']
             )
         );
+
         return implode(DIRECTORY_SEPARATOR, [$rootInstallationPath, 'lib']);
     }
 

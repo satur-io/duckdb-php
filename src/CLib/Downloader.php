@@ -40,7 +40,7 @@ class Downloader
         }
 
         if ($phar->extractTo($path, [$platformInfo['file']], true)) {
-            echo 'C lib downloaded' . PHP_EOL;
+            echo 'C lib downloaded'.PHP_EOL;
         } else {
             echo sprintf('ERROR: Couldn\'t extract %s from ZIP file.', $platformInfo['file']);
         }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saturio\DuckDB\CLib;
 
 use ReflectionClass;
@@ -16,7 +18,6 @@ class Installer
 
 EOF;
 
-
     /**
      * @throws NotSupportedException
      * @throws CLibInstallationException
@@ -25,13 +26,14 @@ EOF;
     {
         try {
             [$headerPath, $libPath] = FindLibrary::headerAndLibrary();
-            echo sprintf('Header found: %s' . PHP_EOL, $headerPath);
-            echo sprintf('Library found: %s' . PHP_EOL, $libPath);
+            echo sprintf('Header found: %s'.PHP_EOL, $headerPath);
+            echo sprintf('Library found: %s'.PHP_EOL, $libPath);
             echo PHP_EOL;
-            echo '✔ DuckDB C library is already installed.' . PHP_EOL;
+            echo '✔ DuckDB C library is already installed.'.PHP_EOL;
+
             return;
         } catch (MissedLibraryException) {
-            echo 'DuckDB C library not found. Starting installation' . PHP_EOL;
+            echo 'DuckDB C library not found. Starting installation'.PHP_EOL;
         }
 
         $path = $path ?? FindLibrary::defaultPath();
@@ -56,7 +58,7 @@ EOF;
                 dirname((new ReflectionClass(self::class))->getFileName()),
                 '..', '..', 'header',
                 $platformInfo['platform'],
-                'duckdb-ffi.h'
+                'duckdb-ffi.h',
             ]);
 
         if (!file_exists($originalHeaderFile)) {
@@ -65,7 +67,7 @@ EOF;
 
         file_put_contents(
             $headerPath,
-            sprintf(self::HEADER_FFI_DEFINITIONS, realpath($libraryPath)) . file_get_contents($originalHeaderFile)
+            sprintf(self::HEADER_FFI_DEFINITIONS, realpath($libraryPath)).file_get_contents($originalHeaderFile)
         );
     }
 }
