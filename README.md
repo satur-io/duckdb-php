@@ -17,14 +17,13 @@ This library is more than just a wrapper for the C API; it introduces custom, PH
 
 Full documentation is available in [https://duckdb-php.readthedocs.io/](https://duckdb-php.readthedocs.io/).
 
-### Install
+### Automatic install (recommended for newcomers)
 
-#### Automatic install (recommended for newcomers)
 ```shell
-composer require satur.io/duckdb-all
+composer require satur.io/duckdb-auto
 ```
 > [!NOTE]
-> You will need to trust `satur.io/duckdb-all` to execute code to use this installation method,
+> You will need to trust `satur.io/duckdb-auto` to execute code to use this installation method,
 > check [installation](https://duckdb-php.readthedocs.io/en/latest/installation) for more details.
 
 ### Quick Start
