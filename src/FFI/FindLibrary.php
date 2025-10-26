@@ -47,7 +47,7 @@ class FindLibrary
 
     private static function headerPath(): string
     {
-        return implode('/', [self::path(), 'duckdb-ffi.h']);
+        return implode(DIRECTORY_SEPARATOR, [self::path(), 'duckdb-ffi.h']);
     }
 
     /**
