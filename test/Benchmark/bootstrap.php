@@ -5,7 +5,7 @@ declare(strict_types=1);
 require __DIR__.'/../../vendor/autoload.php';
 
 if (!is_dir('.phpbench/samples')) {
-    mkdir('.phpbench/samples');
+    mkdir('.phpbench/samples', recursive: true);
 }
 
 $files = [
