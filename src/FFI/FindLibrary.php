@@ -69,7 +69,8 @@ class FindLibrary
 
     private static function getConfiguredDuckdbPath(): ?string
     {
-        $phpConstantValueOrNull = fn() => defined(self::KEY) ? constant(self::KEY) : null;
+        $phpConstantValueOrNull = fn () => defined(self::KEY) ? constant(self::KEY) : null;
+
         return getenv(self::KEY) ?: $phpConstantValueOrNull();
     }
 }
