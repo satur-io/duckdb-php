@@ -19,6 +19,7 @@ nav:
       - 'examples.md'
   - Guides:
       - 'opcache-preload.md'
+      - 'upgrade-1-to-2'
 
 markdown_extensions:
   - admonition

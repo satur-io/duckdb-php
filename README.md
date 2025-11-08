@@ -107,8 +107,11 @@ for ($i = 0; $i < 100; ++$i) {
 $appender->flush();
 ```
 
+### Upgrading from 1.x to 2.x
 
-#### DuckDB powerful
+See [upgrade  from 1.x to 2.x docs](https://duckdb-php.readthedocs.io/en/latest/upgrade-1-to-2).
+
+### DuckDB power
 
 DuckDB provides some amazing features. For example, 
 you can query remote files directly.
