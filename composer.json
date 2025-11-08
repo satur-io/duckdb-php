@@ -42,8 +42,7 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit test",
-        "performance": "./test/Performance/compare_current_branch_performance.sh",
-        "get-libraries": "./scripts/get_libraries.sh",
+        "get-headers": "./scripts/get_headers.sh",
         "fix": "PHP_CS_FIXER_IGNORE_ENV=1 tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes",
         "benchmark": "vendor/bin/phpbench run --config=phpbench-local.json --report=duckdb_benchmark_report",
         "benchmark-regression": "./scripts/run_local_benchmark_regression.sh"

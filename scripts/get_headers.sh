@@ -14,7 +14,7 @@ for platform in "${platforms[@]}"; do
   rm -f "libduckdb-${platform}.zip"
 
   sed -i.bak '/#include <std/d'  "/tmp/${platform}/duckdb.h"
-  cpp -P -C -D"attribute(ARGS)=" "/tmp/${platform}/duckdb.h" >> "/tmp/${platform}/duckdb-ffi.h"
+  cpp -w -P -C -D"attribute(ARGS)=" "/tmp/${platform}/duckdb.h" >> "/tmp/${platform}/duckdb-ffi.h"
   cp "/tmp/${platform}/duckdb-ffi.h" "./header/${platform}/duckdb-ffi.h"
   rm -rf "/tmp/${platform}"
   counter=${counter}+1
