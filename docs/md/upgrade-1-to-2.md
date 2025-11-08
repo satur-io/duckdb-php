@@ -1,4 +1,4 @@
-# 2.x breaking changes
+# Breaking changes in 2.x version
 
 The main challenge for the duckdb-php package distribution, detailed in
 [Issue #12](https://github.com/satur-io/duckdb-php/issues/12), 
