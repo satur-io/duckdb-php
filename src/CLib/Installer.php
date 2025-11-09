@@ -22,9 +22,10 @@ EOF;
      * @throws NotSupportedException
      * @throws CLibInstallationException
      */
-    public static function install(?string $path = null): void
+    public static function install(mixed $path = null): void
     {
         try {
+            $path = is_string($path) ? $path : null;
             [$headerPath, $libPath] = FindLibrary::headerAndLibrary();
             echo sprintf('Header found: %s'.PHP_EOL, $headerPath);
             echo sprintf('Library found: %s'.PHP_EOL, $libPath);
