@@ -7,6 +7,7 @@ namespace Saturio\DuckDB\Type;
 use DateMalformedStringException;
 use DateTime;
 use DateTimeInterface;
+use DateTimeZone;
 use JsonSerializable;
 use Saturio\DuckDB\Exception\InvalidTimeException;
 
@@ -92,7 +93,8 @@ class Timestamp implements JsonSerializable
      */
     public function toDateTime(): DateTime
     {
-        return new DateTime($this->__toString());
+        $dateTime = new DateTime($this->__toString(), new DateTimeZone('UTC'));
+        return $dateTime->setTimezone(new DateTimeZone(date_default_timezone_get()));
     }
 
     public function jsonSerialize(): string
