@@ -212,4 +212,19 @@ class PreparedStatementTest extends TestCase
         $row = $result->rows()->current();
         $this->assertEquals($expectedValues, $row);
     }
+
+    public function testNull(): void
+    {
+        $this->db->query('CREATE TABLE test_null (i INTEGER NULL);');
+        $expectedValues = [null];
+
+        $preparedStatement = $this->db->preparedStatement('INSERT INTO test_null VALUES (?);');
+        $preparedStatement->bindParam(1, null);
+        $preparedStatement->execute();
+
+        $result = $this->db->query('SELECT * FROM test_null');
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row);
+    }
 }
