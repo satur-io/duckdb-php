@@ -1,5 +1,3 @@
-#define FFI_SCOPE "DUCKDB"
-#define FFI_LIB "lib/osx-universal/libduckdb.dylib"
 //===----------------------------------------------------------------------===//
 //
 //                         DuckDB

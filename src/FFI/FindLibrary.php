@@ -5,64 +5,72 @@ declare(strict_types=1);
 namespace Saturio\DuckDB\FFI;
 
 use ReflectionClass;
+use Saturio\DuckDB\CLib\PlatformInfo;
+use Saturio\DuckDB\Exception\MissedLibraryException;
 use Saturio\DuckDB\Exception\NotSupportedException;
 
 class FindLibrary
 {
-    /**
-     * @throws NotSupportedException
-     */
-    public static function headerPath(): string
-    {
-        return implode('/', [self::path(), 'duckdb-ffi.h']);
-    }
-
-    public static function libPath(): string
-    {
-        $os = php_uname('s');
-
-        return match ($os) {
-            'Windows NT' => implode(DIRECTORY_SEPARATOR, [self::path(), 'duckdb.dll']),
-            'Linux' => implode(DIRECTORY_SEPARATOR, [self::path(), 'libduckdb.so']),
-            'Darwin' => implode(DIRECTORY_SEPARATOR, [self::path(), 'libduckdb.dylib']),
-            default => throw new NotSupportedException("Unsupported OS: {$os}"),
-        };
-    }
+    private const string KEY = 'DUCKDB_PHP_PATH';
 
     /**
      * @throws NotSupportedException
+     * @throws MissedLibraryException
      */
+    public static function headerAndLibrary(): array
+    {
+        $headerPath = FindLibrary::headerPath();
+
+        if (!file_exists($headerPath)) {
+            throw new MissedLibraryException("Could not load library header file '$headerPath'. Check documentation for installation options:  https://duckdb-php.readthedocs.io.");
+        }
+
+        $libPath = FindLibrary::libPath();
+
+        if (!file_exists($libPath)) {
+            throw new MissedLibraryException("Could not load library '$libPath'. Check documentation for installation options:  https://duckdb-php.readthedocs.io.");
+        }
+
+        return [$headerPath, $libPath];
+    }
+
+    public static function defaultPath(): string
+    {
+        $rootInstallationPath = realpath(
+            implode(DIRECTORY_SEPARATOR,
+                [dirname((new ReflectionClass(self::class))->getFileName()), '..', '..']
+            )
+        );
+
+        return implode(DIRECTORY_SEPARATOR, [$rootInstallationPath, 'lib']);
+    }
+
+    private static function headerPath(): string
+    {
+        return implode(DIRECTORY_SEPARATOR, [self::path(), 'duckdb-ffi.h']);
+    }
+
+    /**
+     * @throws NotSupportedException
+     */
+    private static function libPath(): string
+    {
+        $file = PlatformInfo::getPlatformInfo()['file'];
+
+        return implode(DIRECTORY_SEPARATOR, [self::path(), $file]);
+    }
+
     private static function path(): string
     {
-        $os = php_uname('s');
-        $machine = php_uname('m');
+        return
+            self::getConfiguredDuckdbPath()
+            ?? self::defaultPath();
+    }
 
-        $libDirectory = getenv('DUCKDB_PHP_LIB_DIRECTORY') ? getenv('DUCKDB_PHP_LIB_DIRECTORY') : 'lib';
+    private static function getConfiguredDuckdbPath(): ?string
+    {
+        $phpConstantValueOrNull = fn () => defined(self::KEY) ? constant(self::KEY) : null;
 
-        if ('Windows NT' === $os) {
-            $machine = match ($machine) {
-                'AMD64', 'x64' => 'amd64',
-                'ARM64' => 'arm64',
-                default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
-            };
-        }
-
-        if ('Linux' === $os) {
-            $machine = match ($machine) {
-                'x86_64' => 'amd64',
-                'aarch64' => 'arm64',
-                default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
-            };
-        }
-
-        $thisClassReflection = new ReflectionClass(self::class);
-        $path = dirname($thisClassReflection->getFileName());
-
-        return match ($os) {
-            'Windows NT' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, "windows-{$machine}"]),
-            'Linux' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, "linux-{$machine}"]),
-            'Darwin' => implode(DIRECTORY_SEPARATOR, [$path, '..', '..', $libDirectory, 'osx-universal']),
-            default => throw new NotSupportedException("Unsupported OS: {$os}-{$machine}"),
-        };
+        return getenv(self::KEY) ?: $phpConstantValueOrNull();
     }
 }

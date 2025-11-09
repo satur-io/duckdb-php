@@ -23,14 +23,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, ubuntu-24.04-arm, windows-11-arm]
-        php: [8.5, 8.4, 8.3]
+        php: [8.6, 8.5, 8.4, 8.3]
   
     name: php-${{ matrix.php }} - ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v4
       with:
-        lfs: true
+        lfs: false
 
     - name: Download nightly artifacts
       if: ${{ inputs.lib-path }}
@@ -57,6 +57,17 @@ jobs:
 
     - name: Install dependencies
       run: composer update --prefer-dist --no-interaction
+
+    - name: Cache libs
+      id: cache-libs
+      uses: actions/cache@v4
+      with:
+        path: lib
+        key: ${{ hashFiles('config.php') }}-${{ matrix.os }}-c-libs
+
+    - name: Download libs
+      if: ${{ !inputs.lib-path && steps.cache-libs.outputs.cache-hit != 'true' }}
+      run: php -r "require './vendor/autoload.php'; Saturio\DuckDB\CLib\Installer::install();"
 
     - name: Info
       env:
@@ -94,7 +105,7 @@ jobs:
           merge-multiple: true
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5.3.1
+        uses: SonarSource/sonarqube-scan-action@v6.0.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -115,7 +126,6 @@ jobs:
           lfs: false
 
       - name: Get libraries
-        if: ${{ steps.libraries-cache.outputs.cache-hit != 'true' }}
         run: ./scripts/get_libraries_nightly.sh
 
       - name: Archive nightly libraries

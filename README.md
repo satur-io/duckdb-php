@@ -7,7 +7,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=satur-io_duckdb-php&metric=alert_status&token=4a4bd82eff843d2b4a93bf4552b6db78e598ecfa)](https://sonarcloud.io/summary/new_code?id=satur-io_duckdb-php)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=satur-io_duckdb-php&metric=coverage)](https://sonarcloud.io/summary/new_code?id=satur-io_duckdb-php)
 [![Packagist Version](https://img.shields.io/packagist/v/satur.io/duckdb?style=flat&logo=packagist&logoColor=white)](https://packagist.org/packages/satur.io/duckdb)
-![DuckDB C API Version](https://img.shields.io/badge/DuckDB_C_API-v1.3.2-%23FFF100?logo=duckdb)
+![DuckDB C API Version](https://img.shields.io/badge/DuckDB_C_API-v1.4.1-%23FFF100?logo=duckdb)
 
 
 This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API for PHP.
@@ -15,15 +15,16 @@ This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API fo
 Focused on performance, it uses the official [C API](https://duckdb.org/docs/api/c/overview.html) internally through [FFI](https://www.php.net/manual/en/book.ffi.php), achieving good benchmarks.
 This library is more than just a wrapper for the C API; it introduces custom, PHP-friendly methods to simplify working with DuckDB. It is compatible with Linux, Windows, and macOS, requiring PHP version 8.3 or higher.
 
-### Install
+Full documentation is available in [https://duckdb-php.readthedocs.io/](https://duckdb-php.readthedocs.io/).
+
+### Automatic install (recommended for newcomers)
 
 ```shell
-composer require satur.io/duckdb
+composer require satur.io/duckdb-auto
 ```
-
-### Documentation
-
-Full documentation is available in [https://duckdb-php.readthedocs.io/](https://duckdb-php.readthedocs.io/).
+> [!NOTE]
+> You will need to allow `satur.io/duckdb-auto` to execute code to use this installation method,
+> check [installation](https://duckdb-php.readthedocs.io/en/latest/installation) for more details.
 
 ### Quick Start
 
@@ -106,8 +107,11 @@ for ($i = 0; $i < 100; ++$i) {
 $appender->flush();
 ```
 
+### Upgrading from 1.x to 2.x
 
-#### DuckDB powerful
+See [upgrade  from 1.x to 2.x docs](https://duckdb-php.readthedocs.io/en/latest/upgrade-1-to-2).
+
+### DuckDB power
 
 DuckDB provides some amazing features. For example, 
 you can query remote files directly.

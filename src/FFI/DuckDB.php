@@ -9,6 +9,7 @@ use FFI\CType;
 use Saturio\DuckDB\DB\Configuration;
 use Saturio\DuckDB\Exception\MissedLibraryException;
 use Saturio\DuckDB\Exception\NotSupportedException;
+use Saturio\DuckDB\Exception\WrongLibraryVersionException;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 
 class DuckDB
@@ -18,6 +19,7 @@ class DuckDB
     /**
      * @throws NotSupportedException
      * @throws MissedLibraryException
+     * @throws WrongLibraryVersionException
      */
     public function __construct()
     {
@@ -25,22 +27,17 @@ class DuckDB
             try {
                 self::$ffi = FFI::scope('DUCKDB');
             } catch (FFI\Exception) {
-                $headerPath = FindLibrary::headerPath();
-                $libPath = FindLibrary::libPath();
-
-                if (!file_exists($headerPath)) {
-                    throw new MissedLibraryException("Could not load library header file '$headerPath'.");
-                }
-
-                if (!file_exists($libPath)) {
-                    throw new MissedLibraryException("Could not load library '$libPath'.");
-                }
+                [$headerPath, $libPath] = FindLibrary::headerAndLibrary();
 
                 self::$ffi = FFI::cdef(
                     file_get_contents($headerPath),
                     $libPath,
                 );
             }
+        }
+
+        if ($this->libraryVersion() !== 'v'.DUCKDB_PHP_LIB_VERSION) {
+            throw new WrongLibraryVersionException(sprintf('Loaded DuckDB library version %s, but %s expected', $this->libraryVersion(), DUCKDB_PHP_LIB_VERSION));
         }
     }
 
@@ -609,5 +606,10 @@ class DuckDB
     public function bindParameterIndex(NativeCData $preparedStatement, ?NativeCData &$parameterIndex, string $name): int
     {
         return self::$ffi->duckdb_bind_parameter_index($preparedStatement, $this->addr($parameterIndex), $name);
+    }
+
+    public function libraryVersion(): string
+    {
+        return self::$ffi->duckdb_library_version();
     }
 }

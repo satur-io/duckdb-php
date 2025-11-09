@@ -458,7 +458,7 @@ class QueryTest extends TestCase
 
     public function testReadBlob(): void
     {
-        $file = __DIR__.'/../../lib/linux-arm64/libduckdb.so';
+        $file = 'docs/md/logo-200x200.svg';
         $contents = file_get_contents($file);
         $expectedValues = [
             0 => strlen($contents),

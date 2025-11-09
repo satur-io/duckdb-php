@@ -9,6 +9,7 @@ nav:
   - Intro:
       - 'index.md'
       - 'getting-started.md'
+      - 'installation.md'
   - Usage:
       - 'running-queries.md'
       - 'read-resultset-content.md'
@@ -18,6 +19,7 @@ nav:
       - 'examples.md'
   - Guides:
       - 'opcache-preload.md'
+      - 'upgrade-1-to-2.md'
 
 markdown_extensions:
   - admonition

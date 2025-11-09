@@ -2,11 +2,16 @@
 
 ## Install
 
-You can install the DuckDB PHP package using Composer by running the following command:
+You can install the DuckDB PHP package and all the required resources
+using Composer by requiring the plugin installer:
 
 ```bash
-$ composer require satur.io/duckdb
+$ composer require satur.io/duckdb-auto
 ```
+
+This is the recommended option for newcomers and should be enough to 
+start using DuckDB from PHP. For more advanced options, 
+check other [installation](installation.md) methods.
 
 ## Query
 
