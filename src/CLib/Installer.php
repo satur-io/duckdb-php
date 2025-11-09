@@ -22,9 +22,10 @@ EOF;
      * @throws NotSupportedException
      * @throws CLibInstallationException
      */
-    public static function install(?string $path = null): void
+    public static function install(mixed $path = null): void
     {
         try {
+            $path = is_string($path) ? $path : null;
             [$headerPath, $libPath] = FindLibrary::headerAndLibrary();
             echo sprintf('Header found: %s'.PHP_EOL, $headerPath);
             echo sprintf('Library found: %s'.PHP_EOL, $libPath);
@@ -37,6 +38,9 @@ EOF;
         }
 
         $path = $path ?? FindLibrary::defaultPath();
+        if (!defined('DUCKDB_PHP_LIB_VERSION')) {
+            require __DIR__.'/../../config.php';
+        }
         Downloader::download($path, DUCKDB_PHP_LIB_VERSION);
         self::copyHeader($path);
     }
