@@ -38,6 +38,9 @@ EOF;
         }
 
         $path = $path ?? FindLibrary::defaultPath();
+        if (!defined('DUCKDB_PHP_LIB_VERSION')) {
+            require __DIR__.'/../../config.php';
+        }
         Downloader::download($path, DUCKDB_PHP_LIB_VERSION);
         self::copyHeader($path);
     }
