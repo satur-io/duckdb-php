@@ -117,7 +117,7 @@ class TypeConverter
 
         if (strlen((string) abs($timestamp->millis)) >= 14) {
             // \DateTime does not support a modify string with a number > 14 digits
-            $this->modifyTimestampInBatches($timestamp, $datetime, $timestamp->millis, 'milliseconds');
+            $this->modifyTimestampInBatches($datetime, $timestamp->millis, 'milliseconds');
         } else {
             $datetime->modify(sprintf('%+d milliseconds', $timestamp->millis));
         }
@@ -314,7 +314,7 @@ class TypeConverter
     /**
      * @throws DateMalformedStringException
      */
-    private function modifyTimestampInBatches(NativeCData $timestamp, DateTime $datetime, int $number, string $unit): void
+    private function modifyTimestampInBatches(DateTime $datetime, int $number, string $unit): void
     {
         $positive = ($number >= 0);
         $sign = $positive ? '+' : '-';
