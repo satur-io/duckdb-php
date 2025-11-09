@@ -84,6 +84,9 @@ class PreparedStatement
         throw new BindValueException("Couldn't bind parameter '{$parameter}' to prepared statement.");
     }
 
+    /**
+     * @throws PreparedStatementExecuteException
+     */
     public function execute(): ResultSet
     {
         $queryResult = $this->ffi->new('duckdb_result');
@@ -91,8 +94,7 @@ class PreparedStatement
         $result = $this->ffi->executePrepared($this->preparedStatement, $this->ffi->addr($queryResult));
 
         if ($result === $this->ffi->error()) {
-            $error = $this->ffi->resultError($this->ffi->addr($queryResult));
-            $this->ffi->destroyResult($this->ffi->addr($queryResult));
+            $error = $this->ffi->prepareError($this->preparedStatement);
             throw new PreparedStatementExecuteException($error);
         }
 

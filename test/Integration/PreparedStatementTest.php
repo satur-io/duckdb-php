@@ -7,6 +7,7 @@ namespace Integration;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
 use Saturio\DuckDB\Exception\BindValueException;
+use Saturio\DuckDB\Exception\PreparedStatementExecuteException;
 use Saturio\DuckDB\Type\Blob;
 use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Time;
@@ -211,5 +212,13 @@ class PreparedStatementTest extends TestCase
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValues, $row);
+    }
+
+    public function testError(): void
+    {
+        $this->expectException(PreparedStatementExecuteException::class);
+        $this->expectExceptionMessageMatches("/^Catalog Error\: Table with name non\_existing\_table does not exist\!/");
+        $smtp = $this->db->preparedStatement('DROP TABLE non_existing_table');
+        $smtp->execute();
     }
 }
