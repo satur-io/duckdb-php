@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type\Converter;
 
+use DateInvalidTimeZoneException;
 use DateMalformedStringException;
 use DateTime;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
@@ -23,6 +24,7 @@ trait GetDuckDBValue
 {
     /**
      * @throws UnsupportedTypeException|DateMalformedStringException
+     * @throws DateInvalidTimeZoneException
      */
     public function getDuckDBValue(
         string|bool|int|float|Date|Time|Timestamp|Interval|BigInteger|UUID|Blob|null $value,
@@ -131,7 +133,7 @@ trait GetDuckDBValue
     }
 
     /**
-     * @throws DateMalformedStringException
+     * @throws DateMalformedStringException|DateInvalidTimeZoneException
      */
     public function createFromTimestampNs(Timestamp $value): NativeCData
     {

@@ -389,7 +389,6 @@ class QueryTest extends TestCase
         date_default_timezone_set('Europe/Berlin');
         $inDate = new DateTime('2025-01-01 04:00:00 +0200');
 
-
         $this->db->query('CREATE TABLE IF NOT EXISTS test (date TIMESTAMP WITH TIME ZONE)');
         $this->db->query('TRUNCATE TABLE test');
         $this->db->query(sprintf('INSERT INTO test (date) VALUES (\'%s\')', $inDate->format('c')));

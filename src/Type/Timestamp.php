@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Type;
 
+use DateInvalidTimeZoneException;
 use DateMalformedStringException;
 use DateTime;
-use DateTimeInterface;
 use DateTimeZone;
 use JsonSerializable;
 use Saturio\DuckDB\Exception\InvalidTimeException;
@@ -41,13 +41,15 @@ class Timestamp implements JsonSerializable
     }
 
     /**
-     * @throws InvalidTimeException
+     * @throws InvalidTimeException|DateInvalidTimeZoneException
      */
     public static function fromDatetime(
-        DateTimeInterface $dateTime,
+        DateTime $dateTime,
         TimePrecision $precision = TimePrecision::MICROSECONDS,
         ?int $nanoseconds = null,
     ): self {
+        $dateTime = $dateTime->setTimezone(new DateTimeZone(date_default_timezone_get()));
+
         if (null !== $nanoseconds and TimePrecision::NANOSECONDS !== $precision) {
             throw new InvalidTimeException('Nanoseconds param is only supported in NANOSECONDS precision');
         }
@@ -89,12 +91,17 @@ class Timestamp implements JsonSerializable
     }
 
     /**
-     * @throws DateMalformedStringException
+     * @throws DateMalformedStringException|DateInvalidTimeZoneException
      */
     public function toDateTime(): DateTime
     {
-        $dateTime = new DateTime($this->__toString(), new DateTimeZone('UTC'));
-        return $dateTime->setTimezone(new DateTimeZone(date_default_timezone_get()));
+        if ($this->time->isTimeZoned()) {
+            $dateTime = new DateTime($this->__toString(), new DateTimeZone('UTC'));
+
+            return $dateTime->setTimezone(new DateTimeZone(date_default_timezone_get()));
+        }
+
+        return new DateTime($this->__toString());
     }
 
     public function jsonSerialize(): string
