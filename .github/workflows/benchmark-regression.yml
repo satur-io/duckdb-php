@@ -62,6 +62,9 @@ jobs:
       - name: Dump autoload
         run: composer dump-autoload --optimize --apcu --no-cache
 
+      - name: Install binary
+        run: php -r "require './vendor/autoload.php'; Saturio\DuckDB\CLib\Installer::install();"
+
       - run: mkdir -p .phpbench/samples
       - name: Cache Benchmark files
         uses: actions/cache@v3
@@ -86,8 +89,7 @@ jobs:
       - name: Dump autoload for current PR
         run: composer dump-autoload --optimize --apcu --no-cache
 
-      - name: Download libs
-        if: ${{ !inputs.lib-path && steps.cache-libs.outputs.cache-hit != 'true' }}
+      - name: Install binary
         run: php -r "require './vendor/autoload.php'; Saturio\DuckDB\CLib\Installer::install();"
 
       - run: mkdir -p .phpbench/samples
