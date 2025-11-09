@@ -26,6 +26,7 @@ class TypeConverter
     use GetDuckDBValue;
     private const string PRECOMPUTED_2_POW_64 = '18446744073709551616';
     private const string PRECOMPUTED_2_POW_63 = '9223372036854775808';
+    const string UNIX_EPOCH = '1970-01-01 00:00:00';
 
     public function __construct(
         private readonly FFIDuckDB $ffi,
@@ -112,7 +113,7 @@ class TypeConverter
      */
     public function getTimestampFromDuckDBTimestampMs(NativeCData $timestamp): Timestamp
     {
-        $datetime = new DateTime('1970-01-01 00:00:00');
+        $datetime = new DateTime(self::UNIX_EPOCH);
 
         if (strlen((string) abs($timestamp->millis)) >= 14) {
             // \DateTime does not support a modify string with a number > 14 digits
@@ -130,7 +131,7 @@ class TypeConverter
      */
     public function getTimestampFromDuckDBTimestampS(NativeCData $timestamp): Timestamp
     {
-        $datetime = new DateTime('1970-01-01 00:00:00');
+        $datetime = new DateTime(self::UNIX_EPOCH);
         $datetime->modify(sprintf('%+d seconds', $timestamp->seconds));
 
         return Timestamp::fromDateTime($datetime, TimePrecision::SECONDS);
@@ -141,7 +142,7 @@ class TypeConverter
      */
     public function getTimestampFromDuckDBTimestampNs(NativeCData $timestamp): Timestamp
     {
-        $datetime = new DateTime('1970-01-01 00:00:00');
+        $datetime = new DateTime(self::UNIX_EPOCH);
         $nanoseconds = $timestamp->nanos;
         $milliseconds = intval($nanoseconds / 1000000);
         $nanosecondsReminder = $nanoseconds % 1000000000;
