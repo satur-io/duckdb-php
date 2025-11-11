@@ -129,6 +129,31 @@ class QueryTest extends TestCase
         $this->assertEquals($expectedValue, $row);
     }
 
+    #[Group('integers')]
+    #[Group('numerics')]
+    public function testBigint(): void
+    {
+        $this->db->query('CREATE TABLE t (id BIGINT)');
+        $stmt = $this->db->preparedStatement('INSERT INTO t VALUES (?), (?), (?)');
+        $stmt->bindParam(1, 2147483647);
+        $stmt->bindParam(2, 2147483648);
+        $stmt->bindParam(3, -2147483648);
+        $stmt->execute();
+        $result = $this->db->query('SELECT * FROM t;');
+        $this->assertEquals([[2147483647], [2147483648], [-2147483648]], iterator_to_array($result->rows()));
+    }
+
+    public function testUBigint(): void
+    {
+        $this->db->query('CREATE TABLE t (id UBIGINT)');
+        $stmt = $this->db->preparedStatement('INSERT INTO t VALUES (?), (?)');
+        $stmt->bindParam(1, 2147483647);
+        $stmt->bindParam(2, 2147483648);
+        $stmt->execute();
+        $result = $this->db->query('SELECT * FROM t;');
+        $this->assertEquals([[2147483647], [2147483648]], iterator_to_array($result->rows()));
+    }
+
     #[Group('primitives')]
     #[Group('integers')]
     #[Group('numerics')]

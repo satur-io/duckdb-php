@@ -7,6 +7,7 @@ namespace Saturio\DuckDB\Type\Converter;
 use DateInvalidTimeZoneException;
 use DateMalformedStringException;
 use DateTime;
+use Saturio\DuckDB\Exception\UnexpectedTypeException;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Blob;
@@ -19,80 +20,54 @@ use Saturio\DuckDB\Type\Timestamp;
 use Saturio\DuckDB\Type\Type;
 use Saturio\DuckDB\Type\TypeC;
 use Saturio\DuckDB\Type\UUID;
+use TypeError;
 
 trait GetDuckDBValue
 {
     /**
-     * @throws UnsupportedTypeException|DateMalformedStringException
+     * @throws UnsupportedTypeException
+     * @throws DateMalformedStringException
      * @throws DateInvalidTimeZoneException
+     * @throws UnexpectedTypeException
      */
     public function getDuckDBValue(
         string|bool|int|float|Date|Time|Timestamp|Interval|BigInteger|UUID|Blob|null $value,
-        ?Type $type = null,
+        Type $type,
     ): NativeCData {
-        $type = $type ?? $this->getInferredType($value);
-
-        return match ($type) {
-            Type::DUCKDB_TYPE_SQLNULL => $this->createNull(),
-            Type::DUCKDB_TYPE_VARCHAR,
-            Type::DUCKDB_TYPE_BOOLEAN,
-            Type::DUCKDB_TYPE_TINYINT,
-            Type::DUCKDB_TYPE_UTINYINT,
-            Type::DUCKDB_TYPE_SMALLINT,
-            Type::DUCKDB_TYPE_USMALLINT,
-            Type::DUCKDB_TYPE_INTEGER,
-            Type::DUCKDB_TYPE_UINTEGER,
-            Type::DUCKDB_TYPE_BIGINT,
-            Type::DUCKDB_TYPE_UBIGINT,
-            Type::DUCKDB_TYPE_FLOAT,
-            Type::DUCKDB_TYPE_DOUBLE => $this->createFromScalar($value, $type),
-            Type::DUCKDB_TYPE_DATE => $this->createFromDate($value),
-            Type::DUCKDB_TYPE_TIME,
-            Type::DUCKDB_TYPE_TIME_TZ => $this->createFromTime($value),
-            Type::DUCKDB_TYPE_TIMESTAMP,
-            Type::DUCKDB_TYPE_TIMESTAMP_S,
-            Type::DUCKDB_TYPE_TIMESTAMP_MS,
-            Type::DUCKDB_TYPE_TIMESTAMP_TZ => $this->createFromTimestamp($value),
-            Type::DUCKDB_TYPE_TIMESTAMP_NS => $this->createFromTimestampNs($value),
-            Type::DUCKDB_TYPE_INTERVAL => $this->createFromInterval($value),
-            Type::DUCKDB_TYPE_HUGEINT => $this->createFromHugeInt($value),
-            Type::DUCKDB_TYPE_UHUGEINT => $this->createFromUhugeInt($value),
-            Type::DUCKDB_TYPE_UUID => $this->createFromUUID($value),
-            Type::DUCKDB_TYPE_BLOB => $this->createFromBlob($value),
-            Type::DUCKDB_TYPE_DECIMAL => $this->createFromScalar($value, Type::DUCKDB_TYPE_DOUBLE),
-            default => throw new UnsupportedTypeException("Unsupported type: {$type->name}"),
-        };
-    }
-
-    /**
-     * @throws UnsupportedTypeException
-     */
-    private function getInferredType(string|bool|int|float|Date|Time|Timestamp|UUID|Blob|null $value): Type
-    {
-        if (is_bool($value)) {
-            return Type::DUCKDB_TYPE_BOOLEAN;
-        } elseif (is_int($value)) {
-            return Type::DUCKDB_TYPE_INTEGER;
-        } elseif (is_float($value)) {
-            return Type::DUCKDB_TYPE_FLOAT;
-        } elseif (is_string($value)) {
-            return Type::DUCKDB_TYPE_VARCHAR;
-        } elseif (is_a($value, Date::class)) {
-            return Type::DUCKDB_TYPE_DATE;
-        } elseif (is_a($value, Time::class)) {
-            return Type::DUCKDB_TYPE_TIME;
-        } elseif (is_a($value, Timestamp::class)) {
-            return Type::DUCKDB_TYPE_TIMESTAMP;
-        } elseif (is_a($value, UUID::class)) {
-            return Type::DUCKDB_TYPE_UUID;
-        } elseif (is_a($value, Blob::class)) {
-            return Type::DUCKDB_TYPE_BLOB;
-        } elseif (is_null($value)) {
-            return Type::DUCKDB_TYPE_SQLNULL;
+        try {
+            return match ($type) {
+                Type::DUCKDB_TYPE_SQLNULL => $this->createNull(),
+                Type::DUCKDB_TYPE_VARCHAR,
+                Type::DUCKDB_TYPE_BOOLEAN,
+                Type::DUCKDB_TYPE_TINYINT,
+                Type::DUCKDB_TYPE_UTINYINT,
+                Type::DUCKDB_TYPE_SMALLINT,
+                Type::DUCKDB_TYPE_USMALLINT,
+                Type::DUCKDB_TYPE_INTEGER,
+                Type::DUCKDB_TYPE_UINTEGER,
+                Type::DUCKDB_TYPE_BIGINT,
+                Type::DUCKDB_TYPE_UBIGINT,
+                Type::DUCKDB_TYPE_FLOAT,
+                Type::DUCKDB_TYPE_DOUBLE => $this->createFromScalar($value, $type),
+                Type::DUCKDB_TYPE_DATE => $this->createFromDate($value),
+                Type::DUCKDB_TYPE_TIME,
+                Type::DUCKDB_TYPE_TIME_TZ => $this->createFromTime($value),
+                Type::DUCKDB_TYPE_TIMESTAMP,
+                Type::DUCKDB_TYPE_TIMESTAMP_S,
+                Type::DUCKDB_TYPE_TIMESTAMP_MS,
+                Type::DUCKDB_TYPE_TIMESTAMP_TZ => $this->createFromTimestamp($value),
+                Type::DUCKDB_TYPE_TIMESTAMP_NS => $this->createFromTimestampNs($value),
+                Type::DUCKDB_TYPE_INTERVAL => $this->createFromInterval($value),
+                Type::DUCKDB_TYPE_HUGEINT => $this->createFromHugeInt($value),
+                Type::DUCKDB_TYPE_UHUGEINT => $this->createFromUhugeInt($value),
+                Type::DUCKDB_TYPE_UUID => $this->createFromUUID($value),
+                Type::DUCKDB_TYPE_BLOB => $this->createFromBlob($value),
+                Type::DUCKDB_TYPE_DECIMAL => $this->createFromScalar($value, Type::DUCKDB_TYPE_DOUBLE),
+                default => throw new UnsupportedTypeException("Unsupported type: {$type->name}"),
+            };
+        } catch (TypeError) {
+            throw new UnexpectedTypeException(sprintf('Error creating a %s from the value \'%s\'', $type->name, $value));
         }
-
-        $type = gettype($value);
-        throw new UnsupportedTypeException("Couldn't get inferred type: {$type}");
     }
 
     private function createFromScalar(
