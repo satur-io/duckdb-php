@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Integration;
 
+use DateTime;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
@@ -404,6 +405,28 @@ class QueryTest extends TestCase
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValues, $row);
+    }
+
+    #[Group('primitives')]
+    #[Group('timestamp')]
+    public function testTimestampTzSelectWithOffsetAndNonUTCTimezone(): void
+    {
+        date_default_timezone_set('Europe/Berlin');
+        $inDate = new DateTime('2025-01-01 04:00:00 +0200');
+
+        $this->db->query('CREATE TABLE IF NOT EXISTS test (date TIMESTAMP WITH TIME ZONE)');
+        $this->db->query('TRUNCATE TABLE test');
+        $this->db->query(sprintf('INSERT INTO test (date) VALUES (\'%s\')', $inDate->format('c')));
+        $outData = iterator_to_array($this->db->query('SELECT * FROM test')->rows(true));
+
+        $this->assertEquals($inDate, $outData[0]['date']->toDateTime());
+
+        $this->db->query("SET TimeZone = 'America/Los_Angeles';");
+        $this->db->query('TRUNCATE TABLE test');
+        $this->db->query(sprintf('INSERT INTO test (date) VALUES (\'%s\')', $inDate->format('c')));
+        $outDataTimezoneAmerica = iterator_to_array($this->db->query('SELECT * FROM test')->rows(true));
+
+        $this->assertEquals($inDate, $outDataTimezoneAmerica[0]['date']->toDateTime());
     }
 
     #[Group('primitives')]
