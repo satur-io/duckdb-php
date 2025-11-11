@@ -612,4 +612,29 @@ class DuckDB
     {
         return self::$ffi->duckdb_library_version();
     }
+
+    public function pendingPrepared(NativeCData $preparedStatement, NativeCData $pendingPrepared): int
+    {
+        return self::$ffi->duckdb_pending_prepared($preparedStatement, $pendingPrepared);
+    }
+
+    public function executeTask(NativeCData $pendingResult): int
+    {
+        return self::$ffi->duckdb_pending_execute_task($pendingResult);
+    }
+
+    public function executePending(NativeCData $pendingResult, NativeCData $result): int
+    {
+        return self::$ffi->duckdb_execute_pending($pendingResult, $result);
+    }
+
+    public function queryProgress(NativeCData $connection): NativeCData
+    {
+        return self::$ffi->duckdb_query_progress($connection);
+    }
+
+    public function pendingError(NativeCData $pendingResult): ?string
+    {
+        return self::$ffi->duckdb_pending_error($pendingResult);
+    }
 }

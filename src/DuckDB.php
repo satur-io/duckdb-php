@@ -157,6 +157,16 @@ class DuckDB
         return Appender::create(self::$ffi, $this->connection->connection, $table, $schema, $catalog);
     }
 
+    public function queryProgress(): array
+    {
+        $progress = self::$ffi->queryProgress($this->connection->connection);
+        return [
+            'percentage' => $progress->percentage,
+            'rows_processed' => $progress->rows_processed,
+            'total_rows_to_process' => $progress->total_rows_to_process,
+        ];
+    }
+
     public function getInstanceCache(): ?InstanceCache
     {
         return $this->instanceCache;
