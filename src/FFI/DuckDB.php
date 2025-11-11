@@ -309,12 +309,12 @@ class DuckDB
 
     public function createInt64_t(int $value): NativeCData
     {
-        return self::$ffi->duckdb_create_int32($value);
+        return self::$ffi->duckdb_create_int64($value);
     }
 
     public function createUint64_t(int|string $value): NativeCData
     {
-        return self::$ffi->duckdb_create_int32($value);
+        return self::$ffi->duckdb_create_uint64($value);
     }
 
     public function createDouble(float $value): NativeCData
@@ -611,5 +611,15 @@ class DuckDB
     public function libraryVersion(): string
     {
         return self::$ffi->duckdb_library_version();
+    }
+
+    public function paramType(NativeCData $preparedStatement, int $index): int
+    {
+        return self::$ffi->duckdb_param_type($preparedStatement, $index);
+    }
+
+    public function appenderColumnType(NativeCData $appender, int $index): NativeCData
+    {
+        return self::$ffi->duckdb_appender_column_type($appender, $index);
     }
 }

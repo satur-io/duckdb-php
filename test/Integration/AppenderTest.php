@@ -11,6 +11,8 @@ use Saturio\DuckDB\Exception\AppenderEndRowException;
 use Saturio\DuckDB\Exception\AppenderFlushException;
 use Saturio\DuckDB\Exception\AppendValueException;
 use Saturio\DuckDB\Exception\ErrorCreatingNewAppender;
+use Saturio\DuckDB\Exception\UnexpectedTypeException;
+use Saturio\DuckDB\Type\Type;
 
 class AppenderTest extends TestCase
 {
@@ -51,9 +53,17 @@ class AppenderTest extends TestCase
         $this->db->appender('this-table-does-not-exist');
     }
 
-    public function testErrorAppendingWrongType()
+    public function testErrorAppendingWrongType(): void
     {
         $this->expectException(AppendValueException::class);
+        $appender = $this->db->appender('people');
+        $appender->append('this-is-a-non-integer-value', Type::DUCKDB_TYPE_VARCHAR);
+    }
+
+    public function testErrorAppendingUnexpectedType(): void
+    {
+        $this->expectException(UnexpectedTypeException::class);
+        $this->expectExceptionMessage('Error creating a DUCKDB_TYPE_INTEGER from the value \'this-is-a-non-integer-value\'');
         $appender = $this->db->appender('people');
         $appender->append('this-is-a-non-integer-value');
     }
