@@ -98,7 +98,8 @@ class PreparedStatement
         $result = $this->ffi->executePrepared($this->preparedStatement, $this->ffi->addr($queryResult));
 
         if ($result === $this->ffi->error()) {
-            $error = $this->ffi->prepareError($this->preparedStatement);
+            $error = $this->ffi->resultError($this->ffi->addr($queryResult)) ?? $this->ffi->prepareError($this->preparedStatement) ?? 'Unknown error';
+            $this->ffi->destroyResult($this->ffi->addr($queryResult));
             throw new PreparedStatementExecuteException($error);
         }
 

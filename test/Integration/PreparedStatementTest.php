@@ -264,4 +264,12 @@ class PreparedStatementTest extends TestCase
         $smtp = $this->db->preparedStatement('DROP TABLE non_existing_table');
         $smtp->execute();
     }
+
+    public function testErrorNonExistingDatabase(): void
+    {
+        $this->expectException(PreparedStatementExecuteException::class);
+        $this->expectExceptionMessageMatches("/^Catalog Error\: SET schema\: No catalog \+ schema named \"hello\" found./");
+        $smtp = $this->db->preparedStatement('USE hello');
+        $smtp->execute();
+    }
 }
