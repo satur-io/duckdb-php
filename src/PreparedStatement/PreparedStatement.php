@@ -36,11 +36,17 @@ class PreparedStatement
     ): self {
         $newPreparedStatement = new self($ffi, $connection, $query);
         $newPreparedStatement->preparedStatement = $newPreparedStatement->ffi->new('duckdb_prepared_statement');
-        $newPreparedStatement->ffi->prepare(
+        $result = $newPreparedStatement->ffi->prepare(
             $newPreparedStatement->connection,
             $newPreparedStatement->query,
             $newPreparedStatement->ffi->addr($newPreparedStatement->preparedStatement)
         );
+
+        if ($result == $newPreparedStatement->ffi->error()) {
+            $error = $newPreparedStatement->ffi->prepareError($newPreparedStatement->preparedStatement);
+            // destructor handles destroying prepared statement
+            throw new PreparedStatementExecuteException($error);
+        }
 
         return $newPreparedStatement;
     }
@@ -98,7 +104,7 @@ class PreparedStatement
         $result = $this->ffi->executePrepared($this->preparedStatement, $this->ffi->addr($queryResult));
 
         if ($result === $this->ffi->error()) {
-            $error = $this->ffi->resultError($this->ffi->addr($queryResult)) ?? $this->ffi->prepareError($this->preparedStatement) ?? 'Unknown error';
+            $error = $this->ffi->resultError($this->ffi->addr($queryResult)) ?? 'Unknown error';
             $this->ffi->destroyResult($this->ffi->addr($queryResult));
             throw new PreparedStatementExecuteException($error);
         }

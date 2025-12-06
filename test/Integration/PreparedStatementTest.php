@@ -261,8 +261,7 @@ class PreparedStatementTest extends TestCase
     {
         $this->expectException(PreparedStatementExecuteException::class);
         $this->expectExceptionMessageMatches("/^Catalog Error\: Table with name non\_existing\_table does not exist\!/");
-        $smtp = $this->db->preparedStatement('DROP TABLE non_existing_table');
-        $smtp->execute();
+        $this->db->preparedStatement('DROP TABLE non_existing_table');
     }
 
     public function testErrorNonExistingDatabase(): void
