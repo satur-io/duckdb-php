@@ -30,6 +30,7 @@ trait GetDuckDBValue
         string|bool|int|float|Date|Time|Timestamp|Interval|BigInteger|UUID|Blob|null $value,
         Type $type,
     ): NativeCData {
+        $type = Type::DUCKDB_TYPE_INVALID === $type ? $this->getInferredType($value) : $type;
         try {
             return match ($type) {
                 Type::DUCKDB_TYPE_SQLNULL => $this->createNull(),
@@ -64,6 +65,37 @@ trait GetDuckDBValue
         } catch (TypeError) {
             throw new UnexpectedTypeException(sprintf('Error creating a %s from the value \'%s\'', $type->name, $value));
         }
+    }
+
+    /**
+     * @throws UnsupportedTypeException
+     */
+    private function getInferredType(string|bool|int|float|Date|Time|Timestamp|UUID|Blob|null $value): Type
+    {
+        if (is_bool($value)) {
+            return Type::DUCKDB_TYPE_BOOLEAN;
+        } elseif (is_int($value)) {
+            return Type::DUCKDB_TYPE_INTEGER;
+        } elseif (is_float($value)) {
+            return Type::DUCKDB_TYPE_FLOAT;
+        } elseif (is_string($value)) {
+            return Type::DUCKDB_TYPE_VARCHAR;
+        } elseif (is_a($value, Date::class)) {
+            return Type::DUCKDB_TYPE_DATE;
+        } elseif (is_a($value, Time::class)) {
+            return Type::DUCKDB_TYPE_TIME;
+        } elseif (is_a($value, Timestamp::class)) {
+            return Type::DUCKDB_TYPE_TIMESTAMP;
+        } elseif (is_a($value, UUID::class)) {
+            return Type::DUCKDB_TYPE_UUID;
+        } elseif (is_a($value, Blob::class)) {
+            return Type::DUCKDB_TYPE_BLOB;
+        } elseif (is_null($value)) {
+            return Type::DUCKDB_TYPE_SQLNULL;
+        }
+
+        $type = gettype($value);
+        throw new UnsupportedTypeException("Couldn't get inferred type: {$type}");
     }
 
     private function createFromScalar(

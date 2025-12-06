@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Integration;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Saturio\DuckDB\DuckDB;
 use Saturio\DuckDB\Exception\BindValueException;
@@ -12,6 +13,7 @@ use Saturio\DuckDB\Type\Date;
 use Saturio\DuckDB\Type\Time;
 use Saturio\DuckDB\Type\Timestamp;
 use Saturio\DuckDB\Type\Type;
+use Saturio\DuckDB\Type\UUID;
 
 class PreparedStatementTest extends TestCase
 {
@@ -226,5 +228,31 @@ class PreparedStatementTest extends TestCase
 
         $row = $result->rows()->current();
         $this->assertEquals($expectedValues, $row);
+    }
+
+    #[DataProvider('inferredTypesProvider')]
+    public function testInferredType(mixed $value): void
+    {
+        $stmt = $this->db->preparedStatement('SELECT ?');
+        $stmt->bindParam(1, $value);
+        $result = $stmt->execute();
+
+        $this->assertEquals([$value], ...$result->rows());
+    }
+
+    public static function inferredTypesProvider(): array
+    {
+        return [
+            'bool' => [true],
+            'integer' => [1],
+            'float' => [1.0],
+            'varchar' => ['quack'],
+            'date' => [new Date(1521, 4, 23)],
+            'time' => [new Time(1, 2, 3)],
+            'timestamp' => [new Timestamp(new Date(1521, 4, 23), new Time(1, 2, 3))],
+            'uuid' => [new UUID('00000000-0000-0000-0000-000000000000')],
+            'blob' => [new Blob('bytes')],
+            'null' => [null],
+        ];
     }
 }
