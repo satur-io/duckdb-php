@@ -7,6 +7,7 @@ namespace Saturio\DuckDB\PreparedStatement;
 use DateMalformedStringException;
 use Saturio\DuckDB\Exception\BindValueException;
 use Saturio\DuckDB\Exception\PreparedStatementExecuteException;
+use Saturio\DuckDB\Exception\UnexpectedTypeException;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
@@ -47,6 +48,7 @@ class PreparedStatement
     /**
      * @throws BindValueException|UnsupportedTypeException
      * @throws DateMalformedStringException
+     * @throws UnexpectedTypeException
      */
     public function bindParam(int|string $parameter, mixed $value, ?Type $type = null): void
     {
