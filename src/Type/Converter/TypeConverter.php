@@ -26,7 +26,7 @@ class TypeConverter
     use GetDuckDBValue;
     private const string PRECOMPUTED_2_POW_64 = '18446744073709551616';
     private const string PRECOMPUTED_2_POW_63 = '9223372036854775808';
-    const string UNIX_EPOCH = '1970-01-01 00:00:00';
+    private const string UNIX_EPOCH = '1970-01-01 00:00:00';
 
     public function __construct(
         private readonly FFIDuckDB $ffi,

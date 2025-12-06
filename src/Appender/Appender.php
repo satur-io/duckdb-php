@@ -9,6 +9,7 @@ use Saturio\DuckDB\Exception\AppenderEndRowException;
 use Saturio\DuckDB\Exception\AppenderFlushException;
 use Saturio\DuckDB\Exception\AppendValueException;
 use Saturio\DuckDB\Exception\ErrorCreatingNewAppender;
+use Saturio\DuckDB\Exception\UnexpectedTypeException;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
@@ -20,6 +21,8 @@ class Appender
 {
     private NativeCData $appender;
     private TypeConverter $converter;
+
+    private int $currentColumn = 0;
 
     private function __construct(
         private readonly FFIDuckDB $ffi,
@@ -57,10 +60,12 @@ class Appender
 
     /**
      * @throws UnsupportedTypeException
-     * @throws AppendValueException|DateMalformedStringException
+     * @throws AppendValueException|DateMalformedStringException|UnexpectedTypeException
      */
     public function append(mixed $value, ?Type $type = null): void
     {
+        $appenderColumnType = $this->ffi->getTypeId($this->ffi->appenderColumnType($this->appender, $this->currentColumn));
+        $type = is_null($value) ? Type::DUCKDB_TYPE_SQLNULL : $type ?? Type::from($appenderColumnType);
         $nativeValue = $this->converter->getDuckDBValue($value, $type);
         $status = $this->ffi->appendValue(
             $this->appender,
@@ -73,6 +78,8 @@ class Appender
             $error = $this->ffi->appenderError($this->appender);
             throw new AppendValueException("Couldn't append {$value}. Error: {$error}");
         }
+
+        ++$this->currentColumn;
     }
 
     public function appendDefault(): void
@@ -85,6 +92,8 @@ class Appender
             $error = $this->ffi->appenderError($this->appender);
             throw new AppendValueException("Couldn't append default. Error: {$error}");
         }
+
+        ++$this->currentColumn;
     }
 
     /**
@@ -96,6 +105,8 @@ class Appender
             $error = $this->ffi->appenderError($this->appender);
             throw new AppenderEndRowException("Couldn't end the row.{$error}");
         }
+
+        $this->currentColumn = 0;
     }
 
     /**
