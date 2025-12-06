@@ -156,6 +156,7 @@ class Vector
             TypeC::DUCKDB_TYPE_TIMESTAMP_NS => $this->typeConverter->getTimestampFromDuckDBTimestampNs($data),
             TypeC::DUCKDB_TYPE_TIMESTAMP_TZ => $this->typeConverter->getTimestampFromDuckDBTimestampTz($data),
             TypeC::DUCKDB_TYPE_INTERVAL => $this->typeConverter->getIntervalFromDuckDBInterval($data),
+            TypeC::DUCKDB_TYPE_BIGINT => $this->typeConverter->getBigIntFromDuckDBBigInt($data, false),
             TypeC::DUCKDB_TYPE_UBIGINT => $this->typeConverter->getBigIntFromDuckDBBigInt($data, true),
             TypeC::DUCKDB_TYPE_HUGEINT => $this->typeConverter->getHugeIntFromDuckDBHugeInt($data, unsigned: false),
             TypeC::DUCKDB_TYPE_UHUGEINT => $this->typeConverter->getHugeIntFromDuckDBHugeInt($data, unsigned: true),

@@ -52,6 +52,8 @@ class PreparedStatement
     public function bindParam(int|string $parameter, mixed $value, ?Type $type = null): void
     {
         $index = $this->getParameterIndex($parameter);
+        $type = is_null($value) ? Type::DUCKDB_TYPE_SQLNULL :
+            $type ?? Type::from($this->ffi->paramType($this->preparedStatement, $index));
 
         $value = $this->converter->getDuckDBValue($value, $type);
         $status = $this->ffi->bindValue(
