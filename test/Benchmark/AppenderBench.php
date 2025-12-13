@@ -5,6 +5,7 @@ namespace Benchmark;
 use PhpBench\Attributes as Bench;
 use Saturio\DuckDB\DuckDB;
 use Saturio\DuckDB\Type\Type;
+use Generator;
 
 class AppenderBench
 {
@@ -103,50 +104,6 @@ class AppenderBench
     #[Bench\Groups(['appender', 'varchar'])]
     #[Bench\Revs(5)]
     #[Bench\Iterations(2)]
-    public function benchAppendVarcharDefaultMethodV2(): void
-    {
-        $duckDB = DuckDB::create();
-        $duckDB->query('CREATE TABLE IF NOT EXISTS test_varchar (value VARCHAR);');
-
-        $appender = $duckDB->appender('test_varchar');
-
-        foreach (range(0, self::QUANTITY) as $i) {
-            $appender->appendV2(base64_encode(random_bytes(self::VARCHAR_LENGTH)));
-            $appender->endRow();
-
-            if ($i % self::BATCH === 0) {
-                $appender->flush();
-            }
-        }
-
-        $appender->flush();
-    }
-
-    #[Bench\Groups(['appender', 'varchar'])]
-    #[Bench\Revs(5)]
-    #[Bench\Iterations(2)]
-    public function benchAppendVarcharDefaultMethodV2Typed(): void
-    {
-        $duckDB = DuckDB::create();
-        $duckDB->query('CREATE TABLE IF NOT EXISTS test_varchar (value VARCHAR);');
-
-        $appender = $duckDB->appender('test_varchar');
-
-        foreach (range(0, self::QUANTITY) as $i) {
-            $appender->appendV2(base64_encode(random_bytes(self::VARCHAR_LENGTH)), Type::DUCKDB_TYPE_VARCHAR);
-            $appender->endRow();
-
-            if ($i % self::BATCH === 0) {
-                $appender->flush();
-            }
-        }
-
-        $appender->flush();
-    }
-
-    #[Bench\Groups(['appender', 'varchar'])]
-    #[Bench\Revs(5)]
-    #[Bench\Iterations(2)]
     public function benchAppendVarcharQuickMethod(): void
     {
         $duckDB = DuckDB::create();
@@ -169,6 +126,28 @@ class AppenderBench
     #[Bench\Groups(['appender', 'varchar'])]
     #[Bench\Revs(5)]
     #[Bench\Iterations(2)]
+    public function benchAppendVarcharQuickMethodInferType(): void
+    {
+        $duckDB = DuckDB::create();
+        $duckDB->query('CREATE TABLE IF NOT EXISTS test_varchar (value VARCHAR);');
+
+        $appender = $duckDB->appender('test_varchar');
+
+        foreach (range(0, self::QUANTITY) as $i) {
+            $appender->quickAppend(base64_encode(random_bytes(self::VARCHAR_LENGTH)), inferType: true);
+            $appender->endRow();
+
+            if ($i % self::BATCH === 0) {
+                $appender->flush();
+            }
+        }
+
+        $appender->flush();
+    }
+
+    #[Bench\Groups(['appender', 'varchar'])]
+    #[Bench\Revs(5)]
+    #[Bench\Iterations(2)]
     public function benchAppendVarcharQuickMethodTyped(): void
     {
         $duckDB = DuckDB::create();
@@ -178,6 +157,50 @@ class AppenderBench
 
         foreach (range(0, self::QUANTITY) as $i) {
             $appender->quickAppend(base64_encode(random_bytes(self::VARCHAR_LENGTH)), Type::DUCKDB_TYPE_VARCHAR);
+            $appender->endRow();
+
+            if ($i % self::BATCH === 0) {
+                $appender->flush();
+            }
+        }
+
+        $appender->flush();
+    }
+
+    #[Bench\Groups(['appender', 'varchar'])]
+    #[Bench\Revs(5)]
+    #[Bench\Iterations(2)]
+    public function benchAppendVarcharQuickMethodV2(): void
+    {
+        $duckDB = DuckDB::create();
+        $duckDB->query('CREATE TABLE IF NOT EXISTS test_varchar (value VARCHAR);');
+
+        $appender = $duckDB->appender('test_varchar');
+
+        foreach (range(0, self::QUANTITY) as $i) {
+            $appender->quickAppendV2(base64_encode(random_bytes(self::VARCHAR_LENGTH)));
+            $appender->endRow();
+
+            if ($i % self::BATCH === 0) {
+                $appender->flush();
+            }
+        }
+
+        $appender->flush();
+    }
+
+    #[Bench\Groups(['appender', 'varchar'])]
+    #[Bench\Revs(5)]
+    #[Bench\Iterations(2)]
+    public function benchAppendVarcharQuickMethodV2InferType(): void
+    {
+        $duckDB = DuckDB::create();
+        $duckDB->query('CREATE TABLE IF NOT EXISTS test_varchar (value VARCHAR);');
+
+        $appender = $duckDB->appender('test_varchar');
+
+        foreach (range(0, self::QUANTITY) as $i) {
+            $appender->quickAppendV2(base64_encode(random_bytes(self::VARCHAR_LENGTH)), inferType: true);
             $appender->endRow();
 
             if ($i % self::BATCH === 0) {
@@ -279,51 +302,7 @@ class AppenderBench
     #[Bench\Groups(['appender', 'int64'])]
     #[Bench\Revs(5)]
     #[Bench\Iterations(2)]
-    public function benchAppendInt64DefaultMethodV2(): void
-    {
-        $duckDB = DuckDB::create();
-        $duckDB->query('CREATE TABLE IF NOT EXISTS test_int64 (value INT8);');
-
-        $appender = $duckDB->appender('test_int64');
-
-        foreach (range(0, self::QUANTITY) as $i) {
-            $appender->appendV2(rand(0, PHP_INT_MAX));
-            $appender->endRow();
-
-            if ($i % self::BATCH === 0) {
-                $appender->flush();
-            }
-        }
-
-        $appender->flush();
-    }
-
-    #[Bench\Groups(['appender', 'int64'])]
-    #[Bench\Revs(5)]
-    #[Bench\Iterations(2)]
-    public function benchAppendInt64DefaultMethodV2Typed(): void
-    {
-        $duckDB = DuckDB::create();
-        $duckDB->query('CREATE TABLE IF NOT EXISTS test_int64 (value INT8);');
-
-        $appender = $duckDB->appender('test_int64');
-
-        foreach (range(0, self::QUANTITY) as $i) {
-            $appender->appendV2(rand(0, PHP_INT_MAX), Type::DUCKDB_TYPE_BIGINT);
-            $appender->endRow();
-
-            if ($i % self::BATCH === 0) {
-                $appender->flush();
-            }
-        }
-
-        $appender->flush();
-    }
-
-    #[Bench\Groups(['appender', 'int64'])]
-    #[Bench\Revs(5)]
-    #[Bench\Iterations(2)]
-    public function benchAppendInt66QuickMethod(): void
+    public function benchAppendInt64QuickMethod(): void
     {
         $duckDB = DuckDB::create();
         $duckDB->query('CREATE TABLE IF NOT EXISTS test_int64 (value INT8);');
@@ -345,7 +324,29 @@ class AppenderBench
     #[Bench\Groups(['appender', 'int64'])]
     #[Bench\Revs(5)]
     #[Bench\Iterations(2)]
-    public function benchAppendInt66QuickMethodTyped(): void
+    public function benchAppendInt64QuickMethodInferType(): void
+    {
+        $duckDB = DuckDB::create();
+        $duckDB->query('CREATE TABLE IF NOT EXISTS test_int64 (value INT8);');
+
+        $appender = $duckDB->appender('test_int64');
+
+        foreach (range(0, self::QUANTITY) as $i) {
+            $appender->quickAppend(rand(0, PHP_INT_MAX), inferType: true);
+            $appender->endRow();
+
+            if ($i % self::BATCH === 0) {
+                $appender->flush();
+            }
+        }
+
+        $appender->flush();
+    }
+
+    #[Bench\Groups(['appender', 'int64'])]
+    #[Bench\Revs(5)]
+    #[Bench\Iterations(2)]
+    public function benchAppendInt64QuickMethodTyped(): void
     {
         $duckDB = DuckDB::create();
         $duckDB->query('CREATE TABLE IF NOT EXISTS test_int64 (value INT8);');
@@ -354,6 +355,50 @@ class AppenderBench
 
         foreach (range(0, self::QUANTITY) as $i) {
             $appender->quickAppend(rand(0, PHP_INT_MAX), Type::DUCKDB_TYPE_BIGINT);
+            $appender->endRow();
+
+            if ($i % self::BATCH === 0) {
+                $appender->flush();
+            }
+        }
+
+        $appender->flush();
+    }
+
+    #[Bench\Groups(['appender', 'int64'])]
+    #[Bench\Revs(5)]
+    #[Bench\Iterations(2)]
+    public function benchAppendInt64QuickMethodV2(): void
+    {
+        $duckDB = DuckDB::create();
+        $duckDB->query('CREATE TABLE IF NOT EXISTS test_int64 (value INT8);');
+
+        $appender = $duckDB->appender('test_int64');
+
+        foreach (range(0, self::QUANTITY) as $i) {
+            $appender->quickAppendV2(rand(0, PHP_INT_MAX));
+            $appender->endRow();
+
+            if ($i % self::BATCH === 0) {
+                $appender->flush();
+            }
+        }
+
+        $appender->flush();
+    }
+
+    #[Bench\Groups(['appender', 'int64'])]
+    #[Bench\Revs(5)]
+    #[Bench\Iterations(2)]
+    public function benchAppendInt64QuickMethodV2InferType(): void
+    {
+        $duckDB = DuckDB::create();
+        $duckDB->query('CREATE TABLE IF NOT EXISTS test_int64 (value INT8);');
+
+        $appender = $duckDB->appender('test_int64');
+
+        foreach (range(0, self::QUANTITY) as $i) {
+            $appender->quickAppendV2(rand(0, PHP_INT_MAX), inferType: true);
             $appender->endRow();
 
             if ($i % self::BATCH === 0) {
@@ -455,6 +500,28 @@ class AppenderBench
     #[Bench\Groups(['appender', 'int32'])]
     #[Bench\Revs(5)]
     #[Bench\Iterations(2)]
+    public function benchAppendInt32QuickMethodInferType(): void
+    {
+        $duckDB = DuckDB::create();
+        $duckDB->query('CREATE TABLE IF NOT EXISTS test_int32 (value INT8);');
+
+        $appender = $duckDB->appender('test_int32');
+
+        foreach (range(0, self::QUANTITY) as $i) {
+            $appender->quickAppend(rand(0, (int) (PHP_INT_MAX/2)), inferType: true);
+            $appender->endRow();
+
+            if ($i % self::BATCH === 0) {
+                $appender->flush();
+            }
+        }
+
+        $appender->flush();
+    }
+
+    #[Bench\Groups(['appender', 'int32'])]
+    #[Bench\Revs(5)]
+    #[Bench\Iterations(2)]
     public function benchAppendInt32QuickMethodTyped(): void
     {
         $duckDB = DuckDB::create();
@@ -464,6 +531,50 @@ class AppenderBench
 
         foreach (range(0, self::QUANTITY) as $i) {
             $appender->quickAppend(rand(0, (int) (PHP_INT_MAX/2)), Type::DUCKDB_TYPE_INTEGER);
+            $appender->endRow();
+
+            if ($i % self::BATCH === 0) {
+                $appender->flush();
+            }
+        }
+
+        $appender->flush();
+    }
+
+    #[Bench\Groups(['appender', 'int32'])]
+    #[Bench\Revs(5)]
+    #[Bench\Iterations(2)]
+    public function benchAppendInt32QuickMethodV2(): void
+    {
+        $duckDB = DuckDB::create();
+        $duckDB->query('CREATE TABLE IF NOT EXISTS test_int32 (value INT8);');
+
+        $appender = $duckDB->appender('test_int32');
+
+        foreach (range(0, self::QUANTITY) as $i) {
+            $appender->quickAppendV2(rand(0, (int) (PHP_INT_MAX/2)));
+            $appender->endRow();
+
+            if ($i % self::BATCH === 0) {
+                $appender->flush();
+            }
+        }
+
+        $appender->flush();
+    }
+
+    #[Bench\Groups(['appender', 'int32'])]
+    #[Bench\Revs(5)]
+    #[Bench\Iterations(2)]
+    public function benchAppendInt32QuickMethodV2InferType(): void
+    {
+        $duckDB = DuckDB::create();
+        $duckDB->query('CREATE TABLE IF NOT EXISTS test_int32 (value INT8);');
+
+        $appender = $duckDB->appender('test_int32');
+
+        foreach (range(0, self::QUANTITY) as $i) {
+            $appender->quickAppendV2(rand(0, (int) (PHP_INT_MAX/2)), inferType: true);
             $appender->endRow();
 
             if ($i % self::BATCH === 0) {

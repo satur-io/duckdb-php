@@ -17,6 +17,7 @@ use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Converter\TypeConverter;
 use Saturio\DuckDB\Type\Math\MathLib;
 use Saturio\DuckDB\Type\Type;
+use function PHPUnit\Framework\matches;
 
 class Appender
 {
@@ -85,73 +86,28 @@ class Appender
         ++$this->currentColumn;
     }
 
-    /**
-     * @throws UnsupportedTypeException
-     * @throws AppendValueException|DateMalformedStringException|UnexpectedTypeException|DateInvalidTimeZoneException
-     */
-    public function appendV2(mixed $value, ?Type $type = null): void
-    {
-
-        $type ??= (is_null($value) ? Type::DUCKDB_TYPE_SQLNULL : null);
-
-        if ($type === null) {
-            if (!array_key_exists($this->currentColumn, $this->columnTypes)) {
-                $this->columnTypes[$this->currentColumn] =  Type::from($this->ffi->getTypeId($this->ffi->appenderColumnType($this->appender, $this->currentColumn)));
-            }
-            $type = $this->columnTypes[$this->currentColumn];
-        }
-
-        switch ($type) {
-            case Type::DUCKDB_TYPE_VARCHAR:
-                $status = $this->ffi->appendVarchar(
-                    $this->appender,
-                    $value,
-                );
-                break;
-            case Type::DUCKDB_TYPE_BIGINT:
-                $status = $this->ffi->appendInt64(
-                    $this->appender,
-                    $value,
-                );
-                break;
-            default:
-                $nativeValue = $this->converter->getDuckDBValue($value, $type);
-                $status = $this->ffi->appendValue(
-                    $this->appender,
-                    $nativeValue,
-                );
-                $this->ffi->destroyValue($this->ffi->addr($nativeValue));
-        }
-
-        if ($status === $this->ffi->error()) {
-            $error = $this->ffi->appenderError($this->appender);
-            throw new AppendValueException("Couldn't append {$value}. Error: {$error}");
-        }
-
-        ++$this->currentColumn;
-    }
-
 
     /**
      * @throws AppendValueException
      */
-    public function quickAppend(mixed $value, ?Type $type = null): void
+    public function quickAppend(mixed $value, ?Type $type = null, bool $inferType = false): void
     {
-        $type ??= match(true) {
-            is_null($value) => Type::DUCKDB_TYPE_SQLNULL,
-            is_string($value) => Type::DUCKDB_TYPE_VARCHAR,
-            is_int($value) => Type::DUCKDB_TYPE_BIGINT,
-            is_bool($value) => Type::DUCKDB_TYPE_BOOLEAN,
-            is_float($value) => Type::DUCKDB_TYPE_FLOAT,
-            default => null,
-        };
+        if ($inferType) {
+            $type ??= match(gettype($value)) {
+                'NULL' => Type::DUCKDB_TYPE_SQLNULL,
+                'string' => Type::DUCKDB_TYPE_VARCHAR,
+                'integer' => Type::DUCKDB_TYPE_BIGINT,
+                'boolean' => Type::DUCKDB_TYPE_BOOLEAN,
+                'double' => Type::DUCKDB_TYPE_FLOAT,
+                default => null,
+            };
+        }
 
         $status = match ($type) {
-            Type::DUCKDB_TYPE_VARCHAR =>
-                $this->ffi->appendVarchar(
-                    $this->appender,
-                    $value,
-                ),
+            Type::DUCKDB_TYPE_VARCHAR => $this->ffi->appendVarchar(
+                $this->appender,
+                $value,
+            ),
             Type::DUCKDB_TYPE_SQLNULL => $this->ffi->appendNull(
                 $this->appender,
             ),
@@ -176,7 +132,55 @@ class Appender
             ),
             default => $this->ffi->appendVarchar(
                 $this->appender,
+                (string) $value,
+            ),
+        };
+
+        if ($status === $this->ffi->error()) {
+            $error = $this->ffi->appenderError($this->appender);
+            throw new AppendValueException("Couldn't append {$value}. Error: {$error}");
+        }
+
+        ++$this->currentColumn;
+    }
+
+    /**
+     * @throws AppendValueException
+     */
+    public function quickAppendV2(mixed $value, bool $inferType = false): void
+    {
+        $type = $inferType ? match(gettype($value)) {
+            'NULL' => Type::DUCKDB_TYPE_SQLNULL,
+            'string' => Type::DUCKDB_TYPE_VARCHAR,
+            'integer' => Type::DUCKDB_TYPE_BIGINT,
+            'boolean' => Type::DUCKDB_TYPE_BOOLEAN,
+            'double' => Type::DUCKDB_TYPE_FLOAT,
+            default => null,
+        } : null;
+
+        $status = match ($type) {
+            Type::DUCKDB_TYPE_VARCHAR => $this->ffi->appendVarchar(
+                $this->appender,
                 $value,
+            ),
+            Type::DUCKDB_TYPE_SQLNULL => $this->ffi->appendNull(
+                $this->appender,
+            ),
+            Type::DUCKDB_TYPE_BIGINT => $this->ffi->appendInt64(
+                $this->appender,
+                $value,
+            ),
+            Type::DUCKDB_TYPE_FLOAT => $this->ffi->appendDouble(
+                $this->appender,
+                $value,
+            ),
+            Type::DUCKDB_TYPE_BOOLEAN => $this->ffi->appendBool(
+                $this->appender,
+                $value,
+            ),
+            default => $this->ffi->appendVarchar(
+                $this->appender,
+                (string) $value,
             ),
         };
 
@@ -225,6 +229,11 @@ class Appender
         }
 
         ++$this->currentColumn;
+    }
+
+    public function appendInt(int $value): void
+    {
+        $this->appendInt64($value);
     }
 
     public function appendInt64(int $value): void
