@@ -11,6 +11,7 @@ use Saturio\DuckDB\Exception\AppenderEndRowException;
 use Saturio\DuckDB\Exception\AppenderFlushException;
 use Saturio\DuckDB\Exception\AppendValueException;
 use Saturio\DuckDB\Exception\ErrorCreatingNewAppender;
+use Saturio\DuckDB\Type\Date;
 
 class FastAppenderTest extends TestCase
 {
@@ -27,6 +28,7 @@ class FastAppenderTest extends TestCase
         $this->db->query('CREATE TABLE file_db.other_schema.other_people (id INTEGER NOT NULL DEFAULT 1, name VARCHAR)');
         $this->db->query('CREATE TABLE bool_table (value BOOLEAN)');
         $this->db->query('CREATE TABLE float_table (value FLOAT)');
+        $this->db->query('CREATE TABLE datetime_table (value DATETIME)');
     }
 
     protected function tearDown(): void
@@ -184,9 +186,12 @@ class FastAppenderTest extends TestCase
         $appender->fastAppend(1);
         $appender->appendVarchar('this-is-a-varchar-value');
         $appender->endRow();
+        $appender->fastAppend(2);
+        $appender->appendVarchar('this-is-other-varchar-value', 27);
+        $appender->endRow();
         $appender->flush();
         $total = $this->db->query('SELECT * FROM people');
-        $this->assertEquals([1, 'this-is-a-varchar-value'], $total->rows()->current());
+        $this->assertEquals([[1, 'this-is-a-varchar-value'], [2, 'this-is-other-varchar-value']], iterator_to_array($total->rows()));
     }
 
     public function testAppendInt(): void
@@ -216,6 +221,16 @@ class FastAppenderTest extends TestCase
         $appender->flush();
         $total = $this->db->query('SELECT * FROM float_table');
         $this->assertEqualsWithDelta([[1.4], [0.5], [3], [1.2], [1.1]], iterator_to_array($total->rows()), 0.01);
+    }
+
+    public function testAppendDateTime(): void
+    {
+        $appender = $this->db->appender('datetime_table');
+        $appender->fastAppend(new Date(2025, 12, 12));
+        $appender->endRow();
+        $appender->flush();
+        $total = $this->db->query('SELECT * FROM datetime_table');
+        $this->assertEquals(new Date(2025, 12, 12), $total->rows()->current()[0]->getDate());
     }
 
     public function testAppendRow(): void
