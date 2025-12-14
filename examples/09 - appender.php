@@ -10,9 +10,7 @@ $result = $duckDB->query('CREATE TABLE people (id INTEGER, name VARCHAR);');
 $appender = $duckDB->appender('people');
 
 for ($i = 0; $i < 100; ++$i) {
-    $appender->append(rand(1, 100000));
-    $appender->append('string-'.rand(1, 100));
-    $appender->endRow();
+    $appender->appendRow(rand(1, 100000), 'string-'.rand(1, 100));
 }
 
 $appender->flush();
