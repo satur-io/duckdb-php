@@ -40,8 +40,8 @@ we will need to append first the `id` and after that the `name`
 to append a row:
 
 ```php
-$appender->append(1);
-$appender->append('Daniel Hernández-Marín');
+$appender->fastAppend(1);
+$appender->fastAppend('Daniel Hernández-Marín');
 ```
 
 And when we are done with a row, we should call `endRow()` function:
@@ -50,14 +50,17 @@ And when we are done with a row, we should call `endRow()` function:
 $appender->endRow();
 ```
 
-We can add some more rows at this point:
+Alternately, you can use `appendRow` to append a full row:
 ```php
-$appender->append(2);
-$appender->append('Elena de Nicolás');
-$appender->endRow();
+$appender->appendRow(2, 'Elena de Nicolás');
+```
 
-$appender->append(3);
-$appender->append('Carlos Hernández Romero');
+`fastAppend` and `appendRow` methods are simple and quite efficient,
+but for the best performance maybe you want to use a specific-type append method:
+
+```php
+$appender->appendInt(3);
+$appender->appendVarchar('Carlos Hernández Romero');
 $appender->endRow();
 ```
 
@@ -77,30 +80,15 @@ $duckDB->query('CREATE TABLE people (id INTEGER, name VARCHAR);');
 
 $appender = $duckDB->appender(table: 'people');
 
-$appender->append(1);
-$appender->append('Daniel Hernández-Marín');
+$appender->fastAppend(1);
+$appender->fastAppend('Daniel Hernández-Marín');
 $appender->endRow();
 
-$appender->append(2);
-$appender->append('Elena de Nicolás');
-$appender->endRow();
+$appender->appendRow(2, 'Elena de Nicolás');
 
-$appender->append(3);
-$appender->append('Carlos Hernández Romero');
+$appender->appendInt(3);
+$appender->appendVarchar('Carlos Hernández Romero');
 $appender->endRow();
 
 $appender->flush();
 ```
-
-### Append explicit typed data
-
-We used infer typing for the previous example, but you can specify the type
-as we made for the [prepared statements](prepared-statements.md#bind-parameters).
-
-```php
-$appender->append(value: 2, type: Type::DUCKDB_TYPE_INTEGER);
-$appender->append(value: 'Elena de Nicolás', type: Type::DUCKDB_TYPE_VARCHAR);
-```
-
-For appending explicitly typed values, same rules as for binding parameters in
-prepared statements are applied. Check [prepared statements section](prepared-statements.md#bind-parameters) if you have doubts.
