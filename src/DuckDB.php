@@ -160,6 +160,7 @@ class DuckDB
     public function queryProgress(): array
     {
         $progress = self::$ffi->queryProgress($this->connection->connection);
+
         return [
             'percentage' => $progress->percentage,
             'rows_processed' => $progress->rows_processed,

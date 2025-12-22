@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Saturio\DuckDB\Result;
 
+use Saturio\DuckDB\Exception\ExecutePendingException;
 use Saturio\DuckDB\FFI\DuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 
@@ -23,17 +26,21 @@ class PendingResult
         return $this->ffi->executeTask($this->pendingResult);
     }
 
-    public function error(): ?string
+    public function error(): string
     {
         return $this->ffi->pendingError($this->pendingResult);
     }
 
+    /**
+     * @throws ExecutePendingException
+     */
     public function execute(): ResultSet
     {
         $result = $this->ffi->new('duckdb_result');
         if ($this->ffi->executePending($this->pendingResult, $this->ffi->addr($result)) === $this->ffi->error()) {
-            throw new \Exception('Error executing pending');
+            throw new ExecutePendingException('Error executing pending: '.$this->ffi->resultError($this->ffi->addr($result)));
         }
+
         return new ResultSet($this->ffi, $result);
     }
 }

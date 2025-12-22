@@ -117,6 +117,7 @@ class PreparedStatement
     {
         $pendingResult = $this->ffi->new('duckdb_pending_result');
         $this->ffi->pendingPrepared($this->preparedStatement, $this->ffi->addr($pendingResult));
+
         return new PendingResult($this->ffi, $pendingResult);
     }
 
