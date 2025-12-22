@@ -26,7 +26,7 @@ class PendingResult
         return $this->ffi->executeTask($this->pendingResult);
     }
 
-    public function error(): string
+    public function error(): ?string
     {
         return $this->ffi->pendingError($this->pendingResult);
     }
@@ -42,5 +42,10 @@ class PendingResult
         }
 
         return new ResultSet($this->ffi, $result);
+    }
+
+    public function __destruct()
+    {
+        $this->ffi->destroyPending($this->ffi->addr($this->pendingResult));
     }
 }

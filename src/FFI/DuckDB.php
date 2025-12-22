@@ -682,4 +682,9 @@ class DuckDB
     {
         return self::$ffi->duckdb_pending_error($pendingResult);
     }
+
+    public function destroyPending(NativeCData $pendingResult): void
+    {
+        self::$ffi->duckdb_destroy_pending($pendingResult);
+    }
 }

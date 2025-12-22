@@ -23,6 +23,22 @@ class PendingResultTest extends TestCase
         $pendingResult->execute();
     }
 
+    public function testPendingExecuteTaskError(): void
+    {
+        $db = DuckDB::create();
+        $db->query('SET threads=1;');
+        $db->query('set enable_progress_bar=true;');
+        $db->query('set enable_progress_bar_print=false;');
+        $preparedStatement = $db->preparedStatement('SELECT SUM(i) FROM range(1000000) tbl(i);');
+        $pendingResult = $preparedStatement->pendingExecute();
+        $this->assertEquals(PendingResult::DUCKDB_PENDING_RESULT_NOT_READY, $pendingResult->executeTask());
+        $pendingResult->__destruct();
+        $this->assertEquals(PendingResult::DUCKDB_PENDING_ERROR, $pendingResult->executeTask());
+
+        // No error message, since pending result was destroyed, and it doesn't exist anymore
+        $this->assertEquals('', $pendingResult->error());
+    }
+
     public function testPendingResultWithProgress(): void
     {
         $db = DuckDB::create();
