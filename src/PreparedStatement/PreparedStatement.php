@@ -7,6 +7,7 @@ namespace Saturio\DuckDB\PreparedStatement;
 use DateMalformedStringException;
 use Saturio\DuckDB\Exception\BindValueException;
 use Saturio\DuckDB\Exception\PreparedStatementExecuteException;
+use Saturio\DuckDB\Exception\UnexpectedTypeException;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
@@ -36,11 +37,17 @@ class PreparedStatement
     ): self {
         $newPreparedStatement = new self($ffi, $connection, $query);
         $newPreparedStatement->preparedStatement = $newPreparedStatement->ffi->new('duckdb_prepared_statement');
-        $newPreparedStatement->ffi->prepare(
+        $result = $newPreparedStatement->ffi->prepare(
             $newPreparedStatement->connection,
             $newPreparedStatement->query,
             $newPreparedStatement->ffi->addr($newPreparedStatement->preparedStatement)
         );
+
+        if ($result == $newPreparedStatement->ffi->error()) {
+            $error = $newPreparedStatement->ffi->prepareError($newPreparedStatement->preparedStatement);
+            // destructor handles destroying prepared statement
+            throw new PreparedStatementExecuteException($error);
+        }
 
         return $newPreparedStatement;
     }
@@ -48,6 +55,7 @@ class PreparedStatement
     /**
      * @throws BindValueException|UnsupportedTypeException
      * @throws DateMalformedStringException
+     * @throws UnexpectedTypeException
      */
     public function bindParam(int|string $parameter, mixed $value, ?Type $type = null): void
     {
@@ -87,6 +95,9 @@ class PreparedStatement
         throw new BindValueException("Couldn't bind parameter '{$parameter}' to prepared statement.");
     }
 
+    /**
+     * @throws PreparedStatementExecuteException
+     */
     public function execute(): ResultSet
     {
         $queryResult = $this->ffi->new('duckdb_result');
@@ -94,7 +105,7 @@ class PreparedStatement
         $result = $this->ffi->executePrepared($this->preparedStatement, $this->ffi->addr($queryResult));
 
         if ($result === $this->ffi->error()) {
-            $error = $this->ffi->resultError($this->ffi->addr($queryResult));
+            $error = $this->ffi->resultError($this->ffi->addr($queryResult)) ?? 'Unknown error';
             $this->ffi->destroyResult($this->ffi->addr($queryResult));
             throw new PreparedStatementExecuteException($error);
         }

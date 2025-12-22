@@ -7,7 +7,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=satur-io_duckdb-php&metric=alert_status&token=4a4bd82eff843d2b4a93bf4552b6db78e598ecfa)](https://sonarcloud.io/summary/new_code?id=satur-io_duckdb-php)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=satur-io_duckdb-php&metric=coverage)](https://sonarcloud.io/summary/new_code?id=satur-io_duckdb-php)
 [![Packagist Version](https://img.shields.io/packagist/v/satur.io/duckdb?style=flat&logo=packagist&logoColor=white)](https://packagist.org/packages/satur.io/duckdb)
-![DuckDB C API Version](https://img.shields.io/badge/DuckDB_C_API-v1.4.1-%23FFF100?logo=duckdb)
+![DuckDB C API Version](https://img.shields.io/badge/DuckDB_C_API-v1.4.3-%23FFF100?logo=duckdb)
 
 
 This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API for PHP.
@@ -99,9 +99,7 @@ $result = $duckDB->query('CREATE TABLE people (id INTEGER, name VARCHAR);');
 $appender = $duckDB->appender('people');
 
 for ($i = 0; $i < 100; ++$i) {
-    $appender->append(rand(1, 100000));
-    $appender->append('string-'.rand(1, 100));
-    $appender->endRow();
+    $appender->appendRow(rand(1, 100000), 'string-'.rand(1, 100));
 }
 
 $appender->flush();

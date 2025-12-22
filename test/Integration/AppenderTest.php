@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Integration;
 
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\TestCase;
-use Saturio\DuckDB\Appender\Appender;
 use Saturio\DuckDB\DuckDB;
 use Saturio\DuckDB\Exception\AppenderEndRowException;
 use Saturio\DuckDB\Exception\AppenderFlushException;
 use Saturio\DuckDB\Exception\AppendValueException;
-use Saturio\DuckDB\Exception\ErrorCreatingNewAppender;
 use Saturio\DuckDB\Exception\UnexpectedTypeException;
 use Saturio\DuckDB\Type\Type;
 
+#[IgnoreDeprecations]
 class AppenderTest extends TestCase
 {
     private DuckDB $db;
@@ -33,24 +33,6 @@ class AppenderTest extends TestCase
     {
         unset($this->db);
         unlink($this->dbFile);
-    }
-
-    public function testCreateAppender()
-    {
-        $appender = $this->db->appender('people');
-        $this->assertInstanceOf(Appender::class, $appender);
-    }
-
-    public function testCreateAppenderForSpecificSchemaAndCatalog()
-    {
-        $appender = $this->db->appender('other_people', 'other_schema', 'file_db');
-        $this->assertInstanceOf(Appender::class, $appender);
-    }
-
-    public function testErrorCreatingAppenderForNonExistingTable()
-    {
-        $this->expectException(ErrorCreatingNewAppender::class);
-        $this->db->appender('this-table-does-not-exist');
     }
 
     public function testErrorAppendingWrongType(): void

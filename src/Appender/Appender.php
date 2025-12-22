@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Saturio\DuckDB\Appender;
 
+use DateInvalidTimeZoneException;
 use DateMalformedStringException;
+use Deprecated;
 use Saturio\DuckDB\Exception\AppenderEndRowException;
 use Saturio\DuckDB\Exception\AppenderFlushException;
 use Saturio\DuckDB\Exception\AppendValueException;
@@ -59,13 +61,17 @@ class Appender
     }
 
     /**
+     * @throws AppendValueException
+     * @throws DateInvalidTimeZoneException
+     * @throws DateMalformedStringException
+     * @throws UnexpectedTypeException
      * @throws UnsupportedTypeException
-     * @throws AppendValueException|DateMalformedStringException|UnexpectedTypeException
      */
+    #[Deprecated('Use fastAppend() or a type specific append method (e.g. appendVarchar, appendInt) instead for a better performance.')]
     public function append(mixed $value, ?Type $type = null): void
     {
-        $appenderColumnType = $this->ffi->getTypeId($this->ffi->appenderColumnType($this->appender, $this->currentColumn));
-        $type = is_null($value) ? Type::DUCKDB_TYPE_SQLNULL : $type ?? Type::from($appenderColumnType);
+        $appenderColumnType = fn () => $this->ffi->getTypeId($this->ffi->appenderColumnType($this->appender, $this->currentColumn));
+        $type = is_null($value) ? Type::DUCKDB_TYPE_SQLNULL : $type ?? Type::from($appenderColumnType());
         $nativeValue = $this->converter->getDuckDBValue($value, $type);
         $status = $this->ffi->appendValue(
             $this->appender,
@@ -82,6 +88,57 @@ class Appender
         ++$this->currentColumn;
     }
 
+    /**
+     * @throws AppendValueException
+     */
+    public function fastAppend(mixed $value): void
+    {
+        $type = match (gettype($value)) {
+            'NULL' => Type::DUCKDB_TYPE_SQLNULL,
+            'string' => Type::DUCKDB_TYPE_VARCHAR,
+            'integer' => Type::DUCKDB_TYPE_BIGINT,
+            'boolean' => Type::DUCKDB_TYPE_BOOLEAN,
+            'double' => Type::DUCKDB_TYPE_FLOAT,
+            default => null,
+        };
+
+        $status = match ($type) {
+            Type::DUCKDB_TYPE_VARCHAR => $this->ffi->appendVarchar(
+                $this->appender,
+                $value,
+            ),
+            Type::DUCKDB_TYPE_SQLNULL => $this->ffi->appendNull(
+                $this->appender,
+            ),
+            Type::DUCKDB_TYPE_BIGINT => $this->ffi->appendInt64(
+                $this->appender,
+                $value,
+            ),
+            Type::DUCKDB_TYPE_FLOAT => $this->ffi->appendDouble(
+                $this->appender,
+                $value,
+            ),
+            Type::DUCKDB_TYPE_BOOLEAN => $this->ffi->appendBool(
+                $this->appender,
+                $value,
+            ),
+            default => $this->ffi->appendVarchar(
+                $this->appender,
+                (string) $value,
+            ),
+        };
+
+        if ($status === $this->ffi->error()) {
+            $error = $this->ffi->appenderError($this->appender);
+            throw new AppendValueException("Couldn't append {$value}. Error: {$error}");
+        }
+
+        ++$this->currentColumn;
+    }
+
+    /**
+     * @throws AppendValueException
+     */
     public function appendDefault(): void
     {
         $status = $this->ffi->appendDefault(
@@ -91,6 +148,100 @@ class Appender
         if ($status === $this->ffi->error()) {
             $error = $this->ffi->appenderError($this->appender);
             throw new AppendValueException("Couldn't append default. Error: {$error}");
+        }
+
+        ++$this->currentColumn;
+    }
+
+    /**
+     * @throws AppendValueException
+     */
+    public function appendVarchar(string $value, ?int $length = null): void
+    {
+        if (null === $length) {
+            $status = $this->ffi->appendVarchar(
+                $this->appender,
+                $value,
+            );
+        } else {
+            $status = $this->ffi->appendVarcharLength(
+                $this->appender,
+                $value,
+                $length,
+            );
+        }
+
+        if ($status === $this->ffi->error()) {
+            $error = $this->ffi->appenderError($this->appender);
+            throw new AppendValueException("Couldn't append {$value}. Error: {$error}");
+        }
+
+        ++$this->currentColumn;
+    }
+
+    /**
+     * @throws AppendValueException
+     */
+    public function appendInt(int $value): void
+    {
+        $status = $this->ffi->appendInt64(
+            $this->appender,
+            $value,
+        );
+
+        if ($status === $this->ffi->error()) {
+            $error = $this->ffi->appenderError($this->appender);
+            throw new AppendValueException("Couldn't append {$value}. Error: {$error}");
+        }
+
+        ++$this->currentColumn;
+    }
+
+    /**
+     * @throws AppendValueException
+     */
+    public function appendNull(): void
+    {
+        $status = $this->ffi->appendNull(
+            $this->appender,
+        );
+
+        if ($status === $this->ffi->error()) {
+            $error = $this->ffi->appenderError($this->appender);
+            throw new AppendValueException("Couldn't append null. Error: {$error}");
+        }
+
+        ++$this->currentColumn;
+    }
+
+    /**
+     * @throws AppendValueException
+     */
+    public function appendFloat(float $value): void
+    {
+        $status = $this->ffi->appendDouble(
+            $this->appender,
+            $value,
+        );
+
+        if ($status === $this->ffi->error()) {
+            $error = $this->ffi->appenderError($this->appender);
+            throw new AppendValueException("Couldn't append null. Error: {$error}");
+        }
+
+        ++$this->currentColumn;
+    }
+
+    public function appendBool(bool $value): void
+    {
+        $status = $this->ffi->appendBool(
+            $this->appender,
+            $value,
+        );
+
+        if ($status === $this->ffi->error()) {
+            $error = $this->ffi->appenderError($this->appender);
+            throw new AppendValueException("Couldn't append null. Error: {$error}");
         }
 
         ++$this->currentColumn;
@@ -107,6 +258,15 @@ class Appender
         }
 
         $this->currentColumn = 0;
+    }
+
+    public function appendRow(mixed ...$params): void
+    {
+        foreach ($params as $param) {
+            $this->fastAppend($param);
+        }
+
+        $this->endRow();
     }
 
     /**

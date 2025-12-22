@@ -74,4 +74,9 @@ class Time implements JsonSerializable
     {
         return $this->__toString();
     }
+
+    public function isTimeZoned(): bool
+    {
+        return $this->isTimeZoned;
+    }
 }

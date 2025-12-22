@@ -533,6 +533,41 @@ class DuckDB
         return self::$ffi->duckdb_append_value($appender, $value);
     }
 
+    public function appendVarchar(NativeCData $appender, string $value): int
+    {
+        return self::$ffi->duckdb_append_varchar($appender, $value);
+    }
+
+    public function appendVarcharLength(NativeCData $appender, string $value, int $length): int
+    {
+        return self::$ffi->duckdb_append_varchar_length($appender, $value, $length);
+    }
+
+    public function appendInt64(NativeCData $appender, int $value): int
+    {
+        return self::$ffi->duckdb_append_int64($appender, $value);
+    }
+
+    public function appendInt32(NativeCData $appender, int $value): int
+    {
+        return self::$ffi->duckdb_append_int32($appender, $value);
+    }
+
+    public function appendDouble(NativeCData $appender, float $value): int
+    {
+        return self::$ffi->duckdb_append_double($appender, $value);
+    }
+
+    public function appendBool(NativeCData $appender, bool $value): int
+    {
+        return self::$ffi->duckdb_append_bool($appender, $value);
+    }
+
+    public function appendNull(NativeCData $appender): int
+    {
+        return self::$ffi->duckdb_append_null($appender);
+    }
+
     public function appendDefault(NativeCData $appender): int
     {
         return self::$ffi->duckdb_append_default($appender);
