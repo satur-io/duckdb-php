@@ -11,6 +11,7 @@ use Saturio\DuckDB\Exception\UnexpectedTypeException;
 use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
+use Saturio\DuckDB\Result\PendingResult;
 use Saturio\DuckDB\Result\ResultSet;
 use Saturio\DuckDB\Type\Converter\TypeConverter;
 use Saturio\DuckDB\Type\Math\MathLib;
@@ -110,6 +111,14 @@ class PreparedStatement
         }
 
         return new ResultSet($this->ffi, $queryResult);
+    }
+
+    public function pendingExecute(): PendingResult
+    {
+        $pendingResult = $this->ffi->new('duckdb_pending_result');
+        $this->ffi->pendingPrepared($this->preparedStatement, $this->ffi->addr($pendingResult));
+
+        return new PendingResult($this->ffi, $pendingResult);
     }
 
     public function __destruct()
