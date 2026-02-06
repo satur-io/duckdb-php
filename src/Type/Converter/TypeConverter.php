@@ -198,10 +198,10 @@ class TypeConverter
      */
     public function getBigIntFromDuckDBBigInt(int $data, bool $unsigned): int|string|LongInteger
     {
-        $this->checkMath();
         if (!$unsigned || $data >= 0) {
             return $data;
         }
+        $this->checkMath();
 
         return
             LongInteger::fromString(
