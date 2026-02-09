@@ -749,4 +749,21 @@ class QueryTest extends TestCase
 
         $this->assertEquals($expectedValues, iterator_to_array($result->columnNames()));
     }
+
+    public function testSubsequentCallsWithDifferentColumnNumbers(): void
+    {
+        $expectedColumnNames = ['column1', 'column2'];
+        $result = $this->db->query("SELECT 'quack' as column1, 'queck' as column2;");
+
+        $this->assertEquals(2, $result->columnCount());
+        $this->assertEquals($expectedColumnNames, iterator_to_array($result->columnNames()));
+        $this->assertCount(2, $result->vectorChunk()->current());
+
+        $expectedColumnNames = ['column1', 'column2', 'column3'];
+        $result = $this->db->query("SELECT 'quack' as column1, 'queck' as column2, 'quick' as column3;");
+
+        $this->assertEquals(3, $result->columnCount());
+        $this->assertEquals($expectedColumnNames, iterator_to_array($result->columnNames()));
+        $this->assertCount(3, $result->vectorChunk()->current());
+    }
 }
