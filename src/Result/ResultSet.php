@@ -17,6 +17,8 @@ class ResultSet
 {
     use ValidityTrait;
 
+    private ?int $columnCount = null;
+
     public function __construct(
         public readonly FFIDuckDB $ffi,
         public readonly NativeCData $result,
@@ -52,10 +54,10 @@ class ResultSet
         /** @var DataChunk $chunk */
         foreach ($this->chunks() as $chunk) {
             $rowCount = $chunk->rowCount();
-            $columnCount = $chunk->columnCount();
+            $this->columnCount ??= $chunk->columnCount();
             $dataGenerators = [];
 
-            for ($columnIndex = 0; $columnIndex < $columnCount; ++$columnIndex) {
+            for ($columnIndex = 0; $columnIndex < $this->columnCount; ++$columnIndex) {
                 $column = $chunk->getVector($columnIndex, rows: $rowCount);
                 $dataGenerators[] = $column->getDataGenerator();
             }
@@ -86,10 +88,10 @@ class ResultSet
         /** @var DataChunk $chunk */
         foreach ($this->chunks() as $chunk) {
             $rowCount = $chunk->rowCount();
-            static $columnCount = $chunk->columnCount();
+            $this->columnCount ??= $chunk->columnCount();
 
             $rows = [];
-            for ($columnIndex = 0; $columnIndex < $columnCount; ++$columnIndex) {
+            for ($columnIndex = 0; $columnIndex < $this->columnCount; ++$columnIndex) {
                 $rows[] = $chunk
                     ->getVector($columnIndex, rows: $rowCount)
                     ->getBatchRows();
@@ -99,7 +101,7 @@ class ResultSet
         }
     }
 
-    public function columnName($columnIndex): ?string
+    public function columnName(int $columnIndex): ?string
     {
         return $this->ffi->columnName($this->ffi->addr($this->result), $columnIndex);
     }
