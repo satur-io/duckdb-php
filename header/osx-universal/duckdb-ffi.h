@@ -3239,7 +3239,8 @@ This allows NULL values to be written to the vector, regardless of whether a val
  void duckdb_vector_ensure_validity_writable(duckdb_vector vector);
 
 /*!
-Assigns a string element in the vector at the specified location.
+Assigns a string element in the vector at the specified location. The vector type must be VARCHAR and the input must be
+valid UTF-8. Otherwise, undefined behavior is expected at later stages.
 
 * @param vector The vector to alter
 * @param index The row position in the vector to assign the string to
@@ -3248,7 +3249,8 @@ Assigns a string element in the vector at the specified location.
  void duckdb_vector_assign_string_element(duckdb_vector vector, idx_t index, const char *str);
 
 /*!
-Assigns a string element in the vector at the specified location. You may also use this function to assign BLOBs.
+Assigns a string element in the vector at the specified location. The vector type can be VARCHAR or BLOB. In the case of
+VARCHAR, you must pass valid UTF-8. Otherwise, undefined behavior is expected at later stages.
 
 * @param vector The vector to alter
 * @param index The row position in the vector to assign the string to
