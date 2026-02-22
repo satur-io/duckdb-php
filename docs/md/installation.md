@@ -26,9 +26,14 @@ to be used in PHP via FFI.
 From v2.0 on, `satur.io/duckdb` includes the fixed headers for all platforms
 and also a script to download the library binary from the official DuckDB release.
 
+This package supports multiple DuckDB C API versions. The default is `1.4.4`.
+To use another supported version, set the `DUCKDB_PHP_LIB_VERSION` environment variable
+or pass the version explicitly to `\Saturio\DuckDB\CLib\Installer::install`.
+Supported versions: `1.4.0`, `1.4.1`, `1.4.2`, `1.4.3`, `1.4.4`.
+
 Key files:
 
-- `scripts/get_header.sh` the script used to get the headers and adapt the files to be used with FFI.
+- `scripts/get_headers.sh` the script used to get the headers and adapt the files to be used with FFI.
 - `\Saturio\DuckDB\CLib\Installer::install` the installer method.
 - `install-c-lib` a simple script useful to install the library in a custom path.
 
@@ -53,6 +58,12 @@ Add scripts to your `composer.json`
 
 And run
 ```shell
+composer install
+```
+
+If you need a different DuckDB version, set it before running composer:
+```shell
+export DUCKDB_PHP_LIB_VERSION=1.4.2
 composer install
 ```
 
@@ -86,6 +97,7 @@ desired path:
 If you don't use the default installation path,
 after running the command you should see a requirement for setting the `DUCKDB_PHP_PATH`
 environment variable to the path where you downloaded the library.
+If you choose a version other than the default, you should also set `DUCKDB_PHP_LIB_VERSION`.
 
 If you want to integrate this method in your CI/CD workflow,
 you could use a custom script instead of using the interactive `install-c-lib` command:
@@ -95,8 +107,9 @@ you could use a custom script instead of using the interactive `install-c-lib` c
     If you define both the environment variable value will be used.
 
 ```shell
-php -r "require './vendor/autoload.php'; Saturio\DuckDB\CLib\Installer::install(<your-custom-path>);"
+php -r "require './vendor/autoload.php'; Saturio\DuckDB\CLib\Installer::install(<your-custom-path>, '1.4.2');"
 echo 'export DUCKDB_PHP_PATH="<your-custom-path>"' >> ~/.bashrc
+echo 'export DUCKDB_PHP_LIB_VERSION="1.4.2"' >> ~/.bashrc
 ```
 
 ### Downloading the library by yourself
@@ -115,7 +128,7 @@ mkdir ~/my-custom-dir
 
 Download C library, for example, for osx:
 ```shell
-curl -s -L https://github.com/duckdb/duckdb/releases/download/v1.4.1/libduckdb-osx-universal.zip -o /tmp/duckdb.zip && unzip /tmp/duckdb.zip && rm /tmp/duckdb.zip
+curl -s -L https://github.com/duckdb/duckdb/releases/download/v1.4.4/libduckdb-osx-universal.zip -o /tmp/duckdb.zip && unzip /tmp/duckdb.zip && rm /tmp/duckdb.zip
 ```
 
 Copy the library binary file:
@@ -125,8 +138,10 @@ cp libduckdb.dylib ~/my-custom-dir/libduckdb.dylib
 
 Copy the fixed header:
 ```shell
-cp vendor/satur.io/header/osx-universal/duckdb-ffi.h ~/my-custom-dir/duckdb-ffi.h
+cp vendor/satur.io/duckdb/header/1.4.4/osx-universal/duckdb-ffi.h ~/my-custom-dir/duckdb-ffi.h
 ```
+If you are using a different DuckDB version, replace `1.4.4` accordingly and ensure
+headers exist under `header/<version>` (you can generate them with `scripts/get_headers.sh <version>`).
 !!! warning
     If you want to use `FFI::load` and `FFI::scope` (recommended for a better performance),
     you also need to modify the `duckdb-ffi.h` file and include on top `FFI_SCOPE` and `FFI_LIB`.
@@ -136,4 +151,5 @@ As in the previous case, you need to set the `DUCKDB_PHP_PATH`
 environment variable to the path.
 ```shell
 export DUCKDB_PHP_PATH=~/my-custom-dir
+export DUCKDB_PHP_LIB_VERSION=1.4.4
 ```

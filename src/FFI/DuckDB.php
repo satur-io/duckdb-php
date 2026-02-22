@@ -6,6 +6,7 @@ namespace Saturio\DuckDB\FFI;
 
 use FFI;
 use FFI\CType;
+use Saturio\DuckDB\CLib\Version;
 use Saturio\DuckDB\DB\Configuration;
 use Saturio\DuckDB\Exception\MissedLibraryException;
 use Saturio\DuckDB\Exception\NotSupportedException;
@@ -36,8 +37,16 @@ class DuckDB
             }
         }
 
-        if ($this->libraryVersion() !== 'v'.DUCKDB_PHP_LIB_VERSION) {
-            throw new WrongLibraryVersionException(sprintf('Loaded DuckDB library version %s, but %s expected', $this->libraryVersion(), DUCKDB_PHP_LIB_VERSION));
+        $expectedVersion = Version::resolve();
+        $loadedVersion = $this->libraryVersion();
+        $loadedNormalized = Version::normalize($loadedVersion) ?? $loadedVersion;
+
+        if ($loadedNormalized !== $expectedVersion) {
+            throw new WrongLibraryVersionException(sprintf(
+                'Loaded DuckDB library version %s, but v%s expected',
+                $loadedVersion,
+                $expectedVersion
+            ));
         }
     }
 

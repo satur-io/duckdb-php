@@ -22,11 +22,16 @@ EOF;
      * @throws NotSupportedException
      * @throws CLibInstallationException
      */
-    public static function install(mixed $path = null): void
+    public static function install(mixed $path = null, ?string $version = null): void
     {
+        if (!defined('DUCKDB_PHP_LIB_VERSION') && !defined('DUCKDB_PHP_LIB_DEFAULT_VERSION')) {
+            require_once __DIR__.'/../../config.php';
+        }
+
+        $version = Version::resolve($version);
         try {
             $path = is_string($path) ? $path : null;
-            [$headerPath, $libPath] = FindLibrary::headerAndLibrary();
+            [$headerPath, $libPath] = FindLibrary::headerAndLibrary($version);
             echo sprintf('Header found: %s'.PHP_EOL, $headerPath);
             echo sprintf('Library found: %s'.PHP_EOL, $libPath);
             echo PHP_EOL;
@@ -37,36 +42,57 @@ EOF;
             echo 'DuckDB C library not found. Starting installation'.PHP_EOL;
         }
 
-        $path = $path ?? FindLibrary::defaultPath();
-        if (!defined('DUCKDB_PHP_LIB_VERSION')) {
-            require_once __DIR__.'/../../config.php';
-        }
-        Downloader::download($path, DUCKDB_PHP_LIB_VERSION);
-        self::copyHeader($path);
+        $path = $path ?? FindLibrary::defaultPath($version);
+        Downloader::download($path, $version);
+        self::copyHeader($path, $version);
     }
 
     /**
      * @throws NotSupportedException
      * @throws CLibInstallationException
      */
-    private static function copyHeader(string $path): void
+    private static function copyHeader(string $path, string $version): void
     {
         $platformInfo = PlatformInfo::getPlatformInfo();
 
         $headerPath = implode(DIRECTORY_SEPARATOR, [$path, 'duckdb-ffi.h']);
         $libraryPath = implode(DIRECTORY_SEPARATOR, [$path, $platformInfo['file']]);
 
-        $originalHeaderFile = implode(
+        $headerRoot = implode(
             DIRECTORY_SEPARATOR,
             [
                 dirname((new ReflectionClass(self::class))->getFileName()),
                 '..', '..', 'header',
-                $platformInfo['platform'],
-                'duckdb-ffi.h',
             ]);
 
+        $versionedHeaderFile = implode(
+            DIRECTORY_SEPARATOR,
+            [
+                $headerRoot,
+                $version,
+                $platformInfo['platform'],
+                'duckdb-ffi.h',
+            ]
+        );
+
+        $legacyHeaderFile = implode(
+            DIRECTORY_SEPARATOR,
+            [
+                $headerRoot,
+                $platformInfo['platform'],
+                'duckdb-ffi.h',
+            ]
+        );
+
+        $originalHeaderFile = file_exists($versionedHeaderFile) ? $versionedHeaderFile : $legacyHeaderFile;
+
         if (!file_exists($originalHeaderFile)) {
-            throw new CLibInstallationException(sprintf('Couldn\'t find original header file "%s".', $originalHeaderFile));
+            throw new CLibInstallationException(sprintf(
+                'Couldn\'t find original header file for version "%s". Tried "%s" and "%s".',
+                $version,
+                $versionedHeaderFile,
+                $legacyHeaderFile
+            ));
         }
 
         file_put_contents(
