@@ -1,0 +1,98 @@
+name: PHPUnit (Alpine native lib)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  alpine:
+    runs-on: ubuntu-latest
+    container:
+      image: alpine:edge
+    env:
+      COMPOSER_PROCESS_TIMEOUT: 0
+      COMPOSER_NO_INTERACTION: 1
+      COMPOSER_NO_AUDIT: 1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Install system dependencies
+        run: |
+          echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+          apk update
+          apk add --no-cache \
+            curl \
+            ca-certificates \
+            git \
+            php83 \
+            php83-ffi \
+            php83-openssl \
+            php83-phar \
+            php83-mbstring \
+            php83-ctype \
+            php83-dom \
+            php83-xml \
+            php83-tokenizer \
+            php83-curl \
+            duckdb \
+            duckdb-dev
+
+      - name: Install Composer
+        run: |
+          curl -sS https://getcomposer.org/installer -o composer-setup.php
+          php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+          rm -f composer-setup.php
+          composer --version
+
+      - name: Prepare DuckDB native library
+        run: |
+          DUCKDB_VERSION="$(duckdb --version | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | head -n1)"
+          if [ -z "$DUCKDB_VERSION" ]; then
+            echo "Unable to detect DuckDB version"
+            exit 1
+          fi
+
+          ARCH="$(uname -m)"
+          case "$ARCH" in
+            x86_64) PLATFORM="linux-amd64" ;;
+            aarch64) PLATFORM="linux-arm64" ;;
+            *) echo "Unsupported architecture: $ARCH" && exit 1 ;;
+          esac
+
+          HEADER_DIR="header/${DUCKDB_VERSION}/${PLATFORM}"
+          if [ ! -f "${HEADER_DIR}/duckdb-ffi.h" ]; then
+            echo "Missing headers for DuckDB ${DUCKDB_VERSION} (${PLATFORM}) at ${HEADER_DIR}"
+            exit 1
+          fi
+
+          LIB_PATH="$(find /usr/lib -maxdepth 1 -name 'libduckdb.so*' | head -n1)"
+          if [ -z "$LIB_PATH" ]; then
+            echo "libduckdb.so not found under /usr/lib"
+            exit 1
+          fi
+
+          mkdir -p /opt/duckdb-native
+          cp "${HEADER_DIR}/duckdb-ffi.h" /opt/duckdb-native/duckdb-ffi.h
+          ln -sf "$LIB_PATH" /opt/duckdb-native/libduckdb.so
+
+          echo "DUCKDB_PHP_PATH=/opt/duckdb-native" >> "$GITHUB_ENV"
+          echo "DUCKDB_PHP_LIB_VERSION=${DUCKDB_VERSION}" >> "$GITHUB_ENV"
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction
+
+      - name: Info
+        run: |
+          php info.php
+          php info.php >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run test suite
+        run: vendor/bin/phpunit test
