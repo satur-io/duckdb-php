@@ -101,4 +101,14 @@ jobs:
           php info.php >> "$GITHUB_STEP_SUMMARY"
 
       - name: Run test suite
-        run: vendor/bin/phpunit -c phpunit.xml.dist
+        run: |
+          CONFIG_PATH="${GITHUB_WORKSPACE:-$(pwd)}/phpunit.xml.dist"
+          if [ ! -f "$CONFIG_PATH" ]; then
+            CONFIG_PATH="$(find . -maxdepth 2 -name phpunit.xml.dist -print -quit)"
+          fi
+          if [ -z "$CONFIG_PATH" ] || [ ! -f "$CONFIG_PATH" ]; then
+            echo "phpunit.xml.dist not found"
+            ls -la
+            exit 1
+          fi
+          vendor/bin/phpunit -c "$CONFIG_PATH"
