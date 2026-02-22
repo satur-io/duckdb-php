@@ -43,6 +43,7 @@ jobs:
             php83-xml \
             php83-tokenizer \
             php83-curl \
+            php83-xmlwriter \
             duckdb \
             duckdb-dev
           ln -sf /usr/bin/php83 /usr/bin/php
