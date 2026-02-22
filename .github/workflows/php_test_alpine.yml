@@ -101,4 +101,4 @@ jobs:
           php info.php >> "$GITHUB_STEP_SUMMARY"
 
       - name: Run test suite
-        run: vendor/bin/phpunit test
+        run: vendor/bin/phpunit
