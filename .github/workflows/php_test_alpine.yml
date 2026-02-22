@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: alpine:edge
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
     env:
       COMPOSER_PROCESS_TIMEOUT: 0
       COMPOSER_NO_INTERACTION: 1
