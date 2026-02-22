@@ -23,10 +23,6 @@ jobs:
       COMPOSER_NO_INTERACTION: 1
       COMPOSER_NO_AUDIT: 1
     steps:
-      - uses: actions/checkout@v4
-        with:
-          lfs: false
-
       - name: Install system dependencies
         run: |
           echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
@@ -50,6 +46,10 @@ jobs:
             duckdb \
             duckdb-dev
           ln -sf /usr/bin/php83 /usr/bin/php
+
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
 
       - name: Install Composer
         run: |
