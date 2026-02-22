@@ -6,6 +6,10 @@ on:
       lib-path:
         required: false
         type: string
+      duckdb-versions:
+        required: false
+        type: string
+        default: '["1.4.0","1.4.1","1.4.2","1.4.3","1.4.4"]'
       run-sonar:
         required: false
         type: boolean
@@ -24,8 +28,12 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, ubuntu-24.04-arm, windows-11-arm]
         php: [8.6, 8.5, 8.4, 8.3]
+        duckdb: ${{ fromJSON(inputs.duckdb-versions) }}
   
-    name: php-${{ matrix.php }} - ${{ matrix.os }}
+    name: php-${{ matrix.php }} - ${{ matrix.os }} - duckdb-${{ matrix.duckdb }}
+
+    env:
+      DUCKDB_PHP_LIB_VERSION: ${{ inputs.lib-path && '' || matrix.duckdb }}
 
     steps:
     - uses: actions/checkout@v4
@@ -62,8 +70,8 @@ jobs:
       id: cache-libs
       uses: actions/cache@v4
       with:
-        path: lib
-        key: ${{ hashFiles('config.php') }}-${{ matrix.os }}-c-libs
+        path: lib/${{ matrix.duckdb }}
+        key: ${{ hashFiles('config.php') }}-${{ matrix.os }}-${{ matrix.duckdb }}-c-libs
 
     - name: Download libs
       if: ${{ !inputs.lib-path && steps.cache-libs.outputs.cache-hit != 'true' }}
@@ -80,14 +88,14 @@ jobs:
     - name: Run test suite
       env:
         DUCKDB_PHP_LIB_DIRECTORY: ${{ inputs.lib-path }}
-      run: vendor/bin/phpunit test --coverage-clover=coverage-${{ matrix.php }}-${{ matrix.os }}.xml
+      run: vendor/bin/phpunit test --coverage-clover=coverage-${{ matrix.php }}-${{ matrix.os }}-${{ matrix.duckdb }}.xml
 
     - name: Archive code coverage results
       if: ${{ inputs.run-sonar }}
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-${{ matrix.php }}-${{ matrix.os }}
-        path: coverage-${{ matrix.php }}-${{ matrix.os }}.xml
+        name: coverage-${{ matrix.php }}-${{ matrix.os }}-${{ matrix.duckdb }}
+        path: coverage-${{ matrix.php }}-${{ matrix.os }}-${{ matrix.duckdb }}.xml
 
   sonar_scan:
     if: ${{ always() && inputs.run-sonar }}

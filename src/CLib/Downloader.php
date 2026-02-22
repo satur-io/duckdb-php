@@ -16,8 +16,9 @@ class Downloader
      * @throws NotSupportedException
      * @throws CLibInstallationException
      */
-    public static function download(string $path, string $version): void
+    public static function download(string $path, ?string $version = null): void
     {
+        $version = Version::resolve($version);
         $platformInfo = PlatformInfo::getPlatformInfo();
         $zipFile = 'lib.zip';
 
@@ -29,8 +30,13 @@ class Downloader
             ))
         );
 
-        if (DUCKDB_PHP_LIB_CHECKSUMS[$platformInfo['platform']] !== hash('sha256', file_get_contents($zipFile))) {
-            throw new CLibInstallationException('Bad checksum');
+        $checksum = Version::checksumFor($version, $platformInfo['platform']);
+        if ($checksum !== null) {
+            if ($checksum !== hash('sha256', file_get_contents($zipFile))) {
+                throw new CLibInstallationException('Bad checksum');
+            }
+        } else {
+            echo sprintf('Warning: checksum not available for DuckDB v%s (%s). Skipping verification.'.PHP_EOL, $version, $platformInfo['platform']);
         }
 
         $phar = new PharData($zipFile);
