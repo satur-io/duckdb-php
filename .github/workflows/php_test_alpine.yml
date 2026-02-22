@@ -33,6 +33,7 @@ jobs:
             ca-certificates \
             git \
             php83 \
+            php83-cli \
             php83-ffi \
             php83-openssl \
             php83-phar \
@@ -44,6 +45,7 @@ jobs:
             php83-curl \
             duckdb \
             duckdb-dev
+          ln -sf /usr/bin/php83 /usr/bin/php
 
       - name: Install Composer
         run: |
