@@ -7,7 +7,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=satur-io_duckdb-php&metric=alert_status&token=4a4bd82eff843d2b4a93bf4552b6db78e598ecfa)](https://sonarcloud.io/summary/new_code?id=satur-io_duckdb-php)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=satur-io_duckdb-php&metric=coverage)](https://sonarcloud.io/summary/new_code?id=satur-io_duckdb-php)
 [![Packagist Version](https://img.shields.io/packagist/v/satur.io/duckdb?style=flat&logo=packagist&logoColor=white)](https://packagist.org/packages/satur.io/duckdb)
-![DuckDB C API Version](https://img.shields.io/badge/DuckDB_C_API-v1.4.3-%23FFF100?logo=duckdb)
+![DuckDB C API Version](https://img.shields.io/badge/DuckDB_C_API-v1.5.0-%23FFF100?logo=duckdb)
 
 
 This package provides a [DuckDB](https://github.com/duckdb/duckdb) Client API for PHP.
@@ -29,7 +29,7 @@ composer require satur.io/duckdb-auto
 ### Quick Start
 
 ```php
-DuckDB::sql("SELECT 'quack' as my_column")->print();    
+DuckDB::sql("SELECT 'quack' as my_column")->print();
 ```
 
 ```
@@ -111,7 +111,7 @@ See [upgrade  from 1.x to 2.x docs](https://duckdb-php.readthedocs.io/en/latest/
 
 ### DuckDB power
 
-DuckDB provides some amazing features. For example, 
+DuckDB provides some amazing features. For example,
 you can query remote files directly.
 
 Let's use an aggregate function to calculate the average of a column
@@ -119,8 +119,8 @@ for a parquet remote file:
 
 ```php
 DuckDB::sql(
-    'SELECT "Reporting Year", avg("Gas Produced, MCF") as "AVG Gas Produced" 
-                FROM "https://github.com/plotly/datasets/raw/refs/heads/master/oil-and-gas.parquet" 
+    'SELECT "Reporting Year", avg("Gas Produced, MCF") as "AVG Gas Produced"
+                FROM "https://github.com/plotly/datasets/raw/refs/heads/master/oil-and-gas.parquet"
                 WHERE "Reporting Year" BETWEEN 1985 AND 1990
                 GROUP BY "Reporting Year";'
 )->print();

@@ -150,6 +150,7 @@ class Vector
             TypeC::DUCKDB_TYPE_DATE => $this->typeConverter->getDateFromDuckDBDate($data),
             TypeC::DUCKDB_TYPE_TIME => $this->typeConverter->getTimeFromDuckDBTime($data),
             TypeC::DUCKDB_TYPE_TIME_TZ => $this->typeConverter->getTimeFromDuckDBTimeTz($data),
+            TypeC::DUCKDB_TYPE_TIME_NS => $this->typeConverter->getTimeFromDuckDBTimeNs($data),
             TypeC::DUCKDB_TYPE_TIMESTAMP => $this->typeConverter->getTimestampFromDuckDBTimestamp($data),
             TypeC::DUCKDB_TYPE_TIMESTAMP_MS => $this->typeConverter->getTimestampFromDuckDBTimestampMs($data),
             TypeC::DUCKDB_TYPE_TIMESTAMP_S => $this->typeConverter->getTimestampFromDuckDBTimestampS($data),

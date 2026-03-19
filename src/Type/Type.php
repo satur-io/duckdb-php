@@ -79,4 +79,7 @@ enum Type: int
     case DUCKDB_TYPE_BIGNUM = 35;
     // SQLNULL type
     case DUCKDB_TYPE_SQLNULL = 36;
+
+    // duckdb_time_ns (nanoseconds)
+    case DUCKDB_TYPE_TIME_NS = 39;
 }

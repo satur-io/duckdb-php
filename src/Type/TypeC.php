@@ -79,4 +79,7 @@ enum TypeC: string
     case DUCKDB_TYPE_BIGNUM = 'duckdb_bignum';
     // SQLNULL type
     case DUCKDB_TYPE_SQLNULL = 'sqlnull';
+
+    // duckdb_time_ns (nanoseconds)
+    case DUCKDB_TYPE_TIME_NS = 'duckdb_time_ns';
 }
