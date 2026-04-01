@@ -18,6 +18,7 @@ From version 1.2.0 on the library supports all DuckDB file types.
 | DUCKDB_TYPE_TIMESTAMP    | TIMESTAMP    | Saturio\DuckDB\Type\Timestamp        |
 | DUCKDB_TYPE_DATE         | DATE         | Saturio\DuckDB\Type\Date             |
 | DUCKDB_TYPE_TIME         | TIME         | Saturio\DuckDB\Type\Time             |
+| DUCKDB_TYPE_TIME_NS      | TIME_NS      | Saturio\DuckDB\Type\Time             |
 | DUCKDB_TYPE_INTERVAL     | INTERVAL     | Saturio\DuckDB\Type\Interval         |
 | DUCKDB_TYPE_HUGEINT      | HUGEINT      | Saturio\DuckDB\Type\Math\LongInteger |
 | DUCKDB_TYPE_UHUGEINT     | UHUGEINT     | Saturio\DuckDB\Type\Math\LongInteger |
