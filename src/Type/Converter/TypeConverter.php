@@ -87,6 +87,33 @@ class TypeConverter
     }
 
     /**
+     * DuckDB exposes TIME_NS as nanoseconds since 00:00:00.
+     * The C API does not provide `duckdb_from_time_ns`, so we decompose manually.
+     *
+     * @throws InvalidTimeException
+     */
+    public function getTimeFromDuckDBTimeNs(NativeCData $time): Time
+    {
+        $nanos = $time->nanos;
+        $totalMicros = intdiv($nanos, 1000);
+        $remainderNanos = $nanos % 1000;
+
+        $hour = intdiv($totalMicros, 3_600_000_000);
+        $totalMicros -= $hour * 3_600_000_000;
+        $min = intdiv($totalMicros, 60_000_000);
+        $totalMicros -= $min * 60_000_000;
+        $sec = intdiv($totalMicros, 1_000_000);
+        $subSecondNanos = ($totalMicros - $sec * 1_000_000) * 1000 + $remainderNanos;
+
+        return new Time(
+            $hour,
+            $min,
+            $sec,
+            nanoseconds: $subSecondNanos,
+        );
+    }
+
+    /**
      * @throws InvalidTimeException
      */
     public function getTimestampFromDuckDBTimestamp(NativeCData $timestamp, bool $timezoned = false): Timestamp

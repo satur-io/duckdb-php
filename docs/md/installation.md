@@ -115,7 +115,7 @@ mkdir ~/my-custom-dir
 
 Download C library, for example, for osx:
 ```shell
-curl -s -L https://github.com/duckdb/duckdb/releases/download/v1.4.1/libduckdb-osx-universal.zip -o /tmp/duckdb.zip && unzip /tmp/duckdb.zip && rm /tmp/duckdb.zip
+curl -s -L https://github.com/duckdb/duckdb/releases/download/v1.5.1/libduckdb-osx-universal.zip -o /tmp/duckdb.zip && unzip /tmp/duckdb.zip && rm /tmp/duckdb.zip
 ```
 
 Copy the library binary file:
