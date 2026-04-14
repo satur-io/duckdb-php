@@ -52,7 +52,7 @@ class Vector
             TypeC::DUCKDB_TYPE_TIMESTAMP_TZ => $this->cast(TypeC::DUCKDB_TYPE_TIMESTAMP),
             TypeC::DUCKDB_TYPE_UUID => $this->cast(TypeC::DUCKDB_TYPE_UHUGEINT),
             TypeC::DUCKDB_TYPE_ENUM => $this->cast(TypeC::{Type::from($this->ffi->enumInternalType($this->logicalType))->name}),
-            TypeC::DUCKDB_TYPE_BLOB, TypeC::DUCKDB_TYPE_BIT, TypeC::DUCKDB_TYPE_BIGNUM => $this->cast(TypeC::DUCKDB_TYPE_VARCHAR),
+            TypeC::DUCKDB_TYPE_BLOB, TypeC::DUCKDB_TYPE_BIT, TypeC::DUCKDB_TYPE_BIGNUM, TypeC::DUCKDB_TYPE_GEOMETRY => $this->cast(TypeC::DUCKDB_TYPE_VARCHAR),
             default => $this->cast($this->type),
         };
 
@@ -125,8 +125,13 @@ class Vector
 
     private function cast(TypeC $type): NativeCData
     {
+        $ffiElementType = match ($type) {
+            TypeC::DUCKDB_TYPE_GEOMETRY => 'duckdb_string_t',
+            default => $type->value,
+        };
+
         return $this->ffi->cast(
-            "{$type->value} *",
+            "{$ffiElementType} *",
             $this->ffi->vectorGetData($this->vector),
         );
     }
@@ -163,7 +168,7 @@ class Vector
             TypeC::DUCKDB_TYPE_UHUGEINT => $this->typeConverter->getHugeIntFromDuckDBHugeInt($data, unsigned: true),
             TypeC::DUCKDB_TYPE_UUID => $this->typeConverter->getUUIDFromDuckDBHugeInt($data),
             TypeC::DUCKDB_TYPE_ENUM => $this->typeConverter->getStringFromEnum($this->logicalType, $data),
-            TypeC::DUCKDB_TYPE_BLOB => $this->typeConverter->getBlobFromBlob($data),
+            TypeC::DUCKDB_TYPE_BLOB, TypeC::DUCKDB_TYPE_GEOMETRY => $this->typeConverter->getBlobFromBlob($data),
             TypeC::DUCKDB_TYPE_BIT => $this->typeConverter->getStringFromDuckDBBit($data),
             TypeC::DUCKDB_TYPE_BIGNUM => $this->typeConverter->getStringFromDuckDBBigNum($data),
             default => $data,

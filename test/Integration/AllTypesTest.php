@@ -22,7 +22,7 @@ class AllTypesTest extends TestCase
     {
         $result = $this->db->query('SELECT * FROM test_all_types();');
 
-        self::assertEquals(55, $result->columnCount());
+        self::assertEquals(56, $result->columnCount());
         $jsonResult = json_encode(
             iterator_to_array($result->rows(columnNameAsKey: true)),
             flags: JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
@@ -32,7 +32,7 @@ class AllTypesTest extends TestCase
 
     private function getExpectedResult(): string
     {
-        return <<<JSON
+        return <<<'JSON'
 [
     {
         "bool": false,
@@ -49,7 +49,6 @@ class AllTypesTest extends TestCase
         "bignum": "-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368",
         "date": "-5877641-06-25",
         "time": "00:00:00.0",
-        "time_ns": "00:00:00.0",
         "timestamp": "-290308-12-22 00:00:00.0",
         "timestamp_s": "-290308-12-22 00:00:00.0",
         "timestamp_ms": "-290308-12-22 00:00:00.0",
@@ -65,7 +64,7 @@ class AllTypesTest extends TestCase
         "uuid": "00000000-0000-0000-0000-000000000000",
         "interval": "0 months 0 days 0 microseconds",
         "varchar": "🦆🦆🦆🦆🦆🦆",
-        "blob": "thisisalongblob\\\\x00withnullbytes",
+        "blob": "thisisalongblob\\x00withnullbytes",
         "bit": "0010001001011100010101011010111",
         "small_enum": "DUCK_DUCK_ENUM",
         "medium_enum": "enum_0",
@@ -177,7 +176,9 @@ class AllTypesTest extends TestCase
                 2,
                 3
             ]
-        ]
+        ],
+        "time_ns": "00:00:00.0",
+        "geometry": "\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\xF8\\x7F\\x00\\x00\\x00\\x00\\x00\\x00\\xF8\\x7F"
     },
     {
         "bool": true,
@@ -194,7 +195,6 @@ class AllTypesTest extends TestCase
         "bignum": "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368",
         "date": "5881580-07-10",
         "time": "24:00:00.0",
-        "time_ns": "24:00:00.0",
         "timestamp": "294247-01-10 04:00:54.775806000",
         "timestamp_s": "294247-01-10 04:00:54.0",
         "timestamp_ms": "294247-01-10 04:00:54.775000000",
@@ -210,7 +210,7 @@ class AllTypesTest extends TestCase
         "uuid": "ffffffff-ffff-ffff-ffff-ffffffffffff",
         "interval": "999 months 999 days 999999999 microseconds",
         "varchar": "goo\u0000se",
-        "blob": "\\\\x00\\\\x00\\\\x00a",
+        "blob": "\\x00\\x00\\x00a",
         "bit": "10101",
         "small_enum": "GOOSE",
         "medium_enum": "enum_299",
@@ -414,7 +414,9 @@ class AllTypesTest extends TestCase
                 5,
                 6
             ]
-        ]
+        ],
+        "time_ns": "24:00:00.0",
+        "geometry": "\\x01\\x07\\x00\\x00\\x00\\x0D\\x00\\x00\\x00\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x00\\x00\\x00\\x00\\x00\\x00\\x00@\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\xF8\\x7F\\x00\\x00\\x00\\x00\\x00\\x00\\xF8\\x7F\\x01\\x02\\x00\\x00\\x00\\x02\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x01\\x02\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x03\\x00\\x00\\x00\\x01\\x00\\x00\\x00\\x05\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x03\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x04\\x00\\x00\\x00\\x02\\x00\\x00\\x00\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x14@\\x00\\x00\\x00\\x00\\x00\\x00\\x18@\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\xF8\\x7F\\x00\\x00\\x00\\x00\\x00\\x00\\xF8\\x7F\\x01\\x05\\x00\\x00\\x00\\x04\\x00\\x00\\x00\\x01\\x02\\x00\\x00\\x00\\x02\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x01\\x02\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x00\\x00\\x00\\x02\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00@\\x00\\x00\\x00\\x00\\x00\\x00\\x00@\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x01\\x02\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x05\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x06\\x00\\x00\\x00\\x04\\x00\\x00\\x00\\x01\\x03\\x00\\x00\\x00\\x01\\x00\\x00\\x00\\x05\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x00\\x00\\x00\\x00\\x00\\x00\\xF0?\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x03\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x03\\x00\\x00\\x00\\x01\\x00\\x00\\x00\\x05\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00@\\x00\\x00\\x00\\x00\\x00\\x00\\x00@\\x00\\x00\\x00\\x00\\x00\\x00\\x00@\\x00\\x00\\x00\\x00\\x00\\x00\\x00@\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x03\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x06\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x07\\x00\\x00\\x00\\x01\\x00\\x00\\x00\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x14@\\x00\\x00\\x00\\x00\\x00\\x00\\x18@\\x01\\x07\\x00\\x00\\x00\\x00\\x00\\x00\\x00"
     },
     {
         "bool": null,
@@ -431,7 +433,6 @@ class AllTypesTest extends TestCase
         "bignum": null,
         "date": null,
         "time": null,
-        "time_ns": null,
         "timestamp": null,
         "timestamp_s": null,
         "timestamp_ms": null,
@@ -504,7 +505,9 @@ class AllTypesTest extends TestCase
             null,
             null
         ],
-        "list_of_fixed_int_array": []
+        "list_of_fixed_int_array": [],
+        "time_ns": null,
+        "geometry": null
     }
 ]
 JSON;
