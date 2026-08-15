@@ -6257,4 +6257,3 @@ Result must be freed with `duckdb_free`.
 
 
 
-
