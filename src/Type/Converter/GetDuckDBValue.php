@@ -62,7 +62,8 @@ trait GetDuckDBValue
                 Type::DUCKDB_TYPE_HUGEINT => $this->createFromHugeInt($value),
                 Type::DUCKDB_TYPE_UHUGEINT => $this->createFromUhugeInt($value),
                 Type::DUCKDB_TYPE_UUID => $this->createFromUUID($value),
-                Type::DUCKDB_TYPE_BLOB => $this->createFromBlob($value),
+                Type::DUCKDB_TYPE_BLOB,
+                Type::DUCKDB_TYPE_GEOMETRY => $this->createFromBlob($value),
                 Type::DUCKDB_TYPE_DECIMAL => $this->createFromScalar($value, Type::DUCKDB_TYPE_DOUBLE),
                 default => throw new UnsupportedTypeException("Unsupported type: {$type->name}"),
             };

@@ -82,4 +82,6 @@ enum Type: int
 
     // duckdb_time_ns (nanoseconds)
     case DUCKDB_TYPE_TIME_NS = 39;
+    // GEOMETRY (WKB blob)
+    case DUCKDB_TYPE_GEOMETRY = 40;
 }

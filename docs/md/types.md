@@ -1,6 +1,6 @@
 ## Types
 
-From version 1.2.0 on the library supports all DuckDB file types.
+From version 1.2.0 on the library supports the DuckDB types in this table, including `TIME_NS` and `GEOMETRY` when the bundled C API defines them.
 
 | DuckDB Type              | SQL Type     | PHP Type                             |
 |--------------------------|--------------|--------------------------------------|
@@ -24,6 +24,7 @@ From version 1.2.0 on the library supports all DuckDB file types.
 | DUCKDB_TYPE_UHUGEINT     | UHUGEINT     | Saturio\DuckDB\Type\Math\LongInteger |
 | DUCKDB_TYPE_VARCHAR      | VARCHAR      | string                               |
 | DUCKDB_TYPE_BLOB         | BLOB         | Saturio\DuckDB\Type\Blob             |
+| DUCKDB_TYPE_GEOMETRY     | GEOMETRY     | Saturio\DuckDB\Type\Blob             |
 | DUCKDB_TYPE_TIMESTAMP_S  | TIMESTAMP_S  | Saturio\DuckDB\Type\Timestamp        |
 | DUCKDB_TYPE_TIMESTAMP_MS | TIMESTAMP_MS | Saturio\DuckDB\Type\Timestamp        |
 | DUCKDB_TYPE_TIMESTAMP_NS | TIMESTAMP_NS | Saturio\DuckDB\Type\Timestamp        |

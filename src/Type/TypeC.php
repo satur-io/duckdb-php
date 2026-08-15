@@ -82,4 +82,6 @@ enum TypeC: string
 
     // duckdb_time_ns (nanoseconds)
     case DUCKDB_TYPE_TIME_NS = 'duckdb_time_ns';
+    // WKB blob; vectors use duckdb_string_t at the FFI layer (value must differ from VARCHAR)
+    case DUCKDB_TYPE_GEOMETRY = 'duckdb_geometry_wkb';
 }
