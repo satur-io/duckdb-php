@@ -3,25 +3,40 @@
 [OPcache](https://www.php.net/manual/en/intro.opcache.php) stores precompiled script bytecode in shared memory.
 [OPcache preloading](https://www.php.net/manual/en/ffi.examples-complete.php) will improve performance loading the C library.
 
-You will need to add an script in a path reachable by your php runtime.
+You will need to add a script in a path reachable by your php runtime.
 
 ```php
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/vendor/satur.io/src/FFI/FindLibrary.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use Saturio\DuckDB\FFI\FindLibrary;
 
 FFI::load(FindLibrary::headerPath());
 
-opcache_compile_file(__DIR__ . "/vendor/satur.io/src/FFI/DuckDB.php");
+opcache_compile_file(__DIR__ . "/vendor/satur.io/duckdb/src/FFI/DuckDB.php");
+```
+
+Alternatively, for a minimal preload script without the full Composer autoloader:
+
+```php
+<?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/vendor/satur.io/duckdb/src/FFI/FindLibrary.php';
+
+use Saturio\DuckDB\FFI\FindLibrary;
+
+FFI::load(FindLibrary::headerPath());
+
+opcache_compile_file(__DIR__ . "/vendor/satur.io/duckdb/src/FFI/DuckDB.php");
 ```
 
 !!! tip
     Adapt the routes according to your system structure.
 
-And also add in yor `php.ini` files opcache configuration:
+And also add in your `php.ini` files opcache configuration:
 
 ```shell
 ffi.enable=preload

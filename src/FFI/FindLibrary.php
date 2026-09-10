@@ -45,7 +45,7 @@ class FindLibrary
         return implode(DIRECTORY_SEPARATOR, [$rootInstallationPath, 'lib']);
     }
 
-    private static function headerPath(): string
+    public static function headerPath(): string
     {
         return implode(DIRECTORY_SEPARATOR, [self::path(), 'duckdb-ffi.h']);
     }
@@ -53,7 +53,7 @@ class FindLibrary
     /**
      * @throws NotSupportedException
      */
-    private static function libPath(): string
+    public static function libPath(): string
     {
         $file = PlatformInfo::getPlatformInfo()['file'];
 
