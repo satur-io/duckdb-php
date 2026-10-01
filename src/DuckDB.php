@@ -21,8 +21,6 @@ use Saturio\DuckDB\Result\Metric\NativeMetric;
 use Saturio\DuckDB\Result\Metric\TimeMetric;
 use Saturio\DuckDB\Result\ResultSet;
 
-use function range;
-
 class DuckDB
 {
     private DB $db;
@@ -110,14 +108,21 @@ class DuckDB
      * @param string $query the query for which to get the table names
      *
      * @return list<string>
+     *
+     * @throws QueryException when DuckDB cannot read the table names of the query
      */
     public function getTableNames(string $query): array
     {
         $tableNames = self::$ffi->getTableNames($this->connection->connection, $query, true);
+
+        if (null === $tableNames) {
+            throw new QueryException("Could not read the table names of the query: {$query}");
+        }
+
         $noOfTables = self::$ffi->getListSize($tableNames);
         $tables = [];
 
-        foreach (range(0, $noOfTables - 1) as $index) {
+        for ($index = 0; $index < $noOfTables; ++$index) {
             $child = self::$ffi->getListChild($tableNames, $index);
             $table = self::$ffi->getVarchar($child);
             $tables[] = $table;

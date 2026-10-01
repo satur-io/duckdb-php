@@ -453,13 +453,13 @@ class AllTypesTest extends TestCase
         "small_enum": null,
         "medium_enum": null,
         "large_enum": null,
-        "int_array": [],
-        "double_array": [],
-        "date_array": [],
-        "timestamp_array": [],
-        "timestamptz_array": [],
-        "varchar_array": [],
-        "nested_int_array": [],
+        "int_array": null,
+        "double_array": null,
+        "date_array": null,
+        "timestamp_array": null,
+        "timestamptz_array": null,
+        "varchar_array": null,
+        "nested_int_array": null,
         "struct": {
             "a": null,
             "b": null
@@ -468,8 +468,8 @@ class AllTypesTest extends TestCase
             "a": null,
             "b": null
         },
-        "array_of_structs": [],
-        "map": [],
+        "array_of_structs": null,
+        "map": null,
         "union": null,
         "fixed_int_array": [
             null,
@@ -505,7 +505,7 @@ class AllTypesTest extends TestCase
             null,
             null
         ],
-        "list_of_fixed_int_array": [],
+        "list_of_fixed_int_array": null,
         "time_ns": null,
         "geometry": null
     }

@@ -695,6 +695,34 @@ class QueryTest extends TestCase
     }
 
     #[Group('nested')]
+    public function testNullList(): void
+    {
+        $result = $this->db->query('SELECT NULL::INTEGER[]');
+
+        $this->assertSame([[null]], iterator_to_array($result->rows(), false));
+    }
+
+    #[Group('nested')]
+    public function testNullListBetweenLists(): void
+    {
+        $this->db->query('DROP TABLE IF EXISTS lists');
+        $this->db->query('CREATE TABLE lists(id INTEGER, list INTEGER[] NULL)');
+        $this->db->query('INSERT INTO lists VALUES (1, [1, 2]), (2, NULL), (3, [NULL, 3]), (4, [])');
+
+        $result = $this->db->query('SELECT list FROM lists ORDER BY id');
+
+        $this->assertSame([[[1, 2]], [null], [[null, 3]], [[]]], iterator_to_array($result->rows(), false));
+    }
+
+    #[Group('nested')]
+    public function testNullMap(): void
+    {
+        $result = $this->db->query("SELECT NULL::MAP(VARCHAR, INTEGER), MAP(['a'], [1])");
+
+        $this->assertSame([[null, ['a' => 1]]], iterator_to_array($result->rows(), false));
+    }
+
+    #[Group('nested')]
     public function testMultirowArray(): void
     {
         $expectedValues = [0 => [['duck', 'goose', 'heron']], 1 => [['duck2', 'goose2', 'heron2']]];

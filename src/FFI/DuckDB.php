@@ -100,7 +100,7 @@ class DuckDB
         return self::$ffi->duckdb_connect($database, $connection);
     }
 
-    public function getTableNames(NativeCData $connection, string $query, bool $qualified): NativeCData
+    public function getTableNames(NativeCData $connection, string $query, bool $qualified): ?NativeCData
     {
         return self::$ffi->duckdb_get_table_names($connection, $query, $qualified);
     }

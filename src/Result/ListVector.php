@@ -22,9 +22,15 @@ class ListVector implements NestedTypeVector
             $this->ffi->vectorGetData($this->vector),
         );
 
+        // The entry of a NULL list is not set, so its length must not be read.
+        $listValidity = $this->ffi->vectorGetValidity($this->vector);
+        $listValidity = null === $listValidity ? null : $this->ffi->cast('uint64_t *', $listValidity);
+
         $totalItems = 0;
         for ($i = 0; $i < $this->rows; ++$i) {
-            $totalItems += $listEntry[$i]->length;
+            if ($this->rowIsValid($listValidity, $i)) {
+                $totalItems += $listEntry[$i]->length;
+            }
         }
 
         $vector = new Vector(
@@ -38,6 +44,12 @@ class ListVector implements NestedTypeVector
         $data = $vector->getDataGenerator();
 
         for ($i = 0; $i < $this->rows; ++$i) {
+            if (!$this->rowIsValid($listValidity, $i)) {
+                $this->children[] = null;
+
+                continue;
+            }
+
             $offset = $listEntry[$i]->offset;
             $length = $listEntry[$i]->length;
 
@@ -56,8 +68,8 @@ class ListVector implements NestedTypeVector
         }
     }
 
-    public function getChildren(int $rowIndex): array
+    public function getChildren(int $rowIndex): ?array
     {
-        return $this->children[$rowIndex] ?? [];
+        return array_key_exists($rowIndex, $this->children) ? $this->children[$rowIndex] : [];
     }
 }

@@ -23,9 +23,15 @@ class MapVector implements NestedTypeVector
         );
     }
 
-    public function getChildren(int $rowIndex): array
+    public function getChildren(int $rowIndex): ?array
     {
-        return array_reduce($this->list->getChildren($rowIndex), function ($result, $item) {
+        $entries = $this->list->getChildren($rowIndex);
+
+        if (null === $entries) {
+            return null;
+        }
+
+        return array_reduce($entries, function ($result, $item) {
             $result[$item['key']] = $item['value'];
 
             return $result;
