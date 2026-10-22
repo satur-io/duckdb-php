@@ -47,8 +47,11 @@ class Timestamp implements JsonSerializable
         DateTime $dateTime,
         TimePrecision $precision = TimePrecision::MICROSECONDS,
         ?int $nanoseconds = null,
+        bool $isTimeZoned = false,
     ): self {
-        $dateTime = $dateTime->setTimezone(new DateTimeZone(date_default_timezone_get()));
+        if (!$isTimeZoned) {
+            $dateTime = $dateTime->setTimezone(new DateTimeZone(date_default_timezone_get()));
+        }
 
         if (null !== $nanoseconds and TimePrecision::NANOSECONDS !== $precision) {
             throw new InvalidTimeException('Nanoseconds param is only supported in NANOSECONDS precision');
@@ -59,24 +62,28 @@ class Timestamp implements JsonSerializable
                 (int) $dateTime->format('H'),
                 (int) $dateTime->format('i'),
                 (int) $dateTime->format('s'),
+                isTimeZoned: $isTimeZoned,
             ),
             TimePrecision::MILLISECONDS => new Time(
                 (int) $dateTime->format('H'),
                 (int) $dateTime->format('i'),
                 (int) $dateTime->format('s'),
                 milliseconds: (int) $dateTime->format('v'),
+                isTimeZoned: $isTimeZoned,
             ),
             TimePrecision::MICROSECONDS => new Time(
                 (int) $dateTime->format('H'),
                 (int) $dateTime->format('i'),
                 (int) $dateTime->format('s'),
                 microseconds: (int) $dateTime->format('u'),
+                isTimeZoned: $isTimeZoned,
             ),
             TimePrecision::NANOSECONDS => new Time(
                 (int) $dateTime->format('H'),
                 (int) $dateTime->format('i'),
                 (int) $dateTime->format('s'),
                 nanoseconds: $nanoseconds,
+                isTimeZoned: $isTimeZoned,
             ),
         };
 

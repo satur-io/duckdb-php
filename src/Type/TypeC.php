@@ -79,9 +79,16 @@ enum TypeC: string
     case DUCKDB_TYPE_BIGNUM = 'duckdb_bignum';
     // SQLNULL type
     case DUCKDB_TYPE_SQLNULL = 'sqlnull';
-
+    // string literal, only useful as logical type
+    case DUCKDB_TYPE_STRING_LITERAL = 'string_literal';
+    // integer literal, only useful as logical type
+    case DUCKDB_TYPE_INTEGER_LITERAL = 'integer_literal';
     // duckdb_time_ns (nanoseconds)
     case DUCKDB_TYPE_TIME_NS = 'duckdb_time_ns';
     // WKB blob; vectors use duckdb_string_t at the FFI layer (value must differ from VARCHAR)
     case DUCKDB_TYPE_GEOMETRY = 'duckdb_geometry_wkb';
+    // VARIANT logical type; vectors are not exposed as a scalar C type
+    case DUCKDB_TYPE_VARIANT = 'variant';
+    // TIMESTAMPTZ_NS; vectors use duckdb_timestamp_ns at the FFI layer
+    case DUCKDB_TYPE_TIMESTAMP_TZ_NS = 'duckdb_timestamp_tz_ns';
 }

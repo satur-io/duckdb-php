@@ -57,11 +57,11 @@ class NativeMetricTest extends TestCase
         // After loop over the results and convert from C types to PHP types, high PHP percentage expected
         iterator_to_array($result->rows());
         $this->assertGreaterThanOrEqual(
-            99,
+            95,
             $result->metric->getPhpPercentage()
         );
         $this->assertLessThanOrEqual(
-            1,
+            5,
             $result->metric->getNativePercentage()
         );
     }

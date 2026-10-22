@@ -384,6 +384,39 @@ class QueryTest extends TestCase
 
     #[Group('primitives')]
     #[Group('timestamp')]
+    public function testTimestampTzNsSelect(): void
+    {
+        $previousTimezone = date_default_timezone_get();
+        date_default_timezone_set('Europe/Berlin');
+
+        try {
+            $expectedValues = [new Timestamp(
+                new Date(1992, 9, 20),
+                new Time(11, 30, 0, nanoseconds: 123456789, isTimeZoned: true)
+            )];
+            $this->db->query("SET TimeZone = 'UTC';");
+            $result = $this->db->query("SELECT TIMESTAMPTZ_NS '1992-09-20 11:30:00.123456789';");
+
+            $row = $result->rows()->current();
+            $this->assertEquals($expectedValues, $row);
+            $this->assertEquals(new DateTime('1992-09-20 13:30:00.123456'), $row[0]->toDateTime());
+        } finally {
+            date_default_timezone_set($previousTimezone);
+        }
+
+        $expectedValues = [new Timestamp(
+            new Date(1992, 9, 20),
+            new Time(12, 30, 0, nanoseconds: 123456789, isTimeZoned: true)
+        )];
+        $this->db->query("SET TimeZone = 'Etc/GMT+1';");
+        $result = $this->db->query("SELECT TIMESTAMPTZ_NS '1992-09-20 11:30:00.123456789';");
+
+        $row = $result->rows()->current();
+        $this->assertEquals($expectedValues, $row);
+    }
+
+    #[Group('primitives')]
+    #[Group('timestamp')]
     public function testTimestampTzSelect(): void
     {
         $expectedValues = [new Timestamp(

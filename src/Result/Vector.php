@@ -7,6 +7,7 @@ namespace Saturio\DuckDB\Result;
 use DateMalformedStringException;
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
+use Saturio\DuckDB\Exception\UnsupportedTypeException;
 use Saturio\DuckDB\FFI\DuckDB as FFIDuckDB;
 use Saturio\DuckDB\Native\FFI\CData as NativeCData;
 use Saturio\DuckDB\Type\Converter\NumericConverter;
@@ -34,6 +35,18 @@ class Vector
     ) {
         $this->type = $this->getColumnType();
 
+        if (TypeC::DUCKDB_TYPE_SQLNULL === $this->type) {
+            return;
+        }
+
+        if (in_array($this->type, [
+            TypeC::DUCKDB_TYPE_VARIANT,
+            TypeC::DUCKDB_TYPE_STRING_LITERAL,
+            TypeC::DUCKDB_TYPE_INTEGER_LITERAL,
+        ], true)) {
+            throw new UnsupportedTypeException(sprintf('DuckDB type %s is not supported', $this->type->name));
+        }
+
         $this->nestedTypeVector = match ($this->type) {
             TypeC::DUCKDB_TYPE_STRUCT => new StructVector($this->ffi, $this->vector, $this->rows, $this->logicalType),
             TypeC::DUCKDB_TYPE_LIST => new ListVector($this->ffi, $this->vector, $this->rows),
@@ -50,6 +63,7 @@ class Vector
         $this->typedData = match ($this->type) {
             TypeC::DUCKDB_TYPE_DECIMAL => $this->cast(TypeC::{Type::from($this->ffi->decimalInternalType($this->logicalType))->name}),
             TypeC::DUCKDB_TYPE_TIMESTAMP_TZ => $this->cast(TypeC::DUCKDB_TYPE_TIMESTAMP),
+            TypeC::DUCKDB_TYPE_TIMESTAMP_TZ_NS => $this->cast(TypeC::DUCKDB_TYPE_TIMESTAMP_NS),
             TypeC::DUCKDB_TYPE_UUID => $this->cast(TypeC::DUCKDB_TYPE_UHUGEINT),
             TypeC::DUCKDB_TYPE_ENUM => $this->cast(TypeC::{Type::from($this->ffi->enumInternalType($this->logicalType))->name}),
             TypeC::DUCKDB_TYPE_BLOB, TypeC::DUCKDB_TYPE_BIT, TypeC::DUCKDB_TYPE_BIGNUM, TypeC::DUCKDB_TYPE_GEOMETRY => $this->cast(TypeC::DUCKDB_TYPE_VARCHAR),
@@ -143,6 +157,10 @@ class Vector
      */
     public function getTypedData(int $rowIndex): mixed
     {
+        if (TypeC::DUCKDB_TYPE_SQLNULL === $this->type) {
+            return null;
+        }
+
         if (!$this->rowIsValid($this->validity, $rowIndex)) {
             return null;
         }
@@ -161,6 +179,7 @@ class Vector
             TypeC::DUCKDB_TYPE_TIMESTAMP_S => $this->typeConverter->getTimestampFromDuckDBTimestampS($data),
             TypeC::DUCKDB_TYPE_TIMESTAMP_NS => $this->typeConverter->getTimestampFromDuckDBTimestampNs($data),
             TypeC::DUCKDB_TYPE_TIMESTAMP_TZ => $this->typeConverter->getTimestampFromDuckDBTimestampTz($data),
+            TypeC::DUCKDB_TYPE_TIMESTAMP_TZ_NS => $this->typeConverter->getTimestampFromDuckDBTimestampTzNs($data),
             TypeC::DUCKDB_TYPE_INTERVAL => $this->typeConverter->getIntervalFromDuckDBInterval($data),
             TypeC::DUCKDB_TYPE_BIGINT => $this->typeConverter->getBigIntFromDuckDBBigInt($data, false),
             TypeC::DUCKDB_TYPE_UBIGINT => $this->typeConverter->getBigIntFromDuckDBBigInt($data, true),

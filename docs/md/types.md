@@ -30,7 +30,8 @@ From version 1.2.0 on the library supports the DuckDB types in this table, inclu
 | DUCKDB_TYPE_TIMESTAMP_NS | TIMESTAMP_NS | Saturio\DuckDB\Type\Timestamp        |
 | DUCKDB_TYPE_UUID         | UUID         | Saturio\DuckDB\Type\UUID             |
 | DUCKDB_TYPE_TIME_TZ      | TIMETZ       | Saturio\DuckDB\Type\Time             |
-| DUCKDB_TYPE_TIMESTAMP_TZ | TIMESTAMPTZ  | Saturio\DuckDB\Type\Timestamp        |
+| DUCKDB_TYPE_TIMESTAMP_TZ    | TIMESTAMPTZ    | Saturio\DuckDB\Type\Timestamp        |
+| DUCKDB_TYPE_TIMESTAMP_TZ_NS | TIMESTAMPTZ_NS | Saturio\DuckDB\Type\Timestamp        |
 | DUCKDB_TYPE_DECIMAL      | DECIMAL      | float                                |
 | DUCKDB_TYPE_ENUM         | ENUM         | string                               |
 | DUCKDB_TYPE_LIST         | LIST         | array                                |
@@ -41,3 +42,5 @@ From version 1.2.0 on the library supports the DuckDB types in this table, inclu
 | DUCKDB_TYPE_BIT          | BIT          | string                               |
 | DUCKDB_TYPE_BIGNUM       | BIGNUM       | string                               |
 | DUCKDB_TYPE_SQLNULL      | NULL         | null                                 |
+
+SQL `TUPLE` values are returned as lists. `VARIANT` is recognized and not decoded.

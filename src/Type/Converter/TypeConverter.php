@@ -6,6 +6,7 @@ namespace Saturio\DuckDB\Type\Converter;
 
 use DateMalformedStringException;
 use DateTime;
+use DateTimeZone;
 use FFI;
 use Saturio\DuckDB\Exception\BigNumbersNotSupportedException;
 use Saturio\DuckDB\Exception\InvalidTimeException;
@@ -167,9 +168,9 @@ class TypeConverter
     /**
      * @throws InvalidTimeException|DateMalformedStringException
      */
-    public function getTimestampFromDuckDBTimestampNs(NativeCData $timestamp): Timestamp
+    public function getTimestampFromDuckDBTimestampNs(NativeCData $timestamp, bool $timezoned = false): Timestamp
     {
-        $datetime = new DateTime(self::UNIX_EPOCH);
+        $datetime = new DateTime(self::UNIX_EPOCH, $timezoned ? new DateTimeZone('UTC') : null);
         $nanoseconds = $timestamp->nanos;
         $milliseconds = intval($nanoseconds / 1000000);
         $nanosecondsReminder = $nanoseconds % 1000000000;
@@ -181,7 +182,15 @@ class TypeConverter
             $datetime->modify(sprintf('%+d milliseconds', $milliseconds));
         }
 
-        return Timestamp::fromDateTime($datetime, TimePrecision::NANOSECONDS, $nanosecondsReminder);
+        return Timestamp::fromDateTime($datetime, TimePrecision::NANOSECONDS, $nanosecondsReminder, isTimeZoned: $timezoned);
+    }
+
+    /**
+     * @throws InvalidTimeException|DateMalformedStringException
+     */
+    public function getTimestampFromDuckDBTimestampTzNs(NativeCData $timestamp): Timestamp
+    {
+        return $this->getTimestampFromDuckDBTimestampNs($timestamp, timezoned: true);
     }
 
     /**

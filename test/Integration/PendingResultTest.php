@@ -66,13 +66,17 @@ class PendingResultTest extends TestCase
 
         do {
             $taskExecutionResult = $pendingResult->executeTask();
+            if (in_array($taskExecutionResult, [PendingResult::DUCKDB_PENDING_ERROR, PendingResult::DUCKDB_PENDING_RESULT_READY], true)) {
+                break;
+            }
+
             $currentProgress = $db->queryProgress();
             $this->assertGreaterThanOrEqual($lastProgress['percentage'], $currentProgress['percentage']);
             if ($currentProgress['total_rows_to_process'] > 0) {
                 $this->assertGreaterThanOrEqual($lastProgress['rows_processed'], $currentProgress['rows_processed']);
             }
             $lastProgress = $currentProgress;
-        } while (!in_array($taskExecutionResult, [PendingResult::DUCKDB_PENDING_ERROR, PendingResult::DUCKDB_PENDING_RESULT_READY], true));
+        } while (true);
 
         if (PendingResult::DUCKDB_PENDING_ERROR === $taskExecutionResult) {
             throw new Exception('Error executing task');
