@@ -1,10 +1,10 @@
 <?php
 
-const DUCKDB_PHP_LIB_VERSION = '1.5.5';
+const DUCKDB_PHP_LIB_VERSION = '2.0.0';
 const DUCKDB_PHP_LIB_CHECKSUMS = [
-    'linux-amd64' => '1fb8ce388157d84a25abe685a8a2520bf00c00321821968e4bb398fd766e7abb',
-    'linux-arm64' => 'abe4f6f005ee0b448a058322f4263584b4bd1b6faf7ab4637b79eeaf978f8e9c',
-    'osx-universal' => '7b5b8915cc382d0708636fe6385c0cdad5a61c9ff8ba2638b3e2141640783155',
-    'windows-amd64' => '8375eb1fcf2212e8a0817950354815d4dde9dd383c2d9fa7b8975b71e278c1bd',
-    'windows-arm64' => '006f8df62957f640a100d673432a5b6f9a7002662822a4567ed06a436ee1d801',
+    'linux-amd64' => '993ad89e7dfca66cd6da994c2cad090c2fc160ddf9f550498a098ab4bb13cfb1',
+    'linux-arm64' => 'c60eecf91143ca6bbac55c4f4d40dc22520488b0ac257c86e0fe9a2b451cf2b7',
+    'osx-universal' => '14cd63180614cfd961f7959146ecd9087527ff20b67311efdc3fa1c29c18204d',
+    'windows-amd64' => '2b83169128239de5f45fe21de80f99bf436e53aa4bb24020dd951a1ba8d4b95f',
+    'windows-arm64' => '159ce60eb587112b8c5f290b8beea56af5f13be4d13679de127ad9bfaafb7447',
 ];

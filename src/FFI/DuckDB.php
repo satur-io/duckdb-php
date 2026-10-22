@@ -628,6 +628,16 @@ class DuckDB
         return self::$ffi->duckdb_profiling_info_get_value($profilingInfo, $string);
     }
 
+    public function profilingInfoChildCount(NativeCData $profilingInfo): int
+    {
+        return self::$ffi->duckdb_profiling_info_get_child_count($profilingInfo);
+    }
+
+    public function profilingInfoChild(NativeCData $profilingInfo, int $index): NativeCData
+    {
+        return self::$ffi->duckdb_profiling_info_get_child($profilingInfo, $index);
+    }
+
     public function getDouble(NativeCData $duckdbValue): float
     {
         return self::$ffi->duckdb_get_double($duckdbValue);

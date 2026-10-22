@@ -79,9 +79,16 @@ enum Type: int
     case DUCKDB_TYPE_BIGNUM = 35;
     // SQLNULL type
     case DUCKDB_TYPE_SQLNULL = 36;
-
+    // string literal, only useful as logical type
+    case DUCKDB_TYPE_STRING_LITERAL = 37;
+    // integer literal, only useful as logical type
+    case DUCKDB_TYPE_INTEGER_LITERAL = 38;
     // duckdb_time_ns (nanoseconds)
     case DUCKDB_TYPE_TIME_NS = 39;
     // GEOMETRY (WKB blob)
     case DUCKDB_TYPE_GEOMETRY = 40;
+    // VARIANT
+    case DUCKDB_TYPE_VARIANT = 41;
+    // duckdb_timestamp_ns (nanoseconds, time zone)
+    case DUCKDB_TYPE_TIMESTAMP_TZ_NS = 42;
 }

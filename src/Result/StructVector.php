@@ -12,8 +12,8 @@ class StructVector implements NestedTypeVector
     use ValidityTrait;
 
     /** @var Vector[] */
-    private array $children;
-    private NativeCData $logicalType;
+    private array $children = [];
+    private ?NativeCData $logicalType = null;
 
     public function __construct(
         private readonly DuckDB $ffi,
@@ -21,7 +21,8 @@ class StructVector implements NestedTypeVector
         private readonly int $rows,
         private readonly NativeCData $parentLogicalType,
     ) {
-        foreach (range(0, $this->ffi->structTypeChildCount($this->parentLogicalType) - 1) as $childIndex) {
+        $childCount = $this->ffi->structTypeChildCount($this->parentLogicalType);
+        for ($childIndex = 0; $childIndex < $childCount; ++$childIndex) {
             $this->children[$childIndex] =
                 new Vector(
                     $this->ffi,
@@ -42,17 +43,31 @@ class StructVector implements NestedTypeVector
 
     public function getChildren(int $rowIndex): array
     {
+        $unnamed = [] !== $this->children;
+        foreach ($this->children as $child) {
+            if ('' !== $child->name && null !== $child->name) {
+                $unnamed = false;
+                break;
+            }
+        }
+
         $array = [];
 
         foreach ($this->children as $child) {
             $validity = $child->getValidity();
 
             if ($this->rowIsValid($validity, $rowIndex)) {
-                $array[$child->name] = $child->isNestedType() ?
+                $value = $child->isNestedType() ?
                     $child->nestedTypeVector->getChildren($rowIndex)
                     : $child->getTypedData($rowIndex);
             } else {
-                $array[$child->name] = null;
+                $value = null;
+            }
+
+            if ($unnamed) {
+                $array[] = $value;
+            } else {
+                $array[$child->name] = $value;
             }
         }
 
@@ -61,6 +76,8 @@ class StructVector implements NestedTypeVector
 
     public function __destruct()
     {
-        $this->ffi->destroyLogicalType($this->ffi->addr($this->logicalType));
+        if (null !== $this->logicalType) {
+            $this->ffi->destroyLogicalType($this->ffi->addr($this->logicalType));
+        }
     }
 }

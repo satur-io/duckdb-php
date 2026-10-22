@@ -9,12 +9,12 @@ counter=0
 for platform in "${platforms[@]}"; do
   mkdir -p "/tmp/${platform}"
   mkdir -p "./header/${platform}"
-  curl -sSL "https://github.com/duckdb/duckdb/releases/download/v${release}/libduckdb-${platform}.zip" > "libduckdb-${platform}.zip"
-  unzip "libduckdb-${platform}.zip" -d "/tmp/${platform}"
-  rm -f "libduckdb-${platform}.zip"
+  curl -sSL "https://github.com/duckdb/duckdb/releases/download/v${release}/duckdb-shared-libs-${platform}.tar.gz" > "duckdb-shared-libs-${platform}.tar.gz"
+  tar -xzf "duckdb-shared-libs-${platform}.tar.gz" -C "/tmp/${platform}"
+  rm -f "duckdb-shared-libs-${platform}.tar.gz"
 
   sed -i.bak '/#include <std/d'  "/tmp/${platform}/duckdb.h"
-  cpp -w -P -C -D"attribute(ARGS)=" "/tmp/${platform}/duckdb.h" >> "/tmp/${platform}/duckdb-ffi.h"
+  cpp -w -P -C -D"attribute(ARGS)=" -D"__attribute__(ARGS)=" -D"__declspec(ARGS)=" "/tmp/${platform}/duckdb.h" >> "/tmp/${platform}/duckdb-ffi.h"
   cp "/tmp/${platform}/duckdb-ffi.h" "./header/${platform}/duckdb-ffi.h"
   rm -rf "/tmp/${platform}"
   counter=${counter}+1
